@@ -56,38 +56,58 @@
 
 #include "Flicker.h"
 
-Flicker* flicker = nullptr;
+constexpr int PIN = 6;
+constexpr int NUMPIXELS = 8;
 
 static constexpr uint32_t speed = 2; // value from 0 to 7, will eventually be passed in
 static constexpr uint8_t hue = 3;
 static constexpr uint8_t sat = 7;
 static constexpr uint8_t val = 4;
 
-constexpr int PIN = 6;
-constexpr int NUMPIXELS = 8;
+class PostLightController
+{
+public:
+	PostLightController() : _pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800) { }
+	~PostLightController() { }
+	
+	void setup()
+	{
+	    Serial.begin(115200);
+	    Serial.print("Hello\n");
 
-Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
+	    _pixels.begin(); // This initializes the NeoPixel library.
+	    _pixels.setBrightness(255);
+	
+		_currentEffect = new Flicker(&_pixels);
+	
+		uint32_t param = Effect::HSVParamsToPackedHSV(hue, sat, val);
+		param |= speed << 11;
+		_currentEffect->init(param);
+	}
+
+	void loop()
+	{
+		uint32_t delayInMs = _currentEffect->loop();
+	
+		// Eventually we can't delay in loop because we have to feed the soft serial port
+		// But for now...
+		delay(delayInMs);
+	}
+
+private:
+	Adafruit_NeoPixel _pixels;
+	
+	Effect* _currentEffect = nullptr;
+};
+
+PostLightController controller;
 
 void setup()
 {
-    Serial.begin(115200);
-    Serial.print("Hello\n");
-
-    pixels.begin(); // This initializes the NeoPixel library.
-    pixels.setBrightness(255);
-	
-	flicker = new Flicker(&pixels);
-	
-	uint32_t param = Effect::HSVParamsToPackedHSV(hue, sat, val);
-	param |= speed << 11;
-	flicker->init(param);
+	controller.setup();
 }
 
 void loop()
 {
-	uint32_t delayInMs = flicker->loop();
-	
-	// Eventually we can't delay in loop because we have to feed the soft serial port
-	// But for now...
-	delay(delayInMs);
+	controller.loop();
 }
