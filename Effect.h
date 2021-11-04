@@ -18,7 +18,10 @@ public:
 		_val = float(color & 0x07) / 8;
 	}
 	
-	void loop();
+	virtual ~Effect() { }
+	
+	// Return delay in ms
+	virtual uint32_t loop() = 0;
 		
 	static uint16_t HSVParamsToPackedHSV(uint8_t h, uint8_t s, uint8_t v)
 	{

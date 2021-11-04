@@ -39,7 +39,7 @@ Flicker::~Flicker()
 	_leds = nullptr;
 }
 
-void
+uint32_t
 Flicker::loop()
 {
     for (int i = 0; i < _pixels->numPixels(); i++) {
@@ -71,5 +71,5 @@ Flicker::loop()
         _pixels->show();
     }
 
-    delay(_speedTable[min(_speed, 9)].delay);
+    return _speedTable[min(_speed, 9)].delay;
 }

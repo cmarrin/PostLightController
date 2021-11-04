@@ -16,7 +16,7 @@ public:
 	Flicker(Adafruit_NeoPixel* pixels, uint8_t speed, uint16_t color);
 	~Flicker();
 	
-	void loop();
+	uint32_t virtual loop() override;
 		
 private:
 	// All values are floats from 0 to 1. Hue is converted to 0-65535, sat and val

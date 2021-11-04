@@ -43,7 +43,7 @@ Flicker* flicker;
 static constexpr uint32_t speed = 2; // value from 0 to 7, will eventually be passed in
 static constexpr uint8_t hue = 3;
 static constexpr uint8_t sat = 7;
-static constexpr uint8_t val = 7;
+static constexpr uint8_t val = 4;
 
 constexpr int PIN = 6;
 constexpr int NUMPIXELS = 8;
@@ -63,5 +63,9 @@ void setup()
 
 void loop()
 {
-	flicker->loop();  
+	uint32_t delayInMs = flicker->loop();
+	
+	// Eventually we can't delay in loop because we have to feed the soft serial port
+	// But for now...
+	delay(delayInMs);
 }
