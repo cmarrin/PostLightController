@@ -17,10 +17,25 @@ static const Flicker::Speed Flicker::_speedTable[] = {
     {   2,   5, 10 },
 };
 
-Flicker::Flicker(Adafruit_NeoPixel* pixels, uint8_t speed, uint16_t color)
-	: Effect(pixels, color)
-	, _speed(speed)
+Flicker::Flicker(Adafruit_NeoPixel* pixels)
+	: Effect(pixels)
 {
+	_leds = new LED[_pixels->numPixels()];
+}
+
+Flicker::~Flicker()
+{
+	delete [ ] _leds;
+	_leds = nullptr;
+}
+
+void
+Flicker::init(uint32_t param)
+{
+	Effect::init(param);
+	
+	_speed = (param >> 11) & 7;
+	
     _stepsMin = _speedTable[min(_speed, 9)].stepsMin;
     _stepsMin = _speedTable[min(_speed, 9)].stepsMax;
 
@@ -29,14 +44,6 @@ Flicker::Flicker(Adafruit_NeoPixel* pixels, uint8_t speed, uint16_t color)
 	_val *= 255;
     _val = _val * float(255 - _minVal) / 255 + _minVal;
     _val /= 255;
-	
-	_leds = new LED[_pixels->numPixels()];
-}
-
-Flicker::~Flicker()
-{
-	delete [ ] _leds;
-	_leds = nullptr;
 }
 
 uint32_t

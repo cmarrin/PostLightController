@@ -21,24 +21,42 @@
 //
 // Command List:
 
-//    Command Value     Name            Params    Description
-//    -------------     ----            ------    -----------
-//        0             Reset           x         Reset to all devices off, 1200 baud
-//        1             Set Baud        rate      3 bit command data is rate, data byte ignored
-//        2             Constant Color  
+//    Command 	Name         	Params						Description
+//    -------   ----            ------    					-----------
+//    	0       Reset           x         					Reset to all devices off, 1200 baud
+//
+//      1       Set Baud        rate      					3 bit command data is rate, data bytes ignored
+//
+//      2       Constant Color  color						Set lights to passed color
+//
+//		3		Flicker			color, speed				Flicker lights based on passed color at 
+//															passed speed (0-7).
+//
+//		4		Throb			color, speed, depth			Throb lights with passed color, dimming at passed
+//															speed (0-7). Passed depth is amount of dimming
+//															0 (slight dimming) to 7 (dimming to 0 brightness)
+//
+//		5		Rainbow			color, speed, range, mode	Change color through the rainbow by changing hue 
+//															from the passed color at the passed speed. Range
+//															is how far from the passed color to go, 0 (very little)
+//															to 7 (full range). If mode (1 bit) is 0 colors bounce 
+//															back and forth between start color through range. If
+//															it is 1 colors cycle the full color spectrum and
+//															range is ignored.
 
 // Params is combined into a single uint32_t with the lower 19 bits being used. Bits 0-7 are 
 // the second data byte, 8-15 are the first data byte and 16-18 are the 3 data bits in the
 // command byte.
 
 // Color is the 11 lowest bits of params. bits 6-10 are the hue (0-31), bits 3-5 are the 
-// saturation (0-7) and bits 0-2 are the value (0-7)
+// saturation (0-7) and bits 0-2 are the value (0-7). Other params are in higher order bits
+// according to the param list
 
 #include <Adafruit_NeoPixel.h>
 
 #include "Flicker.h"
 
-Flicker* flicker;
+Flicker* flicker = nullptr;
 
 static constexpr uint32_t speed = 2; // value from 0 to 7, will eventually be passed in
 static constexpr uint8_t hue = 3;
@@ -58,7 +76,11 @@ void setup()
     pixels.begin(); // This initializes the NeoPixel library.
     pixels.setBrightness(255);
 	
-	flicker = new Flicker(&pixels, speed, Flicker::HSVParamsToPackedHSV(hue, sat, val));
+	flicker = new Flicker(&pixels);
+	
+	uint32_t param = Effect::HSVParamsToPackedHSV(hue, sat, val);
+	param |= speed << 11;
+	flicker->init(param);
 }
 
 void loop()

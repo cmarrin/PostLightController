@@ -11,14 +11,16 @@
 class Effect
 {
 public:
-	Effect(Adafruit_NeoPixel* pixels, uint32_t color = 0) : _pixels(pixels)
-	{
-		_hue = float((color >> 6) & 0x1f) / 32;
-		_sat = float((color >> 3) & 0x7) / 8;
-		_val = float(color & 0x07) / 8;
-	}
+	Effect(Adafruit_NeoPixel* pixels) : _pixels(pixels) { }
 	
 	virtual ~Effect() { }
+	
+	virtual void init(uint32_t param)
+	{
+		_hue = float((param >> 6) & 0x1f) / 32;
+		_sat = float((param >> 3) & 0x7) / 8;
+		_val = float(param & 0x07) / 8;
+	}
 	
 	// Return delay in ms
 	virtual uint32_t loop() = 0;
