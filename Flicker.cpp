@@ -44,6 +44,15 @@ Flicker::init(uint8_t param1, uint8_t param2, uint8_t param3)
 	_val *= 255;
     _val = _val * float(255 - _minVal) / 255 + _minVal;
     _val /= 255;
+
+	Serial.print("Flicker started: hue=");
+	Serial.print(_hue);
+	Serial.print(", sat=");
+	Serial.print(_sat);
+	Serial.print(", val=");
+	Serial.print(_val);
+	Serial.print(", speed=");
+	Serial.println(_speed);
 }
 
 uint32_t
