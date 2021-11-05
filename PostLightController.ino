@@ -52,6 +52,7 @@
 // saturation (0-7) and bits 0-2 are the value (0-7). Other params are in higher order bits
 // according to the param list
 
+#include <SoftwareSerial.h>
 #include <Adafruit_NeoPixel.h>
 
 #include "Flicker.h"
@@ -67,13 +68,17 @@ static constexpr uint8_t val = 4;
 class PostLightController
 {
 public:
-	PostLightController() : _pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800) { }
+	PostLightController()
+		: _pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800)
+		, _serial(10, 11)
+	{ }
 	~PostLightController() { }
 	
 	void setup()
 	{
 	    Serial.begin(115200);
 	    Serial.print("Hello\n");
+	    _serial.begin(2400);
 
 	    _pixels.begin(); // This initializes the NeoPixel library.
 	    _pixels.setBrightness(255);
@@ -89,15 +94,70 @@ public:
 	{
 		uint32_t delayInMs = _currentEffect->loop();
 	
+	    if (_serial.available()) {
+			char c = char(_serial.read());
+			
+			// Wait for a start char
+			if (!_capturing) {
+				if (c == '@') {
+					_capturing = true;
+					_bufIndex = 0;
+				}
+			}
+			
+			if (_capturing) {
+				_buf[_bufIndex++] = c;
+				if (_bufIndex >= 8) {
+					_buf[8] = '\0';
+					
+					// We have a bufferful
+					// First make sure checksum is right
+					uint8_t expectedChecksum = _buf[6];
+					_buf[6] = '0';
+					uint8_t actualChecksum = checksum(_buf, 8) + 0x30;
+					if (expectedChecksum != actualChecksum) {
+						Serial.print("CRC ERROR: expected=");
+						Serial.print(expectedChecksum);
+						Serial.print(", actual=");
+						Serial.print(actualChecksum);
+						Serial.print(", cmd: ");
+						Serial.println(_buf);
+					} else {
+						// Process command
+						Serial.print("Processing cmd: ");
+						Serial.println(_buf);
+					}
+					
+					_capturing = false;
+				}
+			}
+	  	}
+
 		// Eventually we can't delay in loop because we have to feed the soft serial port
 		// But for now...
 		delay(delayInMs);
 	}
 
 private:
+	static uint8_t checksum(const char* str, int length) 
+	{
+	    uint8_t sum = 0;
+
+	    for (int i = 0; i < length; i++) {
+			sum += str[i];
+	        uint8_t extract = str[i];
+	    }
+	    return sum & 0x3f;
+	}
+
+	SoftwareSerial _serial;
 	Adafruit_NeoPixel _pixels;
 	
 	Effect* _currentEffect = nullptr;
+	
+	char _buf[9];
+	char _bufIndex = 0;
+	bool _capturing = false;
 };
 
 PostLightController controller;
