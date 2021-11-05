@@ -55,6 +55,7 @@
 #include <SoftwareSerial.h>
 #include <Adafruit_NeoPixel.h>
 
+#include "ConstantColor.h"
 #include "Flicker.h"
 
 constexpr int PIN = 6;
@@ -83,6 +84,8 @@ public:
 	    _pixels.begin(); // This initializes the NeoPixel library.
 	    _pixels.setBrightness(255);
 	
+		_currentEffect = new ConstantColor(&_pixels);
+		_currentEffect->init(0, 0, 0);
 	}
 
 	void loop()
