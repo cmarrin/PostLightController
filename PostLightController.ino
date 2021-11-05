@@ -131,9 +131,15 @@ public:
 						}
 						
 						switch(_buf[2]) {
+							case 'C':
+							_currentEffect = new ConstantColor(&_pixels);
+							_currentEffect->init(cmdParamToValue(_buf[3]), cmdParamToValue(_buf[4]), 0);
+							break;
+							
 							case 'F':
 							_currentEffect = new Flicker(&_pixels);
 							_currentEffect->init(cmdParamToValue(_buf[3]), cmdParamToValue(_buf[4]), 0);
+							break;
 						}
 					}
 					
