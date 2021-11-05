@@ -30,11 +30,11 @@ Flicker::~Flicker()
 }
 
 void
-Flicker::init(uint32_t param)
+Flicker::init(uint8_t param1, uint8_t param2, uint8_t param3)
 {
-	Effect::init(param);
+	Effect::init(param1, param2, param3);
 	
-	_speed = (param >> 11) & 7;
+	_speed = param3 & 7;
 	
     _stepsMin = _speedTable[min(_speed, 9)].stepsMin;
     _stepsMin = _speedTable[min(_speed, 9)].stepsMax;

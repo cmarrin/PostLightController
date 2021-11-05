@@ -83,11 +83,6 @@ public:
 	    _pixels.begin(); // This initializes the NeoPixel library.
 	    _pixels.setBrightness(255);
 	
-		_currentEffect = new Flicker(&_pixels);
-	
-		uint32_t param = Effect::HSVParamsToPackedHSV(hue, sat, val);
-		param |= speed << 11;
-		_currentEffect->init(param);
 	}
 
 	void loop()

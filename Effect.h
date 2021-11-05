@@ -15,11 +15,14 @@ public:
 	
 	virtual ~Effect() { }
 	
-	virtual void init(uint32_t param)
+	// Each param is 6 bits
+	virtual void init(uint8_t param1, uint8_t param2, uint8_t param3)
 	{
-		_hue = float((param >> 6) & 0x1f) / 32;
-		_sat = float((param >> 3) & 0x7) / 8;
-		_val = float(param & 0x07) / 8;
+		// Usually the first 2 params are hue (6 bits), sat (3 bits)
+		// and val (3 bits). Extract those
+		_hue = float(param1 & 0x3f) / 64;
+		_sat = float((param2 >> 3) & 0x7) / 8;
+		_val = float(param2 & 0x07) / 8;
 	}
 	
 	// Return delay in ms

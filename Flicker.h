@@ -6,8 +6,6 @@
 
 #pragma once
 
-#include <Adafruit_NeoPixel.h>
-
 #include "Effect.h"
 
 class Flicker : public Effect
@@ -16,7 +14,8 @@ public:
 	Flicker(Adafruit_NeoPixel* pixels);
 	virtual ~Flicker();
 	
-	virtual void init(uint32_t param) override;
+	// Param3, lower 3 bits are speed
+	virtual void init(uint8_t param1, uint8_t param2, uint8_t param3) override;
 	virtual uint32_t loop() override;
 		
 private:
