@@ -124,6 +124,17 @@ public:
 						// Process command
 						Serial.print("Processing cmd: ");
 						Serial.println(_buf);
+						
+						if (_currentEffect) {
+							delete _currentEffect;
+							_currentEffect = nullptr;
+						}
+						
+						switch(_buf[2]) {
+							case 'F':
+							_currentEffect = new Flicker(&_pixels);
+							_currentEffect->init(cmdParamToValue(_buf[3]), cmdParamToValue(_buf[4]), 0);
+						}
 					}
 					
 					_capturing = false;
@@ -137,6 +148,8 @@ public:
 	}
 
 private:
+	static uint8_t cmdParamToValue(uint8_t param) { return param - 0x30; }
+	
 	static uint8_t checksum(const char* str, int length) 
 	{
 	    uint8_t sum = 0;
