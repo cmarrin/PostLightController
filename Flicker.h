@@ -19,13 +19,6 @@ public:
 	virtual uint32_t loop() override;
 		
 private:
-	// All values are floats from 0 to 1. Hue is converted to 0-65535, sat and val
-	// are converted to 0-255
-	uint32_t HSVToRGB(float h, float s, float v)
-	{
-	    return _pixels->gamma32(_pixels->ColorHSV(round(h * 65535), round(s * 255), min(round(v * 255), 255)));
-	}
-
 	struct LED {
 	    float off = 0;
 	    float inc = 0;
