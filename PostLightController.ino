@@ -58,20 +58,20 @@
 #include "ConstantColor.h"
 #include "Flicker.h"
 
-constexpr int PIN = 6;
-constexpr int NUMPIXELS = 8;
-
-static constexpr uint32_t speed = 2; // value from 0 to 7, will eventually be passed in
-static constexpr uint8_t hue = 3;
-static constexpr uint8_t sat = 7;
-static constexpr uint8_t val = 4;
+constexpr int LEDPin = 6;
+constexpr int NumPixels = 8;
+constexpr int BufferSize = 10;
+constexpr int ChecksumByte = BufferSize - 2;
+constexpr char StartChar = '(';
+constexpr char EndChar = ')';
+constexpr unsigned long serialTimeOut = 2000; // ms
 
 class PostLightController
 {
 public:
 	PostLightController()
-		: _pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800)
-		, _serial(10, 11)
+		: _pixels(NumPixels, LEDPin, NEO_GRB + NEO_KHZ800)
+		, _serial(11, 10)
 	{ }
 	~PostLightController() { }
 	
@@ -79,25 +79,35 @@ public:
 	{
 	    Serial.begin(115200);
 	    Serial.print("Hello\n");
-	    _serial.begin(2400);
+	    _serial.begin(1200);
 
 	    _pixels.begin(); // This initializes the NeoPixel library.
 	    _pixels.setBrightness(255);
 	
 		_currentEffect = new ConstantColor(&_pixels);
-		_currentEffect->init(0, 0, 0);
+		_currentEffect->init();
+		_timeSinceLastChar = millis();
 	}
 
 	void loop()
 	{
 		uint32_t delayInMs = _currentEffect->loop();
-	
+		
 	    if (_serial.available()) {
+			// If it's been a while, reset the _capturing flag
+			unsigned long newTime = millis();
+			if (newTime - _timeSinceLastChar > serialTimeOut) {
+				_capturing = false;
+				Serial.print("***** resetting _capturing\n");
+			}
+			
+			_timeSinceLastChar = newTime;
+			
 			char c = char(_serial.read());
 			
 			// Wait for a start char
 			if (!_capturing) {
-				if (c == '@') {
+				if (c == StartChar) {
 					_capturing = true;
 					_bufIndex = 0;
 				}
@@ -105,14 +115,22 @@ public:
 			
 			if (_capturing) {
 				_buf[_bufIndex++] = c;
-				if (_bufIndex >= 8) {
-					_buf[8] = '\0';
+				if (_bufIndex >= BufferSize) {
+					Serial.print("***** finished capturing\n");
+					_buf[BufferSize] = '\0';
 					
 					// We have a bufferful
+					if (_buf[BufferSize - 1] != EndChar) {
+						Serial.print("MALFORMED BUFFER: unexpected end char=");
+						Serial.print(_buf[BufferSize - 1]);
+						Serial.print(", cmd: ");
+						Serial.println(_buf);
+					}
+					
 					// First make sure checksum is right
-					uint8_t expectedChecksum = _buf[6];
-					_buf[6] = '0';
-					uint8_t actualChecksum = checksum(_buf, 8) + 0x30;
+					uint8_t expectedChecksum = _buf[ChecksumByte];
+					_buf[ChecksumByte] = '0';
+					uint8_t actualChecksum = checksum(_buf, BufferSize) + 0x30;
 					if (expectedChecksum != actualChecksum) {
 						Serial.print("CRC ERROR: expected=");
 						Serial.print(expectedChecksum);
@@ -133,13 +151,15 @@ public:
 						switch(_buf[2]) {
 							case 'C':
 							_currentEffect = new ConstantColor(&_pixels);
-							_currentEffect->init(cmdParamToValue(_buf[3]), cmdParamToValue(_buf[4]), 0);
 							break;
 							
 							case 'F':
 							_currentEffect = new Flicker(&_pixels);
-							_currentEffect->init(cmdParamToValue(_buf[3]), cmdParamToValue(_buf[4]), 0);
 							break;
+						}
+						
+						if (_currentEffect) {
+							_currentEffect->init(_buf + 3, BufferSize - 5);
 						}
 					}
 					
@@ -154,8 +174,6 @@ public:
 	}
 
 private:
-	static uint8_t cmdParamToValue(uint8_t param) { return param - 0x30; }
-	
 	static uint8_t checksum(const char* str, int length) 
 	{
 	    uint8_t sum = 0;
@@ -172,9 +190,10 @@ private:
 	
 	Effect* _currentEffect = nullptr;
 	
-	char _buf[9];
+	char _buf[BufferSize + 1];
 	char _bufIndex = 0;
 	bool _capturing = false;
+	unsigned long _timeSinceLastChar = 0;
 };
 
 PostLightController controller;

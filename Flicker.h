@@ -15,7 +15,7 @@ public:
 	virtual ~Flicker();
 	
 	// Param3, lower 3 bits are speed
-	virtual void init(uint8_t param1, uint8_t param2, uint8_t param3) override;
+	virtual void init(const uint8_t* buf, uint32_t size) override;
 	virtual uint32_t loop() override;
 		
 private:

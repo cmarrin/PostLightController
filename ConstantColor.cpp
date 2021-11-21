@@ -14,9 +14,9 @@ ConstantColor::~ConstantColor()
 }
 
 void
-ConstantColor::init(uint8_t param1, uint8_t param2, uint8_t param3)
+ConstantColor::init(const uint8_t* buf, uint32_t size)
 {
-	Effect::init(param1, param2, param3);
+	Effect::init(buf, size);
 	Serial.print("ConstantColor started: hue=");
 	Serial.print(_hue);
 	Serial.print(", sat=");
