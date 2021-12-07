@@ -78,7 +78,6 @@ public:
 	void setup()
 	{
 	    Serial.begin(115200);
-	    Serial.print("Hello\n");
 	    _serial.begin(1200);
 
 	    _pixels.begin(); // This initializes the NeoPixel library.
