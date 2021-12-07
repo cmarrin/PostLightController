@@ -2,3 +2,13 @@ fp-info-cache
 PostLightController-cache.lib
 PostLightController.kicad_pcb-bak
 PostLightController.sch-bak
+PostLightController-gbr.zip
+gbr/PostLightController-B_Cu.gbl
+gbr/PostLightController-B_Mask.gbs
+gbr/PostLightController-B_SilkS.gbo
+gbr/PostLightController-Edge_Cuts.gm1
+gbr/PostLightController-F_Cu.gtl
+gbr/PostLightController-F_Mask.gts
+gbr/PostLightController-F_SilkS.gto
+gbr/PostLightController-job.gbrjob
+gbr/PostLightController.drl
