@@ -55,7 +55,7 @@ Flicker::init(const uint8_t* buf, uint32_t size)
 	Serial.println(_speed);
 }
 
-uint32_t
+int32_t
 Flicker::loop()
 {
     for (int i = 0; i < _pixels->numPixels(); i++) {

@@ -52,7 +52,7 @@ public:
 	}
 	
 	// Return delay in ms
-	virtual uint32_t loop() = 0;
+	virtual int32_t loop() = 0;
 		
 protected:
 	// All values are floats from 0 to 1. Hue is converted to 0-65535, sat and val

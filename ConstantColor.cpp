@@ -25,7 +25,7 @@ ConstantColor::init(const uint8_t* buf, uint32_t size)
 	Serial.println(_val);
 }
 
-uint32_t
+int32_t
 ConstantColor::loop()
 {
     for (int i = 0; i < _pixels->numPixels(); i++) {
