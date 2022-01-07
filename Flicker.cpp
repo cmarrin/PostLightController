@@ -6,7 +6,7 @@
 
 #include "Flicker.h"
 
-static const Flicker::Speed Flicker::_speedTable[] = {
+const Flicker::Speed Flicker::_speedTable[ ] = {
     { 300, 350, 40 },
     { 250, 280, 30 },
     { 180, 240, 20 },
@@ -58,7 +58,7 @@ Flicker::init(const uint8_t* buf, uint32_t size)
 int32_t
 Flicker::loop()
 {
-    for (int i = 0; i < _pixels->numPixels(); i++) {
+    for (uint32_t i = 0; i < _pixels->numPixels(); i++) {
         LED& led = _leds[i];
         led.off += led.inc;
 

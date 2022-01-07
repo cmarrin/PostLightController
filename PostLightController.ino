@@ -64,7 +64,7 @@ constexpr int BufferSize = 10;
 constexpr int ChecksumByte = BufferSize - 2;
 constexpr char StartChar = '(';
 constexpr char EndChar = ')';
-constexpr unsigned long serialTimeOut = 2000; // ms
+constexpr unsigned long SerialTimeOut = 2000; // ms
 
 class PostLightController
 {
@@ -90,7 +90,7 @@ public:
 
 	void loop()
 	{
-		uint32_t delayInMs = _currentEffect->loop();
+		int32_t delayInMs = _currentEffect ? _currentEffect->loop() : 0;
 		
 	    if (_serial.available()) {
 			// If it's been a while, reset the _capturing flag
@@ -179,18 +179,17 @@ private:
 
 	    for (int i = 0; i < length; i++) {
 			sum += str[i];
-	        uint8_t extract = str[i];
 	    }
 	    return sum & 0x3f;
 	}
 
-	SoftwareSerial _serial;
 	Adafruit_NeoPixel _pixels;
+	SoftwareSerial _serial;
 	
 	Effect* _currentEffect = nullptr;
 	
 	char _buf[BufferSize + 1];
-	char _bufIndex = 0;
+	int _bufIndex = 0;
 	bool _capturing = false;
 	unsigned long _timeSinceLastChar = 0;
 };

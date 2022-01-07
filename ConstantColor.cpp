@@ -28,7 +28,7 @@ ConstantColor::init(const uint8_t* buf, uint32_t size)
 int32_t
 ConstantColor::loop()
 {
-    for (int i = 0; i < _pixels->numPixels(); i++) {
+    for (uint32_t i = 0; i < _pixels->numPixels(); i++) {
         _pixels->setPixelColor(i, HSVToRGB(_hue, _sat, _val));
         _pixels->show();
     }
