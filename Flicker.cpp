@@ -37,7 +37,7 @@ Flicker::init(const uint8_t* buf, uint32_t size)
 	_speed = _param1 & 0x07;
 	
     _stepsMin = _speedTable[min(_speed, 9)].stepsMin;
-    _stepsMin = _speedTable[min(_speed, 9)].stepsMax;
+    _stepsMax = _speedTable[min(_speed, 9)].stepsMax;
 
     // A val of 0 will be set to minVal / 255, a val of 7 is set to 1
     // values between are evenly spaced
