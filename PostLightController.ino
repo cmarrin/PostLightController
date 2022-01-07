@@ -57,6 +57,7 @@
 
 #include "ConstantColor.h"
 #include "Flicker.h"
+#include "Flash.h"
 
 constexpr int LEDPin = 6;
 constexpr int NumPixels = 8;
@@ -79,12 +80,14 @@ public:
 	{
 	    Serial.begin(115200);
 	    _serial.begin(1200);
+		
+		delay(500);
 
 	    _pixels.begin(); // This initializes the NeoPixel library.
 	    _pixels.setBrightness(255);
 	
-		_currentEffect = new ConstantColor(&_pixels);
-		_currentEffect->init();
+		showStatus(StatusColor::Green, 3, 2);
+
 		_timeSinceLastChar = millis();
 	}
 
@@ -92,14 +95,30 @@ public:
 	{
 		int32_t delayInMs = _currentEffect ? _currentEffect->loop() : 0;
 		
-	    if (_serial.available()) {
-			// If it's been a while, reset the _capturing flag
-			unsigned long newTime = millis();
-			if (newTime - _timeSinceLastChar > serialTimeOut) {
-				_capturing = false;
-				Serial.print("***** resetting _capturing\n");
+		if (delayInMs < 0) {
+			// An effect has finished. End it and clear the display
+			if (_currentEffect) {
+				delete _currentEffect;
+				_currentEffect = nullptr;
 			}
 			
+			_currentEffect = new ConstantColor(&_pixels);
+			_currentEffect->init();
+			delayInMs = 0;
+		}
+		
+		uint32_t newTime = millis();
+
+		// If we're capturing and it's been a while, error
+		if (_capturing) {
+			if (newTime - _timeSinceLastChar > SerialTimeOut) {
+				_capturing = false;
+				Serial.print("***** Too Long since last char, resetting\n");
+				showStatus(StatusColor::Red, 3, 2);
+			}
+		}
+
+	    if (_serial.available()) {
 			_timeSinceLastChar = newTime;
 			
 			char c = char(_serial.read());
@@ -118,50 +137,53 @@ public:
 					Serial.print("***** finished capturing\n");
 					_buf[BufferSize] = '\0';
 					
+					if (_currentEffect) {
+						delete _currentEffect;
+						_currentEffect = nullptr;
+					}
+					
+					delayInMs = 0;
+
 					// We have a bufferful
 					if (_buf[BufferSize - 1] != EndChar) {
 						Serial.print("MALFORMED BUFFER: unexpected end char=");
 						Serial.print(_buf[BufferSize - 1]);
 						Serial.print(", cmd: ");
 						Serial.println(_buf);
-					}
-					
-					// First make sure checksum is right
-					uint8_t expectedChecksum = _buf[ChecksumByte];
-					_buf[ChecksumByte] = '0';
-					uint8_t actualChecksum = checksum(_buf, BufferSize) + 0x30;
-					if (expectedChecksum != actualChecksum) {
-						Serial.print("CRC ERROR: expected=");
-						Serial.print(expectedChecksum);
-						Serial.print(", actual=");
-						Serial.print(actualChecksum);
-						Serial.print(", cmd: ");
-						Serial.println(_buf);
+						showStatus(StatusColor::Red, 6, 1);
 					} else {
-						// Process command
-						Serial.print("Processing cmd: ");
-						Serial.println(_buf);
+						// First make sure checksum is right
+						uint8_t expectedChecksum = _buf[ChecksumByte];
+						_buf[ChecksumByte] = '0';
+						uint8_t actualChecksum = checksum(_buf, BufferSize) + 0x30;
+						if (expectedChecksum != actualChecksum) {
+							Serial.print("CRC ERROR: expected=");
+							Serial.print(expectedChecksum);
+							Serial.print(", actual=");
+							Serial.print(actualChecksum);
+							Serial.print(", cmd: ");
+							Serial.println(_buf);
+							showStatus(StatusColor::Red, 5, 5);
+						} else {
+							// Process command
+							Serial.print("Processing cmd: ");
+							Serial.println(_buf);
 						
-						if (_currentEffect) {
-							delete _currentEffect;
-							_currentEffect = nullptr;
-						}
-						
-						switch(_buf[2]) {
-							case 'C':
-							_currentEffect = new ConstantColor(&_pixels);
-							break;
+							switch(_buf[2]) {
+								case 'C':
+								_currentEffect = new ConstantColor(&_pixels);
+								break;
 							
-							case 'F':
-							_currentEffect = new Flicker(&_pixels);
-							break;
-						}
+								case 'F':
+								_currentEffect = new Flicker(&_pixels);
+								break;
+							}
 						
-						if (_currentEffect) {
-							_currentEffect->init(_buf + 3, BufferSize - 5);
+							if (_currentEffect) {
+								_currentEffect->init(reinterpret_cast<uint8_t*>(_buf + 3), BufferSize - 5);
+							}
 						}
 					}
-					
 					_capturing = false;
 				}
 			}
@@ -183,6 +205,24 @@ private:
 	    return sum & 0x3f;
 	}
 
+	enum class StatusColor { Red, Green, Yellow };
+	
+	void showStatus(StatusColor color, uint8_t numberOfBlinks, uint8_t interval)
+	{
+		// Flash full bright red at 1 second interval, 10 times
+		if (_currentEffect) {
+			delete _currentEffect;
+			_currentEffect = nullptr;
+		}
+
+		uint8_t buf[ ] = { 0, 111, 111, 58, 58 };
+		buf[0] = (color == StatusColor::Red) ? 0 : ((color == StatusColor::Green) ? 70 : 55);
+		buf[3] = numberOfBlinks + 0x30;
+		buf[4] = interval + 0x30;
+		_currentEffect = new Flash(&_pixels);
+		_currentEffect->init(buf, sizeof(buf));		
+	}
+	
 	Adafruit_NeoPixel _pixels;
 	SoftwareSerial _serial;
 	
