@@ -87,7 +87,7 @@ public:
 	    _pixels.setBrightness(255);
 	
 		showStatus(StatusColor::Green, 3, 2);
-
+		
 		_timeSinceLastChar = millis();
 	}
 
@@ -102,8 +102,10 @@ public:
 				_currentEffect = nullptr;
 			}
 			
-			_currentEffect = new ConstantColor(&_pixels);
+			ConstantColor* cc = new ConstantColor(&_pixels);
+			_currentEffect = cc;
 			_currentEffect->init();
+
 			delayInMs = 0;
 		}
 		
@@ -216,7 +218,7 @@ private:
 		}
 
 		uint8_t buf[ ] = { 0, 111, 111, 58, 58 };
-		buf[0] = (color == StatusColor::Red) ? 0 : ((color == StatusColor::Green) ? 70 : 55);
+		buf[0] = (color == StatusColor::Red) ? 48 : ((color == StatusColor::Green) ? 70 : 55);
 		buf[3] = numberOfBlinks + 0x30;
 		buf[4] = interval + 0x30;
 		_currentEffect = new Flash(&_pixels);

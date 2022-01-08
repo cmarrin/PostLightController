@@ -16,6 +16,8 @@ public:
 	
 	virtual void init(const uint8_t* buf, uint32_t size) override;
 	virtual int32_t loop() override;
+	
+	void setIndexedColor(uint8_t index);
 		
 private:
 };

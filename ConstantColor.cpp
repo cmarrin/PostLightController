@@ -35,3 +35,13 @@ ConstantColor::loop()
 
     return 0;
 }
+
+void
+ConstantColor::setIndexedColor(uint8_t index)
+{
+	uint32_t color = colorIndexToRGB(index);
+    for (uint32_t i = 0; i < _pixels->numPixels(); i++) {
+        _pixels->setPixelColor(i, color);
+        _pixels->show();
+    }
+}

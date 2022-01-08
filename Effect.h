@@ -23,33 +23,7 @@ public:
 	//		buf[3] - param1
 	//		buf[4] - param2
 	//
-	virtual void init(const uint8_t* buf = nullptr, uint32_t size = 0)
-	{
-		if (size < 5 || !buf) {
-			Serial.println("***** Buffer not passed. Resetting...");
-			_hue = 0;
-			_sat = 0;
-			_val = 0;
-			_param1 = 0;
-			_param2 = 0;
-		} else {
-			_hue = float(cmdParamToValue(buf[0])) / 64;
-			_sat = float(cmdParamToValue(buf[1])) / 64;
-			_val = float(cmdParamToValue(buf[2])) / 64;
-			_param1 = cmdParamToValue(buf[3]);
-			_param2 = cmdParamToValue(buf[4]);
-			Serial.print("Effect inited: hue=");
-			Serial.print(_hue);
-			Serial.print(", sat=");
-			Serial.print(_sat);
-			Serial.print(", val=");
-			Serial.print(_val);
-			Serial.print(", param1=");
-			Serial.print(_param1);
-			Serial.print(", param2=");
-			Serial.println(_param2);
-		}
-	}
+	virtual void init(const uint8_t* buf = nullptr, uint32_t size = 0);
 	
 	// Return delay in ms
 	virtual int32_t loop() = 0;
@@ -57,12 +31,28 @@ public:
 protected:
 	// All values are floats from 0 to 1. Hue is converted to 0-65535, sat and val
 	// are converted to 0-255
-	uint32_t HSVToRGB(float h, float s, float v)
+	uint32_t HSVToRGB(float h, float s, float v, bool gammaCorrect = true)
 	{
-	    return _pixels->gamma32(_pixels->ColorHSV(round(h * 65535), round(s * 255), min(round(v * 255), 255)));
+		uint32_t c = _pixels->ColorHSV(round(h * 65535), round(s * 255), min(round(v * 255), 255));
+		if (gammaCorrect) {
+			c = _pixels->gamma32(c);
+		}
+	    return c;
 	}
 	
 	static uint8_t cmdParamToValue(uint8_t param) { return (param - 0x30) & 0x3f; }
+	
+	uint32_t colorIndexToRGB(uint8_t index)
+	{
+		uint16_t color = ColorTable[(index < 64) ? index : 0];
+		uint32_t r = color >> 8;
+		uint32_t g = (color >> 4) & 0x0f;
+		uint32_t b = color & 0x0f;
+		r = (r == 0x0f) ? 0xff : (r << 4);
+		g = (g == 0x0f) ? 0xff : (g << 4);
+		b = (b == 0x0f) ? 0xff : (b << 4);
+		return _pixels->gamma32((r << 16) | (g << 8) | b);
+	}
 	
 	Adafruit_NeoPixel* _pixels = nullptr;
 	float _hue = 0;
@@ -70,4 +60,7 @@ protected:
 	float _val = 0;
 	uint8_t _param1 = 0;
 	uint8_t _param2 = 0;
+	
+private:
+	static uint16_t ColorTable[64];
 };
