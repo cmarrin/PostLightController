@@ -42,18 +42,6 @@ protected:
 	
 	static uint8_t cmdParamToValue(uint8_t param) { return (param - 0x30) & 0x3f; }
 	
-	uint32_t colorIndexToRGB(uint8_t index)
-	{
-		uint16_t color = ColorTable[(index < 64) ? index : 0];
-		uint32_t r = color >> 8;
-		uint32_t g = (color >> 4) & 0x0f;
-		uint32_t b = color & 0x0f;
-		r = (r == 0x0f) ? 0xff : (r << 4);
-		g = (g == 0x0f) ? 0xff : (g << 4);
-		b = (b == 0x0f) ? 0xff : (b << 4);
-		return _pixels->gamma32((r << 16) | (g << 8) | b);
-	}
-	
 	Adafruit_NeoPixel* _pixels = nullptr;
 	float _hue = 0;
 	float _sat = 0;
@@ -62,5 +50,4 @@ protected:
 	uint8_t _param2 = 0;
 	
 private:
-	static uint16_t ColorTable[64];
 };
