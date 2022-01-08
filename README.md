@@ -1,6 +1,7 @@
 # PostLightController
-Code for Pond controller
+## Code for Pond controller
 
+## Board Fab
 To send PostLightController board to seeedstudio (https://www.seeedstudio.com/fusion_pcb.html):
 
 	1) open PostLightController.kicad_pcb
