@@ -5,9 +5,12 @@ Software runs on Arduino Nano. SoftSerial is used to receive packets of data fom
 ### TODO
 - ☐ Get rid of new to create Effects. Create one of each and point to it as needed
 - ☑︎ Get rid of color table
-- Change packet to be variable length: start ('('), device addr ('0' = all devices), cmd, payload len (0-63), checksum, end (')')
-- Make payload a binary array, colors are 2 bytes: first byte is hue (upper 4 bits 0-15) and sat (lower 4 bits 0-15), second byte val (0-255)
-- Make Effect a concrete class, executing interpreted code specified by command
+- ☐ Change packet to be variable length: start ('('), device addr ('0' = all devices), cmd, payload len (0-63), checksum, end (')')
+- ☐ Create a Color class which takes rgb or hsv values and can give back color as uint32_t (0x00RRGGBB) or hsv (3 floats 0-1)
+- ☐ Make all effects use Color class
+- ☐ Make payload a binary array, colors are 2 bytes: first byte is hue (upper 4 bits 0-15) and sat (lower 4 bits 0-15), second byte val (0-255)
+- ☐ Make node-red generate colors in new format and use variable length format
+- ☐ Make Effect a concrete class, executing interpreted code specified by command
 
 ## Board Fab
 To send PostLightController board to seeedstudio (https://www.seeedstudio.com/fusion_pcb.html):
