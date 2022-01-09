@@ -49,7 +49,7 @@ Flicker::init(const uint8_t* buf, uint32_t size)
     // A val of 0 will be set to minVal / 255, a val of 7 is set to 1
     // values between are evenly spaced
 	_val *= 255;
-    _val = _val * float(255 - _minVal) / 255 + _minVal;
+    _val = _val * float(255 - ValMin) / 255 + ValMin;
     _val /= 255;
 
 	Serial.print("Flicker started: hue=");
@@ -80,7 +80,7 @@ Flicker::loop()
             led.off = 0;
 
             // Increment in value for each step, in 1/10s
-            led.inc = float(random(_incMin * 100, _incMax * 100)) / 100;
+            led.inc = float(random(IncMin * 100, IncMax * 100)) / 100;
 
             // Random number of steps to throb up and down
             led.lim = led.inc + random(_stepsMin, _stepsMax);
@@ -89,7 +89,7 @@ Flicker::loop()
         // What is the relative brightness. led.off always starts at 0, so that is 
         // a brightness multiplier of 1. at its limit it is equal to led.lim, so
         // that is a multiplier of 1 + led.lim / 255.
-        float brightness = (_brightnessMin + led.off) / 255;
+        float brightness = (BrightnessMin + led.off) / 255;
 
         _pixels->setPixelColor(i, Color(_hue, _sat, _val * brightness).rgb());
         _pixels->show();

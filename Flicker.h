@@ -31,10 +31,10 @@ private:
 	    int stepsMin, stepsMax, delay;
 	};
 
-	static constexpr int _incMin = 1;          	// minimum pixel increment/decrement
-	static constexpr int _incMax = 10;        	// maximum pixel increment/decrement
-	static constexpr int _brightnessMin = 100;  // minimum starting brightness in pixels
-	static constexpr int _minVal = 40;         	// lowest allowed val amount in pixels
+	static constexpr int IncMin = 1;          	// minimum pixel increment/decrement
+	static constexpr int IncMax = 10;        	// maximum pixel increment/decrement
+	static constexpr int BrightnessMin = 100;  // minimum starting brightness in pixels
+	static constexpr int ValMin = 40;         	// lowest allowed val amount in pixels
 	
 	LED* _leds = nullptr;
 
