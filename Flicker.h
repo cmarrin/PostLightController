@@ -38,12 +38,8 @@ private:
 	
 	LED* _leds = nullptr;
 
-	float _hue = 0;
-	float _sat = 0;
-	float _val = 0;
+	Color _color;
 	uint8_t _speed = 0;
-	int _stepsMin = 0;
-	int _stepsMax = 0;
 	
 	static const Speed _speedTable[8];
 };

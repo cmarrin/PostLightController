@@ -38,26 +38,22 @@ Flicker::init(const uint8_t* buf, uint32_t size)
 		Serial.println("***** Buffer not passed to Flicker");
 		return;
 	}
-	Color color = Color(buf[0], buf[1], buf[2], Color::Model::HSV);
-	color.hsv(_hue, _sat, _val);
-
-	_speed = buf[2] & 0x07;
-	
-    _stepsMin = _speedTable[min(_speed, 9)].stepsMin;
-    _stepsMax = _speedTable[min(_speed, 9)].stepsMax;
 
     // A val of 0 will be set to minVal / 255, a val of 7 is set to 1
     // values between are evenly spaced
-	_val *= 255;
-    _val = _val * float(255 - ValMin) / 255 + ValMin;
-    _val /= 255;
+	float val = buf[2];
+    val = val * float(255 - ValMin) / 255 + ValMin;
 
+	_color = Color(buf[0], buf[1], round(val));
+
+	_speed = buf[2] & 0x07;
+	
 	Serial.print("Flicker started: hue=");
-	Serial.print(_hue);
+	Serial.print(buf[0]);
 	Serial.print(", sat=");
-	Serial.print(_sat);
+	Serial.print(buf[1]);
 	Serial.print(", val=");
-	Serial.print(_val);
+	Serial.print(val);
 	Serial.print(", speed=");
 	Serial.println(_speed);
 }
@@ -83,7 +79,7 @@ Flicker::loop()
             led.inc = float(random(IncMin * 100, IncMax * 100)) / 100;
 
             // Random number of steps to throb up and down
-            led.lim = led.inc + random(_stepsMin, _stepsMax);
+            led.lim = led.inc + random(_speedTable[min(_speed, 9)].stepsMin, _speedTable[min(_speed, 9)].stepsMax);
         }
 
         // What is the relative brightness. led.off always starts at 0, so that is 
@@ -91,7 +87,7 @@ Flicker::loop()
         // that is a multiplier of 1 + led.lim / 255.
         float brightness = (BrightnessMin + led.off) / 255;
 
-        _pixels->setPixelColor(i, Color(_hue, _sat, _val * brightness).rgb());
+        _pixels->setPixelColor(i, Color(_color.hue(), _color.sat(), _color.val() * brightness).rgb());
         _pixels->show();
     }
 

@@ -22,7 +22,7 @@ ConstantColor::init(const uint8_t* buf, uint32_t size)
 		Serial.println("***** Buffer not passed. Resetting...");
 		_color = Color();
 	} else {
-		_color = Color(buf[0], buf[1], buf[2], Color::Model::HSV);
+		_color = Color(buf[0], buf[1], buf[2]);
 	}
 
 	Serial.print("ConstantColor started: color=0x");

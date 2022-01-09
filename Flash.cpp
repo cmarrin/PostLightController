@@ -17,7 +17,7 @@ Flash::init(const uint8_t* buf, uint32_t size)
 		_count = 0;
 		_duration = 0;
 	} else {
-		_color = Color(buf[0], buf[1], buf[2], Color::Model::HSV);
+		_color = Color(buf[0], buf[1], buf[2]);
 		_count = buf[3];
 		_duration = uint32_t(buf[4]) * 100; // Incoming duration is in 100ms units
 		
