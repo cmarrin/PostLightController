@@ -34,7 +34,14 @@ Flicker::init(const uint8_t* buf, uint32_t size)
 {
 	Effect::init(buf, size);
 	
-	_speed = _param1 & 0x07;
+	if (size < 4 || !buf) {
+		Serial.println("***** Buffer not passed to Flicker");
+		return;
+	}
+	Color color = Color(buf[0], buf[1], buf[2], Color::Model::HSV);
+	color.hsv(_hue, _sat, _val);
+
+	_speed = buf[2] & 0x07;
 	
     _stepsMin = _speedTable[min(_speed, 9)].stepsMin;
     _stepsMax = _speedTable[min(_speed, 9)].stepsMax;
@@ -83,7 +90,8 @@ Flicker::loop()
         // a brightness multiplier of 1. at its limit it is equal to led.lim, so
         // that is a multiplier of 1 + led.lim / 255.
         float brightness = (_brightnessMin + led.off) / 255;
-        _pixels->setPixelColor(i, HSVToRGB(_hue, _sat, _val * brightness));
+
+        _pixels->setPixelColor(i, Color(_hue, _sat, _val * brightness).rgb());
         _pixels->show();
     }
 

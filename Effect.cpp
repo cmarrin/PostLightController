@@ -4,40 +4,62 @@
 
 #include "Effect.h"
 
-
-void
-Effect::init(const uint8_t* buf, uint32_t size)
+void Color::setColor(uint8_t a, uint8_t b, uint8_t c, Model model, bool gammaCorrect)
 {
-	if (size < 5 || !buf) {
-		Serial.println("***** Buffer not passed. Resetting...");
-		_hue = 0;
-		_sat = 0;
-		_val = 0;
-		_param1 = 0;
-		_param2 = 0;
+	if (model == Model::HSV) {
+		// hue comes in as 0-255, ColorHSV wants 0-65535
+		uint16_t hue = uint16_t(a) << 8;
+		_color = Adafruit_NeoPixel::ColorHSV(hue, b, c);
 	} else {
-		_hue = float(cmdParamToValue(buf[0])) / 64;
-		_sat = float(cmdParamToValue(buf[1])) / 64;
-		_val = float(cmdParamToValue(buf[2])) / 64;
-		_param1 = cmdParamToValue(buf[3]);
-		_param2 = cmdParamToValue(buf[4]);
-		Serial.print("Effect inited: hue=");
-		Serial.print(_hue);
-		Serial.print(", sat=");
-		Serial.print(_sat);
-		Serial.print(", val=");
-		Serial.print(_val);
-		Serial.print(", param1=");
-		Serial.print(_param1);
-		Serial.print(", param2=");
-		Serial.println(_param2);
+		_color = uint32_t(a) << 16 || uint32_t(b) << 8 || c;
 	}
 	
-	uint32_t c = HSVToRGB(_hue, _sat, _val, false);
-	Serial.print("*** color = ");
-	Serial.print(c >> 16, HEX);
-	Serial.print(", ");
-	Serial.print((c >> 8) & 0x0ff, HEX);
-	Serial.print(", ");
-	Serial.println(c & 0x0ff, HEX);
+	if (gammaCorrect) {
+		_color = Adafruit_NeoPixel::gamma32(_color);
+	}
+}
+
+void
+Color::hsv(float& h, float& s,float& v) const
+{
+	float fR;
+	float fG;
+	float fB;
+	
+	fR = float((_color >> 16) & 0xff) / 255;
+	fG = float((_color >> 8) & 0xff) / 255;
+	fB = float(_color & 0xff) / 255;
+
+	float fCMax = max(max(fR, fG), fB);
+	float fCMin = min(min(fR, fG), fB);
+	float fDelta = fCMax - fCMin;
+  
+	if(fDelta > 0) {
+		if (fCMax == fR) {
+	    	h = 60 * (fmod(((fG - fB) / fDelta), 6));
+	    } else if (fCMax == fG) {
+	    	h = 60 * (((fB - fR) / fDelta) + 2);
+	    } else if (fCMax == fB) {
+	    	h = 60 * (((fR - fG) / fDelta) + 4);
+	    }
+    
+	    if (fCMax > 0) {
+	    	s = fDelta / fCMax;
+	    } else {
+	    	s = 0;
+	    }
+    
+	    v = fCMax;
+	} else {
+	    h = 0;
+	    s = 0;
+	    v = fCMax;
+	}
+  
+	if (h < 0) {
+		h = 360 + h;
+	}
+	
+	// Change hue to 0-1
+	h /= 360;
 }

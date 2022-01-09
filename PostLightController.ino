@@ -85,6 +85,8 @@ public:
 
 	    _pixels.begin(); // This initializes the NeoPixel library.
 	    _pixels.setBrightness(255);
+		
+		Serial.println("Post Light Controller v0.1");
 	
 		showStatus(StatusColor::Green, 3, 2);
 		
@@ -168,8 +170,12 @@ public:
 							showStatus(StatusColor::Red, 5, 5);
 						} else {
 							// Process command
-							Serial.print("Processing cmd: ");
-							Serial.println(_buf);
+							Serial.print("Processing cmd: [ ");
+							for (int i = 0; i < BufferSize; ++i) {
+								Serial.print(_buf[i], HEX);
+								Serial.print(" ");
+							}
+							Serial.println("]");
 						
 							switch(_buf[2]) {
 								case 'C':
@@ -178,6 +184,11 @@ public:
 							
 								case 'F':
 								_currentEffect = new Flicker(&_pixels);
+								break;
+								default:
+								Serial.print("Unrecognized command: ");
+								Serial.println(_buf[2], HEX);
+								showStatus(StatusColor::Red, 8, 4);
 								break;
 							}
 						
@@ -197,12 +208,12 @@ public:
 	}
 
 private:
-	static uint8_t checksum(const char* str, int length) 
+	static uint8_t checksum(const char* buf, int length) 
 	{
 	    uint8_t sum = 0;
 
 	    for (int i = 0; i < length; i++) {
-			sum += str[i];
+			sum += buf[i];
 	    }
 	    return sum & 0x3f;
 	}
@@ -217,10 +228,8 @@ private:
 			_currentEffect = nullptr;
 		}
 
-		uint8_t buf[ ] = { 0, 111, 111, 58, 58 };
-		buf[0] = (color == StatusColor::Red) ? 48 : ((color == StatusColor::Green) ? 70 : 55);
-		buf[3] = numberOfBlinks + 0x30;
-		buf[4] = interval + 0x30;
+		uint8_t buf[ ] = { 0x00, 0xff, 0xff, numberOfBlinks, interval };
+		buf[0] = (color == StatusColor::Red) ? 0 : ((color == StatusColor::Green) ? 85 : 42);
 		_currentEffect = new Flash(&_pixels);
 		_currentEffect->init(buf, sizeof(buf));		
 	}
