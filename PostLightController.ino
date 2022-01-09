@@ -73,6 +73,9 @@ public:
 	PostLightController()
 		: _pixels(NumPixels, LEDPin, NEO_GRB + NEO_KHZ800)
 		, _serial(11, 10)
+		, _constantColorEffect(&_pixels)
+		, _flickerEffect(&_pixels)
+		, _flashEffect(&_pixels)
 	{ }
 	~PostLightController() { }
 	
@@ -99,15 +102,8 @@ public:
 		
 		if (delayInMs < 0) {
 			// An effect has finished. End it and clear the display
-			if (_currentEffect) {
-				delete _currentEffect;
-				_currentEffect = nullptr;
-			}
-			
-			ConstantColor* cc = new ConstantColor(&_pixels);
-			_currentEffect = cc;
+			_currentEffect = &_constantColorEffect;
 			_currentEffect->init();
-
 			delayInMs = 0;
 		}
 		
@@ -140,11 +136,6 @@ public:
 				if (_bufIndex >= BufferSize) {
 					Serial.print("***** finished capturing\n");
 					_buf[BufferSize] = '\0';
-					
-					if (_currentEffect) {
-						delete _currentEffect;
-						_currentEffect = nullptr;
-					}
 					
 					delayInMs = 0;
 
@@ -179,11 +170,11 @@ public:
 						
 							switch(_buf[2]) {
 								case 'C':
-								_currentEffect = new ConstantColor(&_pixels);
+								_currentEffect = &_constantColorEffect;
 								break;
 							
 								case 'F':
-								_currentEffect = new Flicker(&_pixels);
+								_currentEffect = &_flickerEffect;
 								break;
 								default:
 								Serial.print("Unrecognized command: ");
@@ -223,14 +214,9 @@ private:
 	void showStatus(StatusColor color, uint8_t numberOfBlinks, uint8_t interval)
 	{
 		// Flash full bright red at 1 second interval, 10 times
-		if (_currentEffect) {
-			delete _currentEffect;
-			_currentEffect = nullptr;
-		}
-
 		uint8_t buf[ ] = { 0x00, 0xff, 0xff, numberOfBlinks, interval };
 		buf[0] = (color == StatusColor::Red) ? 0 : ((color == StatusColor::Green) ? 85 : 42);
-		_currentEffect = new Flash(&_pixels);
+		_currentEffect = &_flashEffect;
 		_currentEffect->init(buf, sizeof(buf));		
 	}
 	
@@ -238,6 +224,10 @@ private:
 	SoftwareSerial _serial;
 	
 	Effect* _currentEffect = nullptr;
+	
+	ConstantColor _constantColorEffect;
+	Flicker _flickerEffect;
+	Flash _flashEffect;
 	
 	char _buf[BufferSize + 1];
 	int _bufIndex = 0;
