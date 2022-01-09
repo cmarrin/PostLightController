@@ -8,7 +8,7 @@ Software runs on Arduino Nano. SoftSerial is used to receive packets of data fom
 - ☑︎ Make all effects use Color class
 - ☑︎ Make payload a binary array, colors are 3 bytes: hue, sat and val, all 0-255
 - ☑︎ Make node-red generate colors in new format
-- ☐ Get rid of new to create Effects. Create one of each and point to it as needed
+- ☑︎ Get rid of new to create Effects. Create one of each and point to it as needed
 - ☐ Change packet to be variable length: start ('('), device addr ('0' = all devices), cmd, payload len (0-63), checksum, end (')')
 - ☐ Make node-red use variable length format
 - ☐ Make Effect a concrete class, executing interpreted code specified by command
