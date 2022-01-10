@@ -7,8 +7,8 @@
 #include "Flicker.h"
 
 const Flicker::Speed Flicker::_speedTable[ ] = {
-    { 300, 350, 40 },
-    { 250, 280, 30 },
+    { 250, 255, 40 },
+    { 220, 250, 30 },
     { 180, 240, 20 },
     { 150, 200, 20 },
     {  70, 120, 20 },
@@ -34,28 +34,26 @@ Flicker::init(const uint8_t* buf, uint32_t size)
 {
 	Effect::init(buf, size);
 	
-	if (size < 4 || !buf) {
-		Serial.println("***** Buffer not passed to Flicker");
+	if (size < 4 || !_buf) {
+		Serial.println("***** Flicker: Buffer not passed");
 		return;
 	}
 
-    // A val of 0 will be set to minVal / 255, a val of 7 is set to 1
-    // values between are evenly spaced
-	float val = buf[2];
-    val = val * float(255 - ValMin) / 255 + ValMin;
+	if (_buf[3] > 7) {
+		Serial.println("***** Flicker: speed out of range");
+		return;
+	}
 
-	_color = Color(buf[0], buf[1], round(val));
+	_color = Color(_buf[0], _buf[1], _buf[2]);
 
-	_speed = buf[2] & 0x07;
-	
 	Serial.print("Flicker started: hue=");
-	Serial.print(buf[0]);
+	Serial.print(_buf[0]);
 	Serial.print(", sat=");
-	Serial.print(buf[1]);
+	Serial.print(_buf[1]);
 	Serial.print(", val=");
-	Serial.print(val);
+	Serial.print(_buf[2]);
 	Serial.print(", speed=");
-	Serial.println(_speed);
+	Serial.println(_buf[3]);
 }
 
 int32_t
@@ -75,21 +73,24 @@ Flicker::loop()
             // We are done with the throb, select a new inc and lim
             led.off = 0;
 
-            // Increment in value for each step, in 1/10s
-            led.inc = float(random(IncMin * 100, IncMax * 100)) / 100;
+            // Increment inc value for each step, in 1/10s
+            led.inc = randomFloat(IncMin, IncMax);
 
             // Random number of steps to throb up and down
-            led.lim = led.inc + random(_speedTable[min(_speed, 9)].stepsMin, _speedTable[min(_speed, 9)].stepsMax);
+            //led.lim = led.inc + random(_speedTable[_buf[3]].stepsMin, _speedTable[_buf[3]].stepsMax);
+            led.lim = led.inc + randomFloat(_speedTable[_buf[3]].stepsMin, _speedTable[_buf[3]].stepsMax);
         }
 
         // What is the relative brightness. led.off always starts at 0, so that is 
         // a brightness multiplier of 1. at its limit it is equal to led.lim, so
         // that is a multiplier of 1 + led.lim / 255.
         float brightness = (BrightnessMin + led.off) / 255;
+		float val = _color.val() * brightness;
+		val = max(val, ValMin);
 
         _pixels->setPixelColor(i, Color(_color.hue(), _color.sat(), _color.val() * brightness).rgb());
         _pixels->show();
     }
 
-    return _speedTable[min(_speed, 9)].delay;
+    return _speedTable[min(_buf[3], 9)].delay;
 }

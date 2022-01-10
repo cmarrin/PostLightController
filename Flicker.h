@@ -27,19 +27,18 @@ private:
 
 	struct Speed {
 	    Speed() { }
-	    Speed(int _min, int _max, int _d) : stepsMin(_min), stepsMax(_max), delay(_d) { };
-	    int stepsMin, stepsMax, delay;
+	    Speed(uint8_t _min, uint8_t _max, uint8_t _d) : stepsMin(_min), stepsMax(_max), delay(_d) { };
+	    uint8_t stepsMin, stepsMax, delay;
 	};
 
-	static constexpr int IncMin = 1;          	// minimum pixel increment/decrement
-	static constexpr int IncMax = 10;        	// maximum pixel increment/decrement
-	static constexpr int BrightnessMin = 100;  // minimum starting brightness in pixels
-	static constexpr int ValMin = 40;         	// lowest allowed val amount in pixels
+	static constexpr uint8_t IncMin = 1;          	// minimum pixel increment/decrement
+	static constexpr uint8_t IncMax = 10;        	// maximum pixel increment/decrement
+	static constexpr uint8_t BrightnessMin = 100;	// minimum starting brightness in pixels
+	static constexpr uint8_t ValMin = 40;         	// lowest allowed val amount in pixels
 	
 	LED* _leds = nullptr;
 
 	Color _color;
-	uint8_t _speed = 0;
 	
 	static const Speed _speedTable[8];
 };
