@@ -1,0 +1,106 @@
+// Arly script for different Post Light Controller effects
+//
+
+const uint8 IncMin          1
+const uint8 IncMax          10
+const uint8 BrightnessMin   100
+const uint8 ValMin          40
+const uint8 LedSize         24
+
+table uint8 SpeedTable
+    250 255 40
+    250 255 30
+    180 240 20
+    150 200 20
+     70 120 20
+     20  80 20
+      8  40 10
+      2   5 10
+    ;
+
+// Constant Color
+effect C 3
+{
+    init
+    {
+        LoadColorParam 0;
+    }
+        
+    loop
+    {
+        SetAllLights;
+    }
+}
+
+// Flicker
+effect F 4
+{
+    float leds 24;
+    
+    init
+    {
+        // Get color param
+        LoadColorParam 0;
+        
+        // Init leds
+        LoadZero r0;
+        Load r1 LedSize;
+        Init leds;
+    }
+    
+    loop:
+    {
+        LoadZero v2
+        Load v3 NumPixels;
+        ForEach;
+            // Get the led index
+            LoadIndex
+            Dup;
+            PushInt8 #12; // Size of each entry
+            MulInt;
+            PushIndex leds;
+            AddInt;
+
+            // At this point the led address is on tos
+            
+            // add led.inc to led.off
+            Dup;
+            PushFloatIndexed #0;
+            Dup;
+            PushFloatIndexed #4;
+            AddFloat;
+            StoreFloatIndexed #0;
+            
+            // Check going past lim
+            Dup;
+            PushFloatIndexed #4;
+            PushFloatZero;
+            GTFloat;
+            If;
+                Dup;
+                PushFloatIndexed #0;
+                Dup;
+                PushFloatIndexed #8;
+                GEFloat;
+                If;
+                    Dup;
+                    PushFloatIndexed #8;
+                    StoreFloatIndexed #0;
+                    Dup;
+                    PushFloatIndexed #4;
+                    NegFloat;
+                    StoreFloatIndexed #4;
+                EndIf;
+            Else;
+                // We are done with the throb, select a new inc and lim
+                Dup;
+                PushFloatIndexed #0;
+                
+                
+                
+                
+            SetLight;
+        EndFor
+    }
+}
+

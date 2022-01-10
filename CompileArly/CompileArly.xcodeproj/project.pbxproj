@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		49DAA647278B212E00F67EEB /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49DAA646278B212E00F67EEB /* main.cpp */; };
+		49DAA651278B3AFE00F67EEB /* Compile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49DAA64F278B3AFE00F67EEB /* Compile.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,6 +26,9 @@
 /* Begin PBXFileReference section */
 		49DAA643278B212E00F67EEB /* CompileArly */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = CompileArly; sourceTree = BUILT_PRODUCTS_DIR; };
 		49DAA646278B212E00F67EEB /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		49DAA64E278B2E5500F67EEB /* PostLightEffects.arly */ = {isa = PBXFileReference; lastKnownFileType = text; path = PostLightEffects.arly; sourceTree = "<group>"; };
+		49DAA64F278B3AFE00F67EEB /* Compile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Compile.cpp; sourceTree = "<group>"; };
+		49DAA650278B3AFE00F67EEB /* Compile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Compile.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -41,7 +45,8 @@
 		49DAA63A278B212E00F67EEB = {
 			isa = PBXGroup;
 			children = (
-				49DAA645278B212E00F67EEB /* CompileArly */,
+				49DAA652278B3B5B00F67EEB /* src */,
+				49DAA64D278B2DF200F67EEB /* Scripts */,
 				49DAA644278B212E00F67EEB /* Products */,
 			);
 			sourceTree = "<group>";
@@ -54,12 +59,22 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		49DAA645278B212E00F67EEB /* CompileArly */ = {
+		49DAA64D278B2DF200F67EEB /* Scripts */ = {
+			isa = PBXGroup;
+			children = (
+				49DAA64E278B2E5500F67EEB /* PostLightEffects.arly */,
+			);
+			name = Scripts;
+			sourceTree = "<group>";
+		};
+		49DAA652278B3B5B00F67EEB /* src */ = {
 			isa = PBXGroup;
 			children = (
 				49DAA646278B212E00F67EEB /* main.cpp */,
+				49DAA64F278B3AFE00F67EEB /* Compile.cpp */,
+				49DAA650278B3AFE00F67EEB /* Compile.h */,
 			);
-			path = CompileArly;
+			name = src;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -120,6 +135,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				49DAA647278B212E00F67EEB /* main.cpp in Sources */,
+				49DAA651278B3AFE00F67EEB /* Compile.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
