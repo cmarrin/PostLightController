@@ -88,8 +88,9 @@ Flicker::loop()
 		val = max(val, ValMin);
 
         _pixels->setPixelColor(i, Color(_color.hue(), _color.sat(), _color.val() * brightness).rgb());
-        _pixels->show();
     }
 
-    return _speedTable[min(_buf[3], 9)].delay;
+    _pixels->show();
+
+    return _speedTable[_buf[3]].delay;
 }

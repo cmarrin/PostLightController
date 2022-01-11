@@ -41,6 +41,6 @@ ConstantColor::setColor(const Color& color)
 {
     for (uint32_t i = 0; i < _pixels->numPixels(); i++) {
         _pixels->setPixelColor(i, color.rgb());
-        _pixels->show();
     }
+    _pixels->show();
 }
