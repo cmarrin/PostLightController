@@ -1,13 +1,17 @@
 // Arly script for different Post Light Controller effects
 //
 
-const uint8 IncMin          1
-const uint8 IncMax          10
-const uint8 BrightnessMin   100
-const uint8 ValMin          40
-const uint8 LedSize         24
+// Total 234 bytes
 
-table uint8 SpeedTable
+// 20 bytes
+const int IncMin            1
+const int IncMax            10
+const float BrightnessMin   0.4
+const float ValMin          0.15
+const int LedSize           24
+
+// 96 bytes
+table int SpeedTable
     250 255 40
     250 255 30
     180 240 20
@@ -16,91 +20,106 @@ table uint8 SpeedTable
      20  80 20
       8  40 10
       2   5 10
-    ;
+end
 
-// Constant Color
+// Constant Color (4 bytes)
 effect C 3
-{
     init
-    {
-        LoadColorParam 0;
-    }
+        LoadColorParam c0 0
+    end
         
     loop
-    {
-        SetAllLights;
-    }
-}
+        SetAllLights c0
+        LoadZero r0
+        Return r0
+    end
+end
 
-// Flicker
+// Flicker (114 bytes)
 effect F 4
-{
-    float leds 24;
+    float leds 24
     
     init
-    {
         // Get color param
-        LoadColorParam 0;
+        LoadColorParam c0 0
         
         // Init leds
-        LoadZero r0;
-        Load r1 LedSize;
-        Init leds;
-    }
+        LoadZero r0
+        Load r1 LedSize
+        Init leds
+    end
     
-    loop:
-    {
-        LoadZero v2
-        Load v3 NumPixels;
-        ForEach;
-            // Get the led index
-            LoadIndex
-            Dup;
-            PushInt8 #12; // Size of each entry
-            MulInt;
-            PushIndex leds;
-            AddInt;
-
-            // At this point the led address is on tos
-            
+    loop
+        LoadZero r2
+        Load r0 NumPixels
+        ForEach r2
             // add led.inc to led.off
-            Dup;
-            PushFloatIndexed #0;
-            Dup;
-            PushFloatIndexed #4;
-            AddFloat;
-            StoreFloatIndexed #0;
+            LoadX r0 leds r2 0
+            LoadX r1 leds r2 1
+            AddFloat
+            StoreX leds r2 0 r0
             
-            // Check going past lim
-            Dup;
-            PushFloatIndexed #4;
-            PushFloatZero;
-            GTFloat;
-            If;
-                Dup;
-                PushFloatIndexed #0;
-                Dup;
-                PushFloatIndexed #8;
-                GEFloat;
-                If;
-                    Dup;
-                    PushFloatIndexed #8;
-                    StoreFloatIndexed #0;
-                    Dup;
-                    PushFloatIndexed #4;
-                    NegFloat;
-                    StoreFloatIndexed #4;
-                EndIf;
-            Else;
-                // We are done with the throb, select a new inc and lim
-                Dup;
-                PushFloatIndexed #0;
-                
-                
-                
-                
-            SetLight;
+            // Check for going past lim (increasing) or below 0 (decreasing)
+            LoadX r0 leds r2 1
+            LoadZero r1
+            GTFloat
+            If
+                LoadX r0 leds r2 0
+                LoadX r1 leds r2 2
+                GEFloat
+                If
+                    LoadX r0 leds r2 2
+                    StoreX leds r2 0 r0
+                    LoadX r0 leds r2 1
+                    NegFloat
+                    StoreX leds r2 r1 0
+                EndIf
+            Else
+                LoadX r0 leds r2 0
+                LoadZero r1
+                LEFloat
+                If
+                    // We are done with the throb, select a new inc and lim
+                    StoreX leds r2 0 r1
+                    
+                    // Increment inc value for each step a random amount
+                    LoadInt r0 IncMin
+                    LoadInt r1 IncMax
+                    Random
+                    StoreX leds r2 1 r0
+            
+                    // Random number of steps to throb up and down
+                    LoadIntParam r3 3
+                    LoadX r0 SpeedTable r3 0
+                    LoadX r1 SpeedTable r3 1
+                    Random
+                    LoadX r1 leds r2 1
+                    AddFloat
+                    StoreX leds r2 2 r0
+                Endif
+            Endif
+            
+            // Multiply val by brightness
+            LoadX r0 leds r2 0
+            LoadByteMax r1
+            ToFloat r1
+            DivFloat
+            Load r1 BrightnessMin
+            AddFloat
+
+            MoveColor c1 c0
+            LoadVal r1 c1
+            MulFloat
+            Load r1 ValMin
+            MaxFloat
+            StoreVal c1 r0
+            
+            SetLight r2 c1
         EndFor
-    }
-}
+        
+        LoadIntParam r3 3
+        LoadX r0 SpeedTable r3 2
+        Return r0
+    end
+end
 
