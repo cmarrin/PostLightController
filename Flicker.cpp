@@ -77,7 +77,6 @@ Flicker::loop()
             led.inc = randomFloat(IncMin, IncMax);
 
             // Random number of steps to throb up and down
-            //led.lim = led.inc + random(_speedTable[_buf[3]].stepsMin, _speedTable[_buf[3]].stepsMax);
             led.lim = led.inc + randomFloat(_speedTable[_buf[3]].stepsMin, _speedTable[_buf[3]].stepsMax);
         }
 
