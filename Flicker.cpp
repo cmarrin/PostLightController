@@ -83,11 +83,11 @@ Flicker::loop()
         // What is the relative brightness. led.off always starts at 0, so that is 
         // a brightness multiplier of 1. at its limit it is equal to led.lim, so
         // that is a multiplier of 1 + led.lim / 255.
-        float brightness = (BrightnessMin + led.off) / 255;
+        float brightness = BrightnessMin + (led.off / 255);
 		float val = _color.val() * brightness;
 		val = max(val, ValMin);
 
-        _pixels->setPixelColor(i, Color(_color.hue(), _color.sat(), _color.val() * brightness).rgb());
+        _pixels->setPixelColor(i, Color(_color.hue(), _color.sat(), val).rgb());
     }
 
     _pixels->show();
