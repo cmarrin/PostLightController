@@ -74,7 +74,7 @@ effect f 4
                     StoreX leds r2 0 r0
                     LoadX r0 leds r2 1
                     NegFloat
-                    StoreX leds r2 0 r1
+                    StoreX leds r2 1 r0
                 end
             else
                 LoadX r0 leds r2 0
