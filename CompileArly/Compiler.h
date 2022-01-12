@@ -305,14 +305,23 @@ enum class P : uint8_t { R, I, Id, Rs, Rd, Sz };
 enum class OpParams : uint8_t {
     None,       // No params
     R,          // b[1:0] = 'r0'-'r3'
+    C,          // b[1:0] = 'c0'-'c3'
     R_I,        // b[1:0] = 'r0'-'r3', b+1 = <int>
+    C_I,        // b[1:0] = 'c0'-'c3', b+1 = <int>
     R_Id,       // b[1:0] = 'r0'-'r3', b+1 = <id>
+    C_Id,       // b[1:0] = 'c0'-'c3', b+1 = <id>
     Id_R,       // b+1 = <id>, b[1:0] = 'r0'-'r3'
+    Id_C,       // b+1 = <id>, b[1:0] = 'c0'-'c3'
     Rd_Id_Rs,   // b+2[7:6] = 'r0'-'r3', b+1 = <id>, b+2[5:4] = 'r0'-'r3'
+    Cd_Id_Rs,   // b+2[7:6] = 'c0'-'c3', b+1 = <id>, b+2[5:4] = 'r0'-'r3'
     Rd_Id_Rs_I, // b+2[7:6] = 'r0'-'r3' b+1 = <id>, b+2[5:4] = 'r0'-'r3', b+2[3:0] = <int>
     Id_Rd_Rs,   // b+1 = <id>, b+2[7:6] = 'r0'-'r3', b+2[5:4] = 'r0'-'r3'
+    Id_Rd_Cs,   // b+1 = <id>, b+2[7:6] = 'r0'-'r3', b+2[5:4] = 'c0'-'c3'
     Id_Rd_I_Rs, // b+1 = <id>, b+2[7:6] = 'r0'-'r3', b+2[3:0] = <int>, b+2[5:4] = 'r0'-'r3'
     Rd_Rs,      // b+1[7:6] = 'r0'-'r3', b+1[5:4] = 'r0'-'r3'
+    Cd_Rs,      // b+1[7:6] = 'c0'-'c3', b+1[5:4] = 'r0'-'r3'
+    Rd_Cs,      // b+1[7:6] = 'r0'-'r3', b+1[5:4] = 'c0'-'c3'
+    Cd_Cs,      // b+1[7:6] = 'c0'-'c3', b+1[5:4] = 'c0'-'c3'
     Id,         // b+1 = <id>
 };
 
@@ -336,6 +345,8 @@ enum class Reserved {
     Else,
     Float,
     Int,
+    R0, R1, R2, R3,
+    C0, C1, C2, C3,
 };
 
 class Compiler
@@ -346,11 +357,15 @@ public:
         ExpectedToken,
         ExpectedType,
         ExpectedValue,
+        ExpectedInt,
         ExpectedOpcode,
         ExpectedEnd,
         ExpectedIdentifier,
         ExpectedCommandId,
+        ExpectedRegister,
         InvalidParamCount,
+        UndefinedIdentifier,
+        ParamOutOfRange,
     };
     
     Compiler() { }

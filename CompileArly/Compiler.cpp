@@ -83,9 +83,8 @@ private:
         expect(value(val), Compiler::Error::ExpectedValue);
         
         // Save constant
-        _symbols.emplace(id, _nextRomAddress++);
-        _rom.push_back(val);
-        assert(_rom.size() == _nextRomAddress);
+        _symbols.emplace(id, _rom32.size());
+        _rom32.push_back(val);
         
         return true;
     }
@@ -103,7 +102,7 @@ private:
         expect(Token::NewLine);
         
         // Set the start address of the table. tableEntries() will fill them in
-        _symbols.emplace(id, _nextRomAddress);
+        _symbols.emplace(id, _rom32.size());
         
         tableEntries();
         expect(Token::Identifier, "end");
@@ -136,7 +135,7 @@ private:
             throw true;
         }
         
-        _effects.emplace(id[0], EffectParams(paramCount, _nextRomAddress));
+        _effects.emplace(id[0], EffectParams(paramCount, _rom32.size()));
 
         expect(Token::NewLine);
         
@@ -180,8 +179,7 @@ private:
             }
             haveValues = true;
             
-            _rom.push_back(val);
-            _nextRomAddress++;
+            _rom32.push_back(val);
         }
         return haveValues;
     }
@@ -201,12 +199,10 @@ private:
         return false;
     }
     
-    bool opParam()
+    bool integer(int32_t& i)
     {
-        if (match(Token::Identifier)) {
-            return true;
-        }
         if (match(Token::Integer)) {
+            i = _scanner.getTokenValue().integer;
             return true;
         }
         return false;
@@ -232,7 +228,13 @@ private:
         }
         
         expect(identifier(id), Compiler::Error::ExpectedIdentifier);
-        expect(Token::Integer);
+        
+        int32_t size;
+        expect(integer(size), Compiler::Error::ExpectedInt);
+
+        // FIXME: need to "allocate" size
+        _symbols.emplace(id, 0);
+
         return true;
     }
 
@@ -284,33 +286,166 @@ private:
         return false;
     }
     
+    uint8_t handleR()
+    {
+        uint8_t i = 0;
+        if (match(Reserved::R0)) {
+            i = 0x00;
+        } else if (match(Reserved::R1)) {
+            i = 0x01;
+        } else if (match(Reserved::R2)) {
+            i = 0x02;
+        } else if (match(Reserved::R3)) {
+            i = 0x03;
+        } else {
+            expect(false, Compiler::Error::ExpectedRegister);
+        }
+        return i;
+    }
+
+    uint8_t handleR(Op op)
+    {
+        return uint8_t(op) | handleR();
+    }
+    
+    uint8_t handleC()
+    {
+        uint8_t i = 0;
+        if (match(Reserved::C0)) {
+            i = 0x00;
+        } else if (match(Reserved::C1)) {
+            i = 0x01;
+        } else if (match(Reserved::C2)) {
+            i = 0x02;
+        } else if (match(Reserved::C3)) {
+            i = 0x03;
+        } else {
+            expect(false, Compiler::Error::ExpectedRegister);
+        }
+        return i;
+    }
+    
+    uint8_t handleC(Op op)
+    {
+        return uint8_t(op) | handleC();
+    }
+    
+    uint8_t handleI()
+    {
+        int32_t i;
+        expect(integer(i), Compiler::Error::ExpectedInt);
+        expect(i >= 0 && i <= 15, Compiler::Error::ParamOutOfRange);
+        return uint8_t(i);
+    }
+    
+    uint8_t handleId()
+    {
+        std::string id;
+        expect(identifier(id), Compiler::Error::ExpectedIdentifier);
+        auto it = _symbols.find(id);
+        expect(it != _symbols.end(), Compiler::Error::UndefinedIdentifier);
+        return it->second;
+    }
+    
+    void handleOpParams(uint8_t a)
+    {
+        _rom8.push_back(a);
+        expectWithoutRetire(Token::NewLine);
+    }
+
+    void handleOpParams(uint8_t a, uint8_t b)
+    {
+        _rom8.push_back(a);
+        _rom8.push_back(b);
+        expectWithoutRetire(Token::NewLine);
+    }
+
+    void handleOpParamsReverse(uint8_t a, uint8_t b)
+    {
+        _rom8.push_back(b);
+        _rom8.push_back(a);
+        expectWithoutRetire(Token::NewLine);
+    }
+
+    void handleOpParamsRdRs(Op op, uint8_t rd, uint8_t rs)
+    {
+        _rom8.push_back(uint8_t(op));
+        _rom8.push_back((rd << 6) | (rs << 4));
+        expectWithoutRetire(Token::NewLine);
+    }
+
+    void handleOpParamsRdRs(Op op, uint8_t a, uint8_t rd, uint8_t rs)
+    {
+        _rom8.push_back(uint8_t(op));
+        _rom8.push_back(a);
+        _rom8.push_back((rd << 6) | (rs << 4));
+        expectWithoutRetire(Token::NewLine);
+    }
+
+    void handleOpParamsRdRsSplit(Op op, uint8_t rd, uint8_t a, uint8_t rs)
+    {
+        _rom8.push_back(uint8_t(op));
+        _rom8.push_back(a);
+        _rom8.push_back((rd << 6) | (rs << 4));
+        expectWithoutRetire(Token::NewLine);
+    }
+
     bool opStatement()
     {
-        Op opcode;
+        Op op;
         OpParams par;
-        if (!isOpcode(_scanner.getToken(), _scanner.getTokenString(), opcode, par)) {
+        if (!isOpcode(_scanner.getToken(), _scanner.getTokenString(), op, par)) {
             return false;
         }
         
-        // Get the params in the sequence specified in OpParams
-//        switch(par) {
-//            case None:
-//        }
+        _scanner.retireToken();
         
-        opParams();
-        return true;
-    }
+        // Get the params in the sequence specified in OpParams
+        uint8_t i;
+        
+        switch(par) {
+            case OpParams::None: expectWithoutRetire(Token::NewLine); break;
+            case OpParams::R: handleOpParams(handleR(op)); break;
+            case OpParams::C: handleOpParams(handleC(op)); break;
+            case OpParams::R_I: handleOpParams(handleR(op), handleI()); break;
+            case OpParams::C_I: handleOpParams(handleC(op), handleI()); break;
+            case OpParams::R_Id: handleOpParams(handleR(op), handleId()); break;
+            case OpParams::C_Id: handleOpParams(handleC(op), handleId()); break;
+            
+            case OpParams::Id_R: handleOpParamsReverse(handleId(), handleR(op)); break;
+            case OpParams::Id_C: handleOpParamsReverse(handleId(), handleC(op)); break;
 
-    bool opParams()
-    {
-        bool haveValues = false;
-        while(1) {
-            if (!opParam()) {
+            case OpParams::Rd_Id_Rs: handleOpParamsRdRsSplit(op, handleR(), handleId(), handleR()); break;
+            case OpParams::Cd_Id_Rs: handleOpParamsRdRsSplit(op, handleC(), handleId(), handleR()); break;
+
+            case OpParams::Id_Rd_Rs: handleOpParamsRdRs(op, handleId(), handleR(), handleR()); break;
+            case OpParams::Id_Rd_Cs: handleOpParamsRdRs(op, handleId(), handleR(), handleC()); break;
+            case OpParams::Rd_Rs: handleOpParamsRdRs(op, handleR(), handleR()); break;
+            case OpParams::Cd_Rs: handleOpParamsRdRs(op, handleC(), handleR()); break;
+            case OpParams::Rd_Cs: handleOpParamsRdRs(op, handleR(), handleC()); break;
+            case OpParams::Cd_Cs: handleOpParamsRdRs(op, handleC(), handleC()); break;
+
+            case OpParams::Rd_Id_Rs_I:
+                _rom8.push_back(uint8_t(op));
+                i = handleR();
+                _rom8.push_back(handleId());
+                _rom8.push_back((i << 6) | (handleR() << 4) | handleI());
+                expectWithoutRetire(Token::NewLine);
                 break;
-            }
-            haveValues = true;
+            case OpParams::Id_Rd_I_Rs:
+                _rom8.push_back(uint8_t(op));
+                _rom8.push_back(handleId());
+                i = handleR();
+                _rom8.push_back((i << 6) | handleI() | (handleR() << 4));
+                expectWithoutRetire(Token::NewLine);
+                break;
+            case OpParams::Id:
+                _rom8.push_back(uint8_t(op));
+                _rom8.push_back(handleId());
+                expectWithoutRetire(Token::NewLine);
+                break;
         }
-        return haveValues;
+        return true;
     }
 
     bool forStatement()
@@ -318,7 +453,10 @@ private:
         if (!match(Reserved::ForEach)) {
             return false;
         }
-        expect(Token::Identifier);
+        
+        Reserved reg;
+        expect(reserved(reg), Compiler::Error::ExpectedRegister);
+        _scanner.retireToken();
         expect(Token::NewLine);
         statements();
         expect(match(Reserved::End), Compiler::Error::ExpectedEnd);
@@ -340,14 +478,6 @@ private:
         
         expect(match(Reserved::End), Compiler::Error::ExpectedEnd);
         return true;
-    }
-    
-    void expect(bool passed, Compiler::Error error)
-    {
-        if (!passed) {
-            _error = error;
-            throw true;
-        }
     }
     
     void expectWithoutRetire(Token token)
@@ -379,6 +509,14 @@ private:
         }
 
         _scanner.retireToken();
+    }
+    
+    void expect(bool passed, Compiler::Error error)
+    {
+        if (!passed) {
+            _error = error;
+            throw true;
+        }
     }
     
     bool match(Token token, const char* str = nullptr)
@@ -430,8 +568,13 @@ private:
     
     bool reserved()
     {
-        Reserved rr;
-        return isReserved(_scanner.getToken(), _scanner.getTokenString(), rr);
+        Reserved r;
+        return isReserved(_scanner.getToken(), _scanner.getTokenString(), r);
+    }
+    
+    bool reserved(Reserved &r)
+    {
+        return isReserved(_scanner.getToken(), _scanner.getTokenString(), r);
     }
     
     bool isOpcode(Token token, const std::string str)
@@ -444,19 +587,19 @@ private:
     bool isOpcode(Token token, const std::string str, Op& op, OpParams& par)
     {
         static std::map<std::string, OpData> opcodes = {
-            { "LoadColorX",     OpData(Op::LoadColor        , OpParams::Rd_Id_Rs) },
+            { "LoadColorX",     OpData(Op::LoadColor        , OpParams::Cd_Id_Rs) },
             { "LoadX",          OpData(Op::LoadX            , OpParams::Rd_Id_Rs_I) },
-            { "StoreColorX",    OpData(Op::StoreColorX      , OpParams::Id_Rd_Rs) },
+            { "StoreColorX",    OpData(Op::StoreColorX      , OpParams::Id_Rd_Cs) },
             { "StoreX",         OpData(Op::StoreX           , OpParams::Id_Rd_I_Rs) },
-            { "MoveColor",      OpData(Op::MoveColor        , OpParams::Rd_Rs) },
+            { "MoveColor",      OpData(Op::MoveColor        , OpParams::Cd_Cs) },
             { "Move",           OpData(Op::Move             , OpParams::Rd_Rs) },
-            { "LoadVal",        OpData(Op::LoadVal          , OpParams::Rd_Rs) },
-            { "StoreVal",       OpData(Op::StoreVal         , OpParams::Rd_Rs) },
+            { "LoadVal",        OpData(Op::LoadVal          , OpParams::Rd_Cs) },
+            { "StoreVal",       OpData(Op::StoreVal         , OpParams::Cd_Rs) },
             { "MinInt",         OpData(Op::MinInt           , OpParams::None) },
             { "MinFloat",       OpData(Op::MinFloat         , OpParams::None) },
             { "MaxInt",         OpData(Op::MaxInt           , OpParams::None) },
             { "MaxFloat",       OpData(Op::MaxFloat         , OpParams::None) },
-            { "SetLight",       OpData(Op::SetLight         , OpParams::Rd_Rs) },
+            { "SetLight",       OpData(Op::SetLight         , OpParams::Rd_Cs) },
             { "Init",           OpData(Op::Init             , OpParams::Id) },
             { "Random",         OpData(Op::Random           , OpParams::None) },
             { "Bor",            OpData(Op::Bor              , OpParams::None) },
@@ -488,14 +631,14 @@ private:
             { "DivFloat",       OpData(Op::DivFloat         , OpParams::None) },
             { "NegInt",         OpData(Op::NegInt           , OpParams::None) },
             { "NegFloat",       OpData(Op::NegFloat         , OpParams::None) },
-            { "LoadColorParam", OpData(Op::LoadColorParam   , OpParams::R_I) },
+            { "LoadColorParam", OpData(Op::LoadColorParam   , OpParams::C_I) },
             { "LoadIntParam",   OpData(Op::LoadIntParam     , OpParams::R_I) },
             { "LoadFloatParam", OpData(Op::LoadFloatParam   , OpParams::R_I) },
-            { "LoadColor",      OpData(Op::LoadColor        , OpParams::R_Id) },
+            { "LoadColor",      OpData(Op::LoadColor        , OpParams::C_Id) },
             { "Load",           OpData(Op::Load             , OpParams::R_Id) },
-            { "StoreColor",     OpData(Op::StoreColor       , OpParams::Id_R) },
+            { "StoreColor",     OpData(Op::StoreColor       , OpParams::Id_C) },
             { "Store",          OpData(Op::Store            , OpParams::Id_R) },
-            { "LoadBlack",      OpData(Op::LoadBlack        , OpParams::R) },
+            { "LoadBlack",      OpData(Op::LoadBlack        , OpParams::C) },
             { "LoadZero",       OpData(Op::LoadZero         , OpParams::R) },
             { "LoadIntOne",     OpData(Op::LoadIntOne       , OpParams::R) },
             { "LoadFloatOne",   OpData(Op::LoadFloatOne     , OpParams::R) },
@@ -503,7 +646,7 @@ private:
             { "Return",         OpData(Op::Return           , OpParams::R) },
             { "ToFloat",        OpData(Op::ToFloat          , OpParams::R) },
             { "ToInt",          OpData(Op::ToInt            , OpParams::R) },
-            { "SetAllLights",   OpData(Op::SetAllLights     , OpParams::R) },
+            { "SetAllLights",   OpData(Op::SetAllLights     , OpParams::C) },
         };
     
         if (token != Token::Identifier) {
@@ -533,6 +676,14 @@ private:
             { "else",       Reserved::Else },
             { "float",      Reserved::Float },
             { "int",        Reserved::Int },
+            { "r0",         Reserved::R0 },
+            { "r1",         Reserved::R1 },
+            { "r2",         Reserved::R2 },
+            { "r3",         Reserved::R3 },
+            { "c0",         Reserved::C0 },
+            { "c1",         Reserved::C1 },
+            { "c2",         Reserved::C2 },
+            { "c3",         Reserved::C3 },
         };
     
         if (token != Token::Identifier) {
@@ -560,9 +711,8 @@ private:
     
     std::map<std::string, uint8_t> _symbols;
     std::map<char, EffectParams> _effects;
-    std::vector<uint32_t> _rom;
-    uint8_t _nextRomAddress = 0;
-    
+    std::vector<uint32_t> _rom32;
+    std::vector<uint32_t> _rom8;
 };
 
 bool Compiler::compile(std::istream* stream)

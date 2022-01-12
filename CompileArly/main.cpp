@@ -63,11 +63,15 @@ int main(int argc, char * const argv[])
             case arly::Compiler::Error::ExpectedToken: err = "expected token"; break;
             case arly::Compiler::Error::ExpectedType: err = "expected type"; break;
             case arly::Compiler::Error::ExpectedValue: err = "expected value"; break;
+            case arly::Compiler::Error::ExpectedInt: err = "expected int"; break;
             case arly::Compiler::Error::ExpectedOpcode: err = "expected opcode"; break;
             case arly::Compiler::Error::ExpectedEnd: err = "expected 'end'"; break;
-            case arly::Compiler::Error::ExpectedIdentifier: err = "expected id"; break;
+            case arly::Compiler::Error::ExpectedIdentifier: err = "expected identifier"; break;
+            case arly::Compiler::Error::ExpectedRegister: err = "expected register"; break;
             case arly::Compiler::Error::ExpectedCommandId: err = "expected command"; break;
             case arly::Compiler::Error::InvalidParamCount: err = "invalid param count"; break;
+            case arly::Compiler::Error::UndefinedIdentifier: err = "undefined identifier"; break;
+            case arly::Compiler::Error::ParamOutOfRange: err = "param must be 0..15"; break;
 
         }
         
