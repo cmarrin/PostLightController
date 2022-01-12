@@ -11,6 +11,7 @@
 
 #pragma once
 
+#include "Scanner.h"
 #include <cstdint>
 #include <istream>
 
@@ -33,13 +34,15 @@ loop            ::= 'loop' <n> statements 'end' <n>
 
 statements      ::= { statement <n> }
 statement       ::= opStatement | forStatement | ifStatement
-opStatement     ::= op values
+opStatement     ::= op opParams
 forStatement    ::= 'foreach' <id> <n> statements 'end'
 ifStatement     ::= 'if' <n> statements { 'else' <n> statements } 'end'
 
-type            ::= 'float' | 'uint8' | 'int32'
+type            ::= 'float' | 'int'
 values          ::= { value }
 value           ::= <float> | <integer>
+opParams        ::= { value }
+opParam         ::= <id> | <integer>
 
 op              ::= <list of opcodes below>
 
@@ -130,7 +133,7 @@ Opcodes:
     LoadZero r              - v[r] = 0
     LoadIntOne r            - v[r] = 1
     LoadFloatOne r          - v[r] = 1.0f
-    LoadIntByteMax          - v[r] = 255
+    LoadIntByteMax r        - v[r] = 255
     
     LoadColorX rd id rs     - c[rd] = mem[id + (rs * 3)]
     LoadX rd, id, rs, i     - v[rd] = mem[id + rs + i]
@@ -289,14 +292,81 @@ enum class Op: uint8_t {
     ForEach            = 0xd0,
 };
 
+// Up to 4 params
+//
+// First param is R, Id or Rd
+// Second params is I, Id, R or Rs
+// Third param is Rs or I
+// Fourth param is Rs or I
+//
+// Param entry is 4 byte array of enums
+enum class P : uint8_t { R, I, Id, Rs, Rd, Sz };
+
+enum class OpParams : uint8_t {
+    None,       // No params
+    R,          // b[1:0] = 'r0'-'r3'
+    R_I,        // b[1:0] = 'r0'-'r3', b+1 = <int>
+    R_Id,       // b[1:0] = 'r0'-'r3', b+1 = <id>
+    Id_R,       // b+1 = <id>, b[1:0] = 'r0'-'r3'
+    Rd_Id_Rs,   // b+2[7:6] = 'r0'-'r3', b+1 = <id>, b+2[5:4] = 'r0'-'r3'
+    Rd_Id_Rs_I, // b+2[7:6] = 'r0'-'r3' b+1 = <id>, b+2[5:4] = 'r0'-'r3', b+2[3:0] = <int>
+    Id_Rd_Rs,   // b+1 = <id>, b+2[7:6] = 'r0'-'r3', b+2[5:4] = 'r0'-'r3'
+    Id_Rd_I_Rs, // b+1 = <id>, b+2[7:6] = 'r0'-'r3', b+2[3:0] = <int>, b+2[5:4] = 'r0'-'r3'
+    Rd_Rs,      // b+1[7:6] = 'r0'-'r3', b+1[5:4] = 'r0'-'r3'
+    Id,         // b+1 = <id>
+};
+
+struct OpData
+{
+    OpData(Op op, OpParams par) : _op(op), _par(par) { }
+    Op _op;
+    OpParams _par;
+};
+
+enum class Reserved {
+    None,
+    Const,
+    Table,
+    Effect,
+    End,
+    Init,
+    Loop,
+    ForEach,
+    If,
+    Else,
+    Float,
+    Int,
+};
+
 class Compiler
 {
 public:
+    enum class Error {
+        None,
+        ExpectedToken,
+        ExpectedType,
+        ExpectedValue,
+        ExpectedOpcode,
+        ExpectedEnd,
+        ExpectedIdentifier,
+        ExpectedCommandId,
+        InvalidParamCount,
+    };
+    
     Compiler() { }
     
     bool compile(std::istream*);
 
+    Error error() const { return _error; }
+    Token expectedToken() const { return _expectedToken; }
+    const std::string& expectedString() const { return _expectedString; }
+    uint32_t lineno() const { return _lineno; }
+
 private:
+    Error _error = Error::None;
+    Token _expectedToken = Token::None;
+    std::string _expectedString;
+    uint32_t _lineno;
 };
 
 }

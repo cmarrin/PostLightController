@@ -9,6 +9,7 @@ const int IncMax            10
 const float BrightnessMin   0.4
 const float ValMin          0.15
 const int LedSize           24
+const int SpeedTableEntry   3
 
 // 96 bytes
 table int SpeedTable
@@ -23,7 +24,7 @@ table int SpeedTable
 end
 
 // Constant Color (4 bytes)
-effect C 3
+effect c 3
     init
         LoadColorParam c0 0
     end
@@ -36,7 +37,7 @@ effect C 3
 end
 
 // Flicker (114 bytes)
-effect F 4
+effect f 4
     float leds 24
     
     init
@@ -52,7 +53,7 @@ effect F 4
     loop
         LoadZero r2
         Load r0 NumPixels
-        ForEach r2
+        foreach r2
             // add led.inc to led.off
             LoadX r0 leds r2 0
             LoadX r1 leds r2 1
@@ -63,41 +64,44 @@ effect F 4
             LoadX r0 leds r2 1
             LoadZero r1
             GTFloat
-            If
+            if
                 LoadX r0 leds r2 0
                 LoadX r1 leds r2 2
                 GEFloat
-                If
+                if
                     LoadX r0 leds r2 2
                     StoreX leds r2 0 r0
                     LoadX r0 leds r2 1
                     NegFloat
                     StoreX leds r2 r1 0
-                EndIf
-            Else
+                end
+            else
                 LoadX r0 leds r2 0
                 LoadZero r1
                 LEFloat
-                If
+                if
                     // We are done with the throb, select a new inc and lim
                     StoreX leds r2 0 r1
                     
                     // Increment inc value for each step a random amount
-                    LoadInt r0 IncMin
-                    LoadInt r1 IncMax
+                    Load r0 IncMin
+                    Load r1 IncMax
                     Random
                     StoreX leds r2 1 r0
             
                     // Random number of steps to throb up and down
-                    LoadIntParam r3 3
+                    LoadIntParam r0 3
+                    Load r1 SpeedTableEntry
+                    MulInt
+                    Move r3 r0
                     LoadX r0 SpeedTable r3 0
                     LoadX r1 SpeedTable r3 1
                     Random
                     LoadX r1 leds r2 1
                     AddFloat
                     StoreX leds r2 2 r0
-                Endif
-            Endif
+                end
+            end
             
             // Multiply val by brightness
             LoadX r0 leds r2 0
@@ -115,9 +119,12 @@ effect F 4
             StoreVal c1 r0
             
             SetLight r2 c1
-        EndFor
+        end
         
-        LoadIntParam r3 3
+        LoadIntParam r0 3
+        Load r1 SpeedTableEntry
+        MulInt
+        Move r3 r0
         LoadX r0 SpeedTable r3 2
         Return r0
     end

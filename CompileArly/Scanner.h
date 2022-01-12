@@ -55,7 +55,7 @@ static inline bool isnewline(uint8_t c)     { return c == '\n'; }
 static inline uint8_t tolower(uint8_t c)    { return isUpper(c) ? (c - 'A' + 'a') : c; }
 static inline uint8_t toupper(uint8_t c)    { return isLower(c) ? (c - 'a' + 'A') : c; }
 
-static constexpr uint8_t C_EOF = static_cast<uint8_t>(Token::EndOfFile);
+static constexpr uint8_t C_EOF = 0xff;
 
 class Scanner  {
 public:
