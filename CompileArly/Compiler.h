@@ -327,9 +327,11 @@ enum class OpParams : uint8_t {
 
 struct OpData
 {
-    OpData(Op op, OpParams par) : _op(op), _par(par) { }
-    Op _op;
-    OpParams _par;
+    OpData() { }
+    OpData(std::string str, Op op, OpParams par) : _str(str), _op(op), _par(par) { }
+    std::string _str;
+    Op _op = Op::LoadColorX;
+    OpParams _par = OpParams::None;
 };
 
 enum class Reserved {

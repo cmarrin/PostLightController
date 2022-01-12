@@ -30,6 +30,17 @@ public:
         return true;
     }
 
+    bool opcode(Op op, std::string& str, OpParams& par)
+    {
+        OpData data;
+        if (!opDataFromOp(op, data)) {
+            return false;
+        }
+        str = data._str;
+        par = data._par;
+        return true;
+    }
+    
     Compiler::Error error() const { return _error; }
     Token expectedToken() const { return _expectedToken; }
     const std::string& expectedString() const { return _expectedString; }
@@ -232,8 +243,8 @@ private:
         int32_t size;
         expect(integer(size), Compiler::Error::ExpectedInt);
 
-        // FIXME: need to "allocate" size
-        _symbols.emplace(id, 0);
+        _symbols.emplace(id, _nextMem);
+        _nextMem += size;
 
         return true;
     }
@@ -394,7 +405,7 @@ private:
     {
         Op op;
         OpParams par;
-        if (!isOpcode(_scanner.getToken(), _scanner.getTokenString(), op, par)) {
+        if (!opcode(_scanner.getToken(), _scanner.getTokenString(), op, par)) {
             return false;
         }
         
@@ -581,85 +592,22 @@ private:
     {
         Op op;
         OpParams par;
-        return isOpcode(token, str, op, par);
+        return opcode(token, str, op, par);
     }
     
-    bool isOpcode(Token token, const std::string str, Op& op, OpParams& par)
+    bool opcode(Token token, const std::string str, Op& op, OpParams& par)
     {
-        static std::map<std::string, OpData> opcodes = {
-            { "LoadColorX",     OpData(Op::LoadColor        , OpParams::Cd_Id_Rs) },
-            { "LoadX",          OpData(Op::LoadX            , OpParams::Rd_Id_Rs_I) },
-            { "StoreColorX",    OpData(Op::StoreColorX      , OpParams::Id_Rd_Cs) },
-            { "StoreX",         OpData(Op::StoreX           , OpParams::Id_Rd_I_Rs) },
-            { "MoveColor",      OpData(Op::MoveColor        , OpParams::Cd_Cs) },
-            { "Move",           OpData(Op::Move             , OpParams::Rd_Rs) },
-            { "LoadVal",        OpData(Op::LoadVal          , OpParams::Rd_Cs) },
-            { "StoreVal",       OpData(Op::StoreVal         , OpParams::Cd_Rs) },
-            { "MinInt",         OpData(Op::MinInt           , OpParams::None) },
-            { "MinFloat",       OpData(Op::MinFloat         , OpParams::None) },
-            { "MaxInt",         OpData(Op::MaxInt           , OpParams::None) },
-            { "MaxFloat",       OpData(Op::MaxFloat         , OpParams::None) },
-            { "SetLight",       OpData(Op::SetLight         , OpParams::Rd_Cs) },
-            { "Init",           OpData(Op::Init             , OpParams::Id) },
-            { "Random",         OpData(Op::Random           , OpParams::None) },
-            { "Bor",            OpData(Op::Bor              , OpParams::None) },
-            { "Bxor",           OpData(Op::Bxor             , OpParams::None) },
-            { "Band",           OpData(Op::Band             , OpParams::None) },
-            { "Bnot",           OpData(Op::Bnot             , OpParams::None) },
-            { "Or",             OpData(Op::Or               , OpParams::None) },
-            { "And",            OpData(Op::And              , OpParams::None) },
-            { "Not",            OpData(Op::Not              , OpParams::None) },
-            { "LTInt",          OpData(Op::LTInt            , OpParams::None) },
-            { "LTFloat",        OpData(Op::LTFloat          , OpParams::None) },
-            { "LEInt",          OpData(Op::LEInt            , OpParams::None) },
-            { "LEFloat",        OpData(Op::LEFloat          , OpParams::None) },
-            { "EQInt",          OpData(Op::EQInt            , OpParams::None) },
-            { "EQFloat",        OpData(Op::EQFloat          , OpParams::None) },
-            { "NEInt",          OpData(Op::NEInt            , OpParams::None) },
-            { "NEFloat",        OpData(Op::NEFloat          , OpParams::None) },
-            { "GEInt",          OpData(Op::GEInt            , OpParams::None) },
-            { "GEFloat",        OpData(Op::GEFloat          , OpParams::None) },
-            { "GTInt",          OpData(Op::GTInt            , OpParams::None) },
-            { "GTFloat",        OpData(Op::GTFloat          , OpParams::None) },
-            { "AddInt",         OpData(Op::AddInt           , OpParams::None) },
-            { "AddFloat",       OpData(Op::AddFloat         , OpParams::None) },
-            { "SubInt",         OpData(Op::SubInt           , OpParams::None) },
-            { "SubFloat",       OpData(Op::SubFloat         , OpParams::None) },
-            { "MulInt",         OpData(Op::MulInt           , OpParams::None) },
-            { "MulFloat",       OpData(Op::MulFloat         , OpParams::None) },
-            { "DivInt",         OpData(Op::DivInt           , OpParams::None) },
-            { "DivFloat",       OpData(Op::DivFloat         , OpParams::None) },
-            { "NegInt",         OpData(Op::NegInt           , OpParams::None) },
-            { "NegFloat",       OpData(Op::NegFloat         , OpParams::None) },
-            { "LoadColorParam", OpData(Op::LoadColorParam   , OpParams::C_I) },
-            { "LoadIntParam",   OpData(Op::LoadIntParam     , OpParams::R_I) },
-            { "LoadFloatParam", OpData(Op::LoadFloatParam   , OpParams::R_I) },
-            { "LoadColor",      OpData(Op::LoadColor        , OpParams::C_Id) },
-            { "Load",           OpData(Op::Load             , OpParams::R_Id) },
-            { "StoreColor",     OpData(Op::StoreColor       , OpParams::Id_C) },
-            { "Store",          OpData(Op::Store            , OpParams::Id_R) },
-            { "LoadBlack",      OpData(Op::LoadBlack        , OpParams::C) },
-            { "LoadZero",       OpData(Op::LoadZero         , OpParams::R) },
-            { "LoadIntOne",     OpData(Op::LoadIntOne       , OpParams::R) },
-            { "LoadFloatOne",   OpData(Op::LoadFloatOne     , OpParams::R) },
-            { "LoadByteMax",    OpData(Op::LoadByteMax      , OpParams::R) },
-            { "Return",         OpData(Op::Return           , OpParams::R) },
-            { "ToFloat",        OpData(Op::ToFloat          , OpParams::R) },
-            { "ToInt",          OpData(Op::ToInt            , OpParams::R) },
-            { "SetAllLights",   OpData(Op::SetAllLights     , OpParams::C) },
-        };
-    
         if (token != Token::Identifier) {
             return false;
         }
         
-        auto it = opcodes.find(str);
-        if (it != opcodes.end()) {
-            op = it->second._op;
-            par = it->second._par;
-            return true;
+        OpData data;
+        if (!opDataFromString(str, data)) {
+            return false;
         }
-        return false;
+        op = data._op;
+        par = data._par;
+        return true;
     }
     
     bool isReserved(Token token, const std::string str, Reserved& r)
@@ -698,6 +646,28 @@ private:
         return false;
     }
     
+    bool opDataFromString(const std::string str, OpData& data) const
+    {
+        auto it = find_if(_opcodes.begin(), _opcodes.end(),
+                        [str](const OpData& opData) { return opData._str == str; });
+        if (it != _opcodes.end()) {
+            data = *it;
+            return true;
+        }
+        return false;
+    }
+ 
+    bool opDataFromOp(const Op op, OpData& data) const
+    {
+        auto it = find_if(_opcodes.begin(), _opcodes.end(),
+                        [op](const OpData& opData) { return opData._op == op; });
+        if (it != _opcodes.end()) {
+            data = *it;
+            return true;
+        }
+        return false;
+    }
+
     Scanner _scanner;
     Compiler::Error _error = Compiler::Error::None;
     Token _expectedToken = Token::None;
@@ -713,6 +683,72 @@ private:
     std::map<char, EffectParams> _effects;
     std::vector<uint32_t> _rom32;
     std::vector<uint32_t> _rom8;
+    uint32_t _nextMem = 0; // next available location in mem
+    
+    static std::vector<OpData> _opcodes;
+};
+
+std::vector<OpData> CompileEngine::_opcodes = {
+    { "LoadColorX",     Op::LoadColor        , OpParams::Cd_Id_Rs },
+    { "LoadX",          Op::LoadX            , OpParams::Rd_Id_Rs_I },
+    { "StoreColorX",    Op::StoreColorX      , OpParams::Id_Rd_Cs },
+    { "StoreX",         Op::StoreX           , OpParams::Id_Rd_I_Rs },
+    { "MoveColor",      Op::MoveColor        , OpParams::Cd_Cs },
+    { "Move",           Op::Move             , OpParams::Rd_Rs },
+    { "LoadVal",        Op::LoadVal          , OpParams::Rd_Cs },
+    { "StoreVal",       Op::StoreVal         , OpParams::Cd_Rs },
+    { "MinInt",         Op::MinInt           , OpParams::None },
+    { "MinFloat",       Op::MinFloat         , OpParams::None },
+    { "MaxInt",         Op::MaxInt           , OpParams::None },
+    { "MaxFloat",       Op::MaxFloat         , OpParams::None },
+    { "SetLight",       Op::SetLight         , OpParams::Rd_Cs },
+    { "Init",           Op::Init             , OpParams::Id },
+    { "Random",         Op::Random           , OpParams::None },
+    { "Bor",            Op::Bor              , OpParams::None },
+    { "Bxor",           Op::Bxor             , OpParams::None },
+    { "Band",           Op::Band             , OpParams::None },
+    { "Bnot",           Op::Bnot             , OpParams::None },
+    { "Or",             Op::Or               , OpParams::None },
+    { "And",            Op::And              , OpParams::None },
+    { "Not",            Op::Not              , OpParams::None },
+    { "LTInt",          Op::LTInt            , OpParams::None },
+    { "LTFloat",        Op::LTFloat          , OpParams::None },
+    { "LEInt",          Op::LEInt            , OpParams::None },
+    { "LEFloat",        Op::LEFloat          , OpParams::None },
+    { "EQInt",          Op::EQInt            , OpParams::None },
+    { "EQFloat",        Op::EQFloat          , OpParams::None },
+    { "NEInt",          Op::NEInt            , OpParams::None },
+    { "NEFloat",        Op::NEFloat          , OpParams::None },
+    { "GEInt",          Op::GEInt            , OpParams::None },
+    { "GEFloat",        Op::GEFloat          , OpParams::None },
+    { "GTInt",          Op::GTInt            , OpParams::None },
+    { "GTFloat",        Op::GTFloat          , OpParams::None },
+    { "AddInt",         Op::AddInt           , OpParams::None },
+    { "AddFloat",       Op::AddFloat         , OpParams::None },
+    { "SubInt",         Op::SubInt           , OpParams::None },
+    { "SubFloat",       Op::SubFloat         , OpParams::None },
+    { "MulInt",         Op::MulInt           , OpParams::None },
+    { "MulFloat",       Op::MulFloat         , OpParams::None },
+    { "DivInt",         Op::DivInt           , OpParams::None },
+    { "DivFloat",       Op::DivFloat         , OpParams::None },
+    { "NegInt",         Op::NegInt           , OpParams::None },
+    { "NegFloat",       Op::NegFloat         , OpParams::None },
+    { "LoadColorParam", Op::LoadColorParam   , OpParams::C_I },
+    { "LoadIntParam",   Op::LoadIntParam     , OpParams::R_I },
+    { "LoadFloatParam", Op::LoadFloatParam   , OpParams::R_I },
+    { "LoadColor",      Op::LoadColor        , OpParams::C_Id },
+    { "Load",           Op::Load             , OpParams::R_Id },
+    { "StoreColor",     Op::StoreColor       , OpParams::Id_C },
+    { "Store",          Op::Store            , OpParams::Id_R },
+    { "LoadBlack",      Op::LoadBlack        , OpParams::C },
+    { "LoadZero",       Op::LoadZero         , OpParams::R },
+    { "LoadIntOne",     Op::LoadIntOne       , OpParams::R },
+    { "LoadFloatOne",   Op::LoadFloatOne     , OpParams::R },
+    { "LoadByteMax",    Op::LoadByteMax      , OpParams::R },
+    { "Return",         Op::Return           , OpParams::R },
+    { "ToFloat",        Op::ToFloat          , OpParams::R },
+    { "ToInt",          Op::ToInt            , OpParams::R },
+    { "SetAllLights",   Op::SetAllLights     , OpParams::C },
 };
 
 bool Compiler::compile(std::istream* stream)
