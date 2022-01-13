@@ -391,7 +391,7 @@ public:
     
     Compiler() { }
     
-    bool compile(std::istream*, std::vector<uint8_t> executable);
+    bool compile(std::istream*, std::vector<uint8_t>& executable);
 
     Error error() const { return _error; }
     Token expectedToken() const { return _expectedToken; }

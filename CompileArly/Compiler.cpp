@@ -30,13 +30,13 @@ public:
         return true;
     }
     
-    void emit(std::vector<uint8_t> executable)
+    void emit(std::vector<uint8_t>& executable)
     {
         executable.push_back('a');
         executable.push_back('r');
         executable.push_back('l');
         executable.push_back('y');
-        executable.push_back(_rom32.size() + _rom8.size() / 4);
+        executable.push_back(_rom32.size());
         executable.push_back(0);
         executable.push_back(0);
         executable.push_back(0);
@@ -538,14 +538,50 @@ private:
             return false;
         }
         expect(Token::NewLine);
+
+        _rom8.push_back(uint8_t(Op::If));
+        
+        // Output a placeholder for sz and rember where it is
+        auto szIndex = _rom8.size();
+        _rom8.push_back(0);
+        
         statements();
         
         if (match(Reserved::Else)) {
             expect(Token::NewLine);
+
+            _rom8.push_back(uint8_t(Op::Else));
+        
+            // Output a placeholder for sz and rember where it is
+            auto szIndex = _rom8.size();
+            _rom8.push_back(0);
             statements();
+
+            // Update sz
+            auto offset = _rom8.size() - szIndex;
+            expect(offset < 256, Compiler::Error::ForEachTooBig);
+        
+            _rom8[szIndex] = uint8_t(offset);
         }
         
         expect(match(Reserved::End), Compiler::Error::ExpectedEnd);
+
+        // Update sz
+        auto offset = _rom8.size() - szIndex;
+        expect(offset < 256, Compiler::Error::ForEachTooBig);
+        
+        _rom8[szIndex] = uint8_t(offset);
+        
+        // Finally output and EndIf. This lets us distinguish
+        // Between an if and an if-else. If we skip an If we
+        // will either see an Else of an EndIf instruction.
+        // If we see anything else it's an error. If we see
+        // an Else, it means this is the else clause of an
+        // if statement we've skipped, so we execute its
+        // statements. If we see an EndIf it means this If
+        // doesn't have an Else.
+        _rom8.push_back(uint8_t(Op::EndIf));
+
         return true;
     }
     
@@ -747,7 +783,7 @@ private:
     std::map<std::string, uint8_t> _symbols;
     std::vector<Effect> _effects;
     std::vector<uint32_t> _rom32;
-    std::vector<uint32_t> _rom8;
+    std::vector<uint8_t> _rom8;
     uint32_t _nextMem = 0; // next available location in mem
     
     static std::vector<OpData> _opcodes;
@@ -816,7 +852,7 @@ std::vector<OpData> CompileEngine::_opcodes = {
     { "SetAllLights",   Op::SetAllLights     , OpParams::C },
 };
 
-bool Compiler::compile(std::istream* istream, std::vector<uint8_t> executable)
+bool Compiler::compile(std::istream* istream, std::vector<uint8_t>& executable)
 {
     CompileEngine eng(istream);
     

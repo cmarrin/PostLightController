@@ -77,7 +77,6 @@ int main(int argc, char * const argv[])
             case arly::Compiler::Error::ForEachTooBig: err = "too many instructions in foreach"; break;
             case arly::Compiler::Error::IfTooBig: err = "too many instructions in if"; break;
             case arly::Compiler::Error::ElseTooBig: err = "too many instructions in else"; break;
-
         }
         
         std::cout << "Compile failed: " << err << " on line " << compiler.lineno() << "\n";
@@ -94,6 +93,7 @@ int main(int argc, char * const argv[])
         } else {
             char* buf = reinterpret_cast<char*>(&(executable[0]));
             outStream.write(buf, executable.size());
+            outStream.close();
         }
     }
 
