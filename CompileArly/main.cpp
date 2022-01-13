@@ -53,21 +53,9 @@ int main(int argc, char * const argv[])
     
     std::cout << "Compiling '" << inputFile << "'\n";
     
-    std::fstream outStream;
-    bool output = false;
+    std::vector<uint8_t> executable;
     
-    if (outputFile.size()) {
-        std::cout << "Emitting executable to '" << outputFile << "'\n";
-        outStream.open(outputFile.c_str(),
-                    std::fstream::out | std::fstream::binary | std::fstream::trunc);
-        if (outStream.fail()) {
-            std::cout << "Can't open '" << outputFile << "'\n";
-        } else {
-            output = true;
-        }
-    }
-
-    compiler.compile(&stream, output ? &outStream : nullptr);
+    compiler.compile(&stream, executable);
     if (compiler.error() == arly::Compiler::Error::None) {
         std::cout << "Compile succeeded!\n";
     } else {
@@ -91,6 +79,21 @@ int main(int argc, char * const argv[])
         
         std::cout << "Compile failed: " << err << " on line " << compiler.lineno() << "\n";
     }
+    
+    // Write executable if needed
+    if (outputFile.size()) {
+        std::cout << "Emitting executable to '" << outputFile << "'\n";
+        std::fstream outStream;
+        outStream.open(outputFile.c_str(),
+                    std::fstream::out | std::fstream::binary | std::fstream::trunc);
+        if (outStream.fail()) {
+            std::cout << "Can't open '" << outputFile << "'\n";
+        } else {
+            char* buf = reinterpret_cast<char*>(&(executable[0]));
+            outStream.write(buf, executable.size());
+        }
+    }
+
 
     return 0;
 }

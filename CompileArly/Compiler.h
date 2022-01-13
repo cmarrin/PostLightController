@@ -14,6 +14,7 @@
 #include "Scanner.h"
 #include <cstdint>
 #include <istream>
+#include <vector>
 
 namespace arly {
 

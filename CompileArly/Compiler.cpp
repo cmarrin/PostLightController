@@ -32,20 +32,27 @@ public:
     
     void emit(std::vector<uint8_t> executable)
     {
-        std::stringstream(
-        stream->write("arly", 4);
-        stream->put(_rom32.size() + _rom8.size() / 4);
-        stream->put(0);
-        stream->put(0);
-        stream->put(0);
-        stream->write(reinterpret_cast<char*>(&(_rom32[0])), _rom32.size() * 4);
+        executable.push_back('a');
+        executable.push_back('r');
+        executable.push_back('l');
+        executable.push_back('y');
+        executable.push_back(_rom32.size() + _rom8.size() / 4);
+        executable.push_back(0);
+        executable.push_back(0);
+        executable.push_back(0);
+        
+        char* buf = reinterpret_cast<char*>(&(_rom32[0]));
+        executable.insert(executable.end(), buf, buf + _rom32.size() * 4);
+
         for (int i = 0; i < _effects.size(); ++i) {
-            stream->put(_effects[i]._cmd);
-            stream->put(_effects[i]._count);
-            stream->put(_effects[i]._initAddr);
-            stream->put(_effects[i]._loopAddr);
+            executable.push_back(_effects[i]._cmd);
+            executable.push_back(_effects[i]._count);
+            executable.push_back(_effects[i]._initAddr);
+            executable.push_back(_effects[i]._loopAddr);
         }
-        stream->write(reinterpret_cast<char*>(&(_rom8[0])), _rom8.size());
+        
+        buf = reinterpret_cast<char*>(&(_rom8[0]));
+        executable.insert(executable.end(), buf, buf + _rom8.size());
     }
 
     bool opcode(Op op, std::string& str, OpParams& par)
