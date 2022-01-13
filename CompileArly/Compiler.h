@@ -207,10 +207,24 @@ Opcodes:
 
     NegInt                  - v[0] = -v[0] (assumes int32_t, result is int32_t)
     NegFloat                - v[0] = -v[0] (assumes float, result is float)
+    
+    
+    Executable format
+    
+    Format Id           - 4 bytes: 'arly'
+    Constants size      - 1 byte: size in 4 byte units of Constants area
+    Unused              - 3 bytes: for alignment
+    Constants area      - n 4 byte entries: ends after size 4 byte units
+    Effects entries     - Each entry has:
+                            1 byte command ('a' to 'p')
+                            1 byte number of param bytes
+                            1 byte start of init instructions, in 4 byte units
+                            1 byte start of loop instructions, in 4 byte units
+    Effects             - List of init and loop instructions for each effect
+                          instruction sections are padded to end on a 4 byte boundary                            
 */
 
-// All ops are 1 byte except those taking id param, which is in the following byte
-// Id 
+// Ops of 0x80 and above have an r param in the lower 2 bits.
 enum class Op: uint8_t {
     LoadColorX         = 0x10,
     LoadX              = 0x11,
@@ -372,7 +386,7 @@ public:
     
     Compiler() { }
     
-    bool compile(std::istream*);
+    bool compile(std::istream*, std::vector<uint8_t> executable);
 
     Error error() const { return _error; }
     Token expectedToken() const { return _expectedToken; }

@@ -53,6 +53,10 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
+            argument = "-o PostLightEffects.arlx"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
             argument = "PostLightEffects.arly"
             isEnabled = "YES">
          </CommandLineArgument>

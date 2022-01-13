@@ -29,6 +29,24 @@ public:
         }
         return true;
     }
+    
+    void emit(std::vector<uint8_t> executable)
+    {
+        std::stringstream(
+        stream->write("arly", 4);
+        stream->put(_rom32.size() + _rom8.size() / 4);
+        stream->put(0);
+        stream->put(0);
+        stream->put(0);
+        stream->write(reinterpret_cast<char*>(&(_rom32[0])), _rom32.size() * 4);
+        for (int i = 0; i < _effects.size(); ++i) {
+            stream->put(_effects[i]._cmd);
+            stream->put(_effects[i]._count);
+            stream->put(_effects[i]._initAddr);
+            stream->put(_effects[i]._loopAddr);
+        }
+        stream->write(reinterpret_cast<char*>(&(_rom8[0])), _rom8.size());
+    }
 
     bool opcode(Op op, std::string& str, OpParams& par)
     {
@@ -146,7 +164,7 @@ private:
             throw true;
         }
         
-        _effects.emplace(id[0], EffectParams(paramCount, _rom32.size()));
+        _effects.emplace_back(id[0], paramCount);
 
         expect(Token::NewLine);
         
@@ -255,6 +273,9 @@ private:
             return false;
         }
         expect(Token::NewLine);
+        
+        _effects.back()._initAddr = _rom8.size() / 4;
+        
         statements();
         expect(match(Reserved::End), Compiler::Error::ExpectedEnd);
         expect(Token::NewLine);
@@ -267,6 +288,9 @@ private:
             return false;
         }
         expect(Token::NewLine);
+
+        _effects.back()._loopAddr = _rom8.size() / 4;
+
         statements();
         expect(match(Reserved::End), Compiler::Error::ExpectedEnd);
         expect(Token::NewLine);
@@ -673,14 +697,21 @@ private:
     Token _expectedToken = Token::None;
     std::string _expectedString;
     
-    struct EffectParams
+    struct Effect
     {
-        EffectParams(uint8_t count, uint8_t addr) : _count(count), _addr(addr) { }
-        uint8_t _count, _addr;
+        Effect(char cmd, uint8_t count)
+            : _cmd(cmd)
+            , _count(count)
+        { }
+        
+        char _cmd;
+        uint8_t _count;
+        uint8_t _initAddr = 0;
+        uint8_t _loopAddr = 0;
     };
     
     std::map<std::string, uint8_t> _symbols;
-    std::map<char, EffectParams> _effects;
+    std::vector<Effect> _effects;
     std::vector<uint32_t> _rom32;
     std::vector<uint32_t> _rom8;
     uint32_t _nextMem = 0; // next available location in mem
@@ -751,9 +782,9 @@ std::vector<OpData> CompileEngine::_opcodes = {
     { "SetAllLights",   Op::SetAllLights     , OpParams::C },
 };
 
-bool Compiler::compile(std::istream* stream)
+bool Compiler::compile(std::istream* istream, std::vector<uint8_t> executable)
 {
-    CompileEngine eng(stream);
+    CompileEngine eng(istream);
     
     eng.program();
     _error = eng.error();
@@ -761,6 +792,9 @@ bool Compiler::compile(std::istream* stream)
     _expectedString = eng.expectedString();
     _lineno = eng.lineno();
     
-    return false;
+    if (_error == Error::None) {
+        eng.emit(executable);
+    }
+    
+    return _error == Error::None;
 }
-

@@ -47,13 +47,27 @@ int main(int argc, char * const argv[])
     std::fstream stream;
     stream.open(inputFile.c_str(), std::fstream::in);
     if (stream.fail()) {
-        std::cout << "Can't open '" << outputFile << "'\n";
+        std::cout << "Can't open '" << inputFile << "'\n";
         return 0;
     }
     
     std::cout << "Compiling '" << inputFile << "'\n";
     
-    compiler.compile(&stream);
+    std::fstream outStream;
+    bool output = false;
+    
+    if (outputFile.size()) {
+        std::cout << "Emitting executable to '" << outputFile << "'\n";
+        outStream.open(outputFile.c_str(),
+                    std::fstream::out | std::fstream::binary | std::fstream::trunc);
+        if (outStream.fail()) {
+            std::cout << "Can't open '" << outputFile << "'\n";
+        } else {
+            output = true;
+        }
+    }
+
+    compiler.compile(&stream, output ? &outStream : nullptr);
     if (compiler.error() == arly::Compiler::Error::None) {
         std::cout << "Compile succeeded!\n";
     } else {
