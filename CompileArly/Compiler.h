@@ -384,6 +384,9 @@ public:
         InvalidParamCount,
         UndefinedIdentifier,
         ParamOutOfRange,
+        ForEachTooBig,
+        IfTooBig,
+        ElseTooBig,
     };
     
     Compiler() { }

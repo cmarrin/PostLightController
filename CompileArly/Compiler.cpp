@@ -500,8 +500,35 @@ private:
         expect(reserved(reg), Compiler::Error::ExpectedRegister);
         _scanner.retireToken();
         expect(Token::NewLine);
+        
+        // Generate ForEach and add in reg
+        uint8_t i = 0;
+        if (reg == Reserved::R0) {
+        } else if (reg == Reserved::R1) {
+            i = 0x01;
+        } else if (reg == Reserved::R2) {
+            i = 0x02;
+        } else if (reg == Reserved::R3) {
+            i = 0x03;
+        } else {
+            expect(false, Compiler::Error::ExpectedRegister);
+        }
+        
+        _rom8.push_back(uint8_t(Op::ForEach) | i);
+        
+        // Output a placeholder for sz and rember where it is
+        auto szIndex = _rom8.size();
+        _rom8.push_back(0);
+        
         statements();
         expect(match(Reserved::End), Compiler::Error::ExpectedEnd);
+        
+        // Update sz
+        auto offset = _rom8.size() - szIndex;
+        expect(offset < 256, Compiler::Error::ForEachTooBig);
+        
+        _rom8[szIndex] = uint8_t(offset);
+        
         return true;
     }
     
