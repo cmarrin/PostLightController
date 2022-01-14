@@ -10,6 +10,7 @@
 		49DAA647278B212E00F67EEB /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49DAA646278B212E00F67EEB /* main.cpp */; };
 		49DAA651278B3AFE00F67EEB /* Compiler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49DAA64F278B3AFE00F67EEB /* Compiler.cpp */; };
 		49DAA657278CD00500F67EEB /* Scanner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49DAA656278CD00500F67EEB /* Scanner.cpp */; };
+		49DAA65D2791B78A00F67EEB /* CompileEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49DAA65B2791B78A00F67EEB /* CompileEngine.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -32,6 +33,9 @@
 		49DAA650278B3AFE00F67EEB /* Compiler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Compiler.h; sourceTree = "<group>"; };
 		49DAA655278CD00500F67EEB /* Scanner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Scanner.h; sourceTree = "<group>"; };
 		49DAA656278CD00500F67EEB /* Scanner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Scanner.cpp; sourceTree = "<group>"; };
+		49DAA65A2790B05000F67EEB /* PostLightEffects.arlx */ = {isa = PBXFileReference; lastKnownFileType = file; path = PostLightEffects.arlx; sourceTree = "<group>"; };
+		49DAA65B2791B78A00F67EEB /* CompileEngine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CompileEngine.cpp; sourceTree = "<group>"; };
+		49DAA65C2791B78A00F67EEB /* CompileEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CompileEngine.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -65,6 +69,7 @@
 		49DAA64D278B2DF200F67EEB /* Scripts */ = {
 			isa = PBXGroup;
 			children = (
+				49DAA65A2790B05000F67EEB /* PostLightEffects.arlx */,
 				49DAA64E278B2E5500F67EEB /* PostLightEffects.arly */,
 			);
 			name = Scripts;
@@ -73,6 +78,8 @@
 		49DAA652278B3B5B00F67EEB /* src */ = {
 			isa = PBXGroup;
 			children = (
+				49DAA65B2791B78A00F67EEB /* CompileEngine.cpp */,
+				49DAA65C2791B78A00F67EEB /* CompileEngine.h */,
 				49DAA656278CD00500F67EEB /* Scanner.cpp */,
 				49DAA655278CD00500F67EEB /* Scanner.h */,
 				49DAA646278B212E00F67EEB /* main.cpp */,
@@ -140,6 +147,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				49DAA657278CD00500F67EEB /* Scanner.cpp in Sources */,
+				49DAA65D2791B78A00F67EEB /* CompileEngine.cpp in Sources */,
 				49DAA647278B212E00F67EEB /* main.cpp in Sources */,
 				49DAA651278B3AFE00F67EEB /* Compiler.cpp in Sources */,
 			);
