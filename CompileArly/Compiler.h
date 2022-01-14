@@ -253,6 +253,7 @@ enum class Op: uint8_t {
     If              = 0x1f,
     Else            = 0x20,
     EndIf           = 0x21, // To distinguish if from if-else
+    End             = 0x22, // Indicates the end of init or loop
 
     Bor             = 0x30,
     Bxor            = 0x31,

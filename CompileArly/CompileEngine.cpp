@@ -354,6 +354,8 @@ CompileEngine::init()
     statements();
     expect(match(Reserved::End), Compiler::Error::ExpectedEnd);
     expect(Token::NewLine);
+
+    _rom8.push_back(uint8_t(Op::End));
     return true;
 }
 
@@ -370,6 +372,8 @@ CompileEngine::loop()
     statements();
     expect(match(Reserved::End), Compiler::Error::ExpectedEnd);
     expect(Token::NewLine);
+
+    _rom8.push_back(uint8_t(Op::End));
     return true;
 }
 
