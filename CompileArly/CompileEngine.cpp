@@ -842,7 +842,7 @@ CompileEngine::isReserved(Token token, const std::string str, Reserved& r)
 }
 
 bool
-CompileEngine::opDataFromString(const std::string str, OpData& data) const
+CompileEngine::opDataFromString(const std::string str, OpData& data)
 {
     auto it = find_if(_opcodes.begin(), _opcodes.end(),
                     [str](const OpData& opData) { return opData._str == str; });
@@ -854,7 +854,7 @@ CompileEngine::opDataFromString(const std::string str, OpData& data) const
 }
 
 bool
-CompileEngine::opDataFromOp(const Op op, OpData& data) const
+CompileEngine::opDataFromOp(const Op op, OpData& data)
 {
     auto it = find_if(_opcodes.begin(), _opcodes.end(),
                     [op](const OpData& opData) { return opData._op == op; });

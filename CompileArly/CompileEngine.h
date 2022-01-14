@@ -32,6 +32,8 @@ public:
     const std::string& expectedString() const { return _expectedString; }
     uint32_t lineno() const { return _scanner.lineno(); }
     
+    static bool opDataFromOp(const Op op, OpData& data);
+
 private:
     enum class Type { Float, Int };
     
@@ -106,8 +108,8 @@ private:
     // These methods search the list of reserved words or opcodes
     // to find a match
     bool isReserved(Token token, const std::string str, Reserved& r);
-    bool opDataFromString(const std::string str, OpData& data) const;
-    bool opDataFromOp(const Op op, OpData& data) const;
+    
+    static bool opDataFromString(const std::string str, OpData& data);
 
     Scanner _scanner;
     Compiler::Error _error = Compiler::Error::None;
