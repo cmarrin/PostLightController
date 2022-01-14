@@ -47,8 +47,10 @@ public:
         for (int i = 0; i < _effects.size(); ++i) {
             executable.push_back(_effects[i]._cmd);
             executable.push_back(_effects[i]._count);
-            executable.push_back(_effects[i]._initAddr);
-            executable.push_back(_effects[i]._loopAddr);
+            executable.push_back(uint8_t(_effects[i]._initAddr));
+            executable.push_back(uint8_t(_effects[i]._initAddr >> 8));
+            executable.push_back(uint8_t(_effects[i]._loopAddr));
+            executable.push_back(uint8_t(_effects[i]._loopAddr >> 8));
         }
         
         buf = reinterpret_cast<char*>(&(_rom8[0]));
@@ -281,7 +283,7 @@ private:
         }
         expect(Token::NewLine);
         
-        _effects.back()._initAddr = _rom8.size() / 4;
+        _effects.back()._initAddr = uint16_t(_rom8.size());
         
         statements();
         expect(match(Reserved::End), Compiler::Error::ExpectedEnd);
@@ -296,7 +298,7 @@ private:
         }
         expect(Token::NewLine);
 
-        _effects.back()._loopAddr = _rom8.size() / 4;
+        _effects.back()._loopAddr = uint16_t(_rom8.size());
 
         statements();
         expect(match(Reserved::End), Compiler::Error::ExpectedEnd);
@@ -786,8 +788,8 @@ private:
         
         char _cmd;
         uint8_t _count;
-        uint8_t _initAddr = 0;
-        uint8_t _loopAddr = 0;
+        uint16_t _initAddr = 0;
+        uint16_t _loopAddr = 0;
     };
     
     std::vector<Symbol> _symbols;

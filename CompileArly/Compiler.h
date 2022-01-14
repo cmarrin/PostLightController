@@ -219,8 +219,8 @@ Opcodes:
     Effects entries     - Each entry has:
                             1 byte command ('a' to 'p')
                             1 byte number of param bytes
-                            1 byte start of init instructions, in 4 byte units
-                            1 byte start of loop instructions, in 4 byte units
+                            2 bytes start of init instructions, in bytes
+                            2 bytes start of loop instructions, in bytes
     Effects             - List of init and loop instructions for each effect
                           instruction sections are padded to end on a 4 byte boundary                            
 */
