@@ -624,6 +624,9 @@ CompileEngine::forStatement()
     
     _rom8[szIndex] = uint8_t(offset);
     
+    // Push a dummy end, mostly for the decompiler
+    _rom8.push_back(uint8_t(Op::DummyEnd));
+
     return true;
 }
 
@@ -676,7 +679,7 @@ CompileEngine::ifStatement()
     // if statement we've skipped, so we execute its
     // statements. If we see an EndIf it means this If
     // doesn't have an Else.
-    _rom8.push_back(uint8_t(Op::EndIf));
+    _rom8.push_back(uint8_t(Op::DummyEnd));
 
     return true;
 }

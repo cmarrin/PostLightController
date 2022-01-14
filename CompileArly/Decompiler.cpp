@@ -134,6 +134,13 @@ Decompiler::statement()
         return Op::End;
     }
     
+    // There is an Op::EndIf that is at the end of an if statement
+    // Handle it separately
+    if (Op(opInt) == Op::DummyEnd) {
+        _out->append("end\n");
+        return Op::DummyEnd;
+    }
+    
     uint8_t r = 0;
     
     if (opInt >= 0x80) {
