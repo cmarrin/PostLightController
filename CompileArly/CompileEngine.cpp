@@ -111,6 +111,7 @@ CompileEngine::emit(std::vector<uint8_t>& executable)
         executable.push_back(uint8_t(_effects[i]._loopAddr));
         executable.push_back(uint8_t(_effects[i]._loopAddr >> 8));
     }
+    executable.push_back(0);
     
     buf = reinterpret_cast<char*>(&(_rom8[0]));
     executable.insert(executable.end(), buf, buf + _rom8.size());

@@ -221,6 +221,9 @@ Opcodes:
                             1 byte number of param bytes
                             2 bytes start of init instructions, in bytes
                             2 bytes start of loop instructions, in bytes
+                            
+                          entries end when a byte of 0 is seen
+                          
     Effects             - List of init and loop instructions for each effect
                           instruction sections are padded to end on a 4 byte boundary                            
 */
