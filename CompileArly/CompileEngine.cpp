@@ -540,7 +540,7 @@ CompileEngine::opStatement()
     uint8_t i;
     
     switch(par) {
-        case OpParams::None: expectWithoutRetire(Token::NewLine); break;
+        case OpParams::None: handleOpParams(uint8_t(op)); break;
         case OpParams::R: handleOpParams(handleR(op)); break;
         case OpParams::C: handleOpParams(handleC(op)); break;
         case OpParams::R_I: handleOpParams(handleR(op), handleI()); break;
