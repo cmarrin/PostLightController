@@ -580,6 +580,10 @@ CompileEngine::opStatement()
             _rom8.push_back(handleId());
             expectWithoutRetire(Token::NewLine);
             break;
+        case OpParams::R_Sz:
+        case OpParams::Sz:
+            // Should never get here
+            break;
     }
     return true;
 }

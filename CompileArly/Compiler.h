@@ -343,6 +343,8 @@ enum class OpParams : uint8_t {
     Rd_Cs,      // b+1[7:6] = 'r0'-'r3', b+1[5:4] = 'c0'-'c3'
     Cd_Cs,      // b+1[7:6] = 'c0'-'c3', b+1[5:4] = 'c0'-'c3'
     Id,         // b+1 = <id>
+    R_Sz,       // foreach case
+    Sz,         // If, Else case
 };
 
 struct OpData
