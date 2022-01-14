@@ -119,7 +119,7 @@ private:
         expect(value(val), Compiler::Error::ExpectedValue);
         
         // Save constant
-        _symbols.emplace(id, _rom32.size());
+        _symbols.emplace_back(id, _rom32.size());
         _rom32.push_back(val);
         
         return true;
@@ -138,7 +138,7 @@ private:
         expect(Token::NewLine);
         
         // Set the start address of the table. tableEntries() will fill them in
-        _symbols.emplace(id, _rom32.size());
+        _symbols.emplace_back(id, _rom32.size());
         
         tableEntries();
         expect(Token::Identifier, "end");
@@ -268,7 +268,7 @@ private:
         int32_t size;
         expect(integer(size), Compiler::Error::ExpectedInt);
 
-        _symbols.emplace(id, _nextMem);
+        _symbols.emplace_back(id, _nextMem);
         _nextMem += size;
 
         return true;
@@ -384,9 +384,12 @@ private:
     {
         std::string id;
         expect(identifier(id), Compiler::Error::ExpectedIdentifier);
-        auto it = _symbols.find(id);
+        
+        auto it = find_if(_symbols.begin(), _symbols.end(),
+                        [id](const Symbol& sym) { return sym._name == id; });
         expect(it != _symbols.end(), Compiler::Error::UndefinedIdentifier);
-        return it->second;
+
+        return it->_addr;
     }
     
     void handleOpParams(uint8_t a)
@@ -767,6 +770,13 @@ private:
     Token _expectedToken = Token::None;
     std::string _expectedString;
     
+    struct Symbol
+    {
+        Symbol(std::string name, uint8_t addr) : _name(name), _addr(addr) { }
+        std::string _name;
+        uint8_t _addr;
+    };
+    
     struct Effect
     {
         Effect(char cmd, uint8_t count)
@@ -780,7 +790,7 @@ private:
         uint8_t _loopAddr = 0;
     };
     
-    std::map<std::string, uint8_t> _symbols;
+    std::vector<Symbol> _symbols;
     std::vector<Effect> _effects;
     std::vector<uint32_t> _rom32;
     std::vector<uint8_t> _rom8;
