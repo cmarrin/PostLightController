@@ -72,6 +72,7 @@ std::vector<OpData> CompileEngine::_opcodes = {
     { "ToFloat",        Op::ToFloat          , OpParams::R },
     { "ToInt",          Op::ToInt            , OpParams::R },
     { "SetAllLights",   Op::SetAllLights     , OpParams::C },
+    { "foreach",        Op::ForEach          , OpParams::R },
 };
 
 bool
@@ -391,13 +392,13 @@ CompileEngine::statements()
 bool
 CompileEngine::statement()
 {
-    if (opStatement()) {
-        return true;
-    }
     if (forStatement()) {
         return true;
     }
     if (ifStatement()) {
+        return true;
+    }
+    if (opStatement()) {
         return true;
     }
     return false;
