@@ -17,7 +17,14 @@
 // Subclass of Interpreter that outputs device info to consolee
 class Simulator : public arly::Interpreter
 {
-
+public:
+    virtual uint8_t rom(uint16_t i) const
+    {
+        return (i < 1024) ? _rom[i] : 0;
+    }
+    
+private:
+    uint8_t _rom[1024];
 };
 
 // compile [-o <output file>] [-x] <input file>
