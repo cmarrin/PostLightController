@@ -541,6 +541,11 @@ CompileEngine::opStatement()
         return false;
     }
     
+    // Don't handle Else here
+    if (op == Op::Else) {
+        return false;
+    }
+    
     _scanner.retireToken();
     
     // Get the params in the sequence specified in OpParams
