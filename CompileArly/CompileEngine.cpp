@@ -630,7 +630,8 @@ CompileEngine::forStatement()
     expect(match(Reserved::End), Compiler::Error::ExpectedEnd);
     
     // Update sz
-    auto offset = _rom8.size() - szIndex;
+    // rom is pointing at inst past 'end', we want to point at end
+    auto offset = _rom8.size() - szIndex - 1;
     expect(offset < 256, Compiler::Error::ForEachTooBig);
     
     _rom8[szIndex] = uint8_t(offset);
@@ -668,7 +669,8 @@ CompileEngine::ifStatement()
         statements();
 
         // Update sz
-        auto offset = _rom8.size() - szIndex;
+        // rom is pointing at inst past 'end', we want to point at end
+        auto offset = _rom8.size() - szIndex - 1;
         expect(offset < 256, Compiler::Error::ForEachTooBig);
     
         _rom8[szIndex] = uint8_t(offset);
@@ -677,7 +679,8 @@ CompileEngine::ifStatement()
     expect(match(Reserved::End), Compiler::Error::ExpectedEnd);
 
     // Update sz
-    auto offset = _rom8.size() - szIndex;
+    // rom is pointing at inst past 'end', we want to point at end
+    auto offset = _rom8.size() - szIndex - 1;
     expect(offset < 256, Compiler::Error::ForEachTooBig);
     
     _rom8[szIndex] = uint8_t(offset);
