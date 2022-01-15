@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		491DED262793225B00D007C2 /* Interpreter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 491DED242793225B00D007C2 /* Interpreter.cpp */; };
 		49DAA647278B212E00F67EEB /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49DAA646278B212E00F67EEB /* main.cpp */; };
 		49DAA651278B3AFE00F67EEB /* Compiler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49DAA64F278B3AFE00F67EEB /* Compiler.cpp */; };
 		49DAA657278CD00500F67EEB /* Scanner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49DAA656278CD00500F67EEB /* Scanner.cpp */; };
@@ -27,6 +28,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		491DED242793225B00D007C2 /* Interpreter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Interpreter.cpp; sourceTree = "<group>"; };
+		491DED252793225B00D007C2 /* Interpreter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Interpreter.h; sourceTree = "<group>"; };
 		49DAA643278B212E00F67EEB /* CompileArly */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = CompileArly; sourceTree = BUILT_PRODUCTS_DIR; };
 		49DAA646278B212E00F67EEB /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		49DAA64E278B2E5500F67EEB /* PostLightEffects.arly */ = {isa = PBXFileReference; lastKnownFileType = text; path = PostLightEffects.arly; sourceTree = "<group>"; };
@@ -87,6 +90,8 @@
 				49DAA65C2791B78A00F67EEB /* CompileEngine.h */,
 				49DAA65F2791C0A500F67EEB /* Decompiler.cpp */,
 				49DAA65E2791C0A500F67EEB /* Decompiler.h */,
+				491DED242793225B00D007C2 /* Interpreter.cpp */,
+				491DED252793225B00D007C2 /* Interpreter.h */,
 				49DAA656278CD00500F67EEB /* Scanner.cpp */,
 				49DAA655278CD00500F67EEB /* Scanner.h */,
 				49DAA646278B212E00F67EEB /* main.cpp */,
@@ -153,6 +158,7 @@
 			files = (
 				49DAA6602791C0A500F67EEB /* Decompiler.cpp in Sources */,
 				49DAA657278CD00500F67EEB /* Scanner.cpp in Sources */,
+				491DED262793225B00D007C2 /* Interpreter.cpp in Sources */,
 				49DAA65D2791B78A00F67EEB /* CompileEngine.cpp in Sources */,
 				49DAA647278B212E00F67EEB /* main.cpp in Sources */,
 				49DAA651278B3AFE00F67EEB /* Compiler.cpp in Sources */,

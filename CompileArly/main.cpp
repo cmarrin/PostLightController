@@ -7,9 +7,18 @@
 
 #include "Compiler.h"
 #include "Decompiler.h"
+#include "Interpreter.h"
 #include <iostream>
 #include <fstream>
 #include <getopt.h>
+
+// Simulator
+//
+// Subclass of Interpreter that outputs device info to consolee
+class Simulator : public arly::Interpreter
+{
+
+};
 
 // compile [-o <output file>] [-x] <input file>
 //
@@ -127,6 +136,39 @@ int main(int argc, char * const argv[])
             std::cout << "Decompile failed: " << err << "\n\n";
             return 0;
         }
+    }
+    
+    // Execute if needed
+    if (execute) {
+        Simulator sim;
+        uint8_t buf[16];
+        
+        // Test 'c' command
+        std::cout << "Simulating 'c' command...\n";
+
+        buf[0] = 240;
+        buf[1] = 224;
+        buf[2] = 64;
+        sim.init('c', buf, 3);
+        
+        for (int i = 0; i < 10; ++i) {
+            sim.loop();
+        }
+        std::cout << "Complete\n\n";
+        
+        // Test 'f' command
+        std::cout << "Simulating 'f' command...\n";
+
+        buf[0] = 20;
+        buf[1] = 224;
+        buf[2] = 200;
+        buf[3] = 0;
+        sim.init('f', buf, 4);
+        
+        for (int i = 0; i < 10; ++i) {
+            sim.loop();
+        }
+        std::cout << "Complete\n\n";
     }
 
     return 0;
