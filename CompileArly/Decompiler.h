@@ -58,11 +58,33 @@ private:
     uint16_t getUInt8() { return *_it++; }
     
     std::string regString(uint8_t r, bool isColor = false);
+    
+    void doIndent()
+    {
+        for (uint32_t i = 0; i < _indent; ++i) {
+            _out->append("    ");
+        }
+    }
+    
+    void decIndent()
+    {
+        if (_indent == 0) {
+            _out->append("*** Error, tried to indent past 0!!!\n");
+        } else {
+            _indent--;
+        }
+    }
+
+    void incIndent()
+    {
+        _indent++;
+    }
 
     Error _error = Error::None;
     const std::vector<uint8_t>* _in;
     std::vector<uint8_t>::const_iterator _it;
     std::string* _out;
+    int32_t _indent = 0;
 };
 
 }

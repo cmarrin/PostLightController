@@ -33,19 +33,25 @@ bool Decompiler::decompile()
 void
 Decompiler::constants()
 {
+    doIndent();
+    incIndent();
     _out->append("const\n");
     
     uint8_t size = *_it++;
     _it += 3;
     
     for (uint8_t i = 0; i < size; ++i) {
+        doIndent();
         _out->append("[");
         _out->append(std::to_string(i));
         _out->append("] = ");
         _out->append(std::to_string(getUInt32()));
         _out->append("\n");
     }
+    
     _out->append("\n");
+    decIndent();
+
 }
 
 void
@@ -75,6 +81,8 @@ Decompiler::effects()
     }
     
     for (auto& entry : entries) {
+        doIndent();
+        incIndent();
         _out->append("effect '");
         char c[2] = " ";
         c[0] = entry._cmd;
@@ -85,12 +93,15 @@ Decompiler::effects()
         
         init();
         loop();
+        decIndent();
     }
 }
 
 void
 Decompiler::init()
 {
+    doIndent();
+    incIndent();
     _out->append("init\n");
     
     while(1) {
@@ -99,11 +110,14 @@ Decompiler::init()
         }
     }
     _out->append("\n");
+    decIndent();
 }
 
 void
 Decompiler::loop()
 {
+    doIndent();
+    incIndent();
     _out->append("loop\n");
     
     while(1) {
@@ -112,6 +126,7 @@ Decompiler::loop()
         }
     }
     _out->append("\n");
+    decIndent();
 }
 
 std::string
@@ -137,7 +152,9 @@ Decompiler::statement()
     // There is an Op::EndIf that is at the end of an if statement
     // Handle it separately
     if (Op(opInt) == Op::DummyEnd) {
-        _out->append("end\n");
+        decIndent();
+        doIndent();
+        _out->append("end\n\n");
         return Op::DummyEnd;
     }
     
@@ -154,6 +171,18 @@ Decompiler::statement()
         _error = Error::InvalidOp;
         throw true;
     }
+
+    // outdent Else one
+    if (opData._op == Op::Else) {
+        decIndent();
+    }
+
+    // Add blank like before if and foreach
+    if (opData._op == Op::ForEach || opData._op == Op::If) {
+        _out->append("\n");
+    }
+
+    doIndent();
 
     _out->append(opData._str);
     _out->append(" ");
@@ -315,5 +344,9 @@ Decompiler::statement()
     }
     
     _out->append("\n");
+    
+    if (opData._op == Op::ForEach || opData._op == Op::If || opData._op == Op::Else) {
+        incIndent();
+    }
     return Op(opInt);
 }
