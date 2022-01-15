@@ -62,15 +62,24 @@ There are built-in constants available to the program. Currently there is
 
 Runtime
 
-Runtime has a register each for color, float and int32. It also has byte storage
-for values. Like constants, values are packed tightly. But storage can be read
-and written. A def is used to identify a storage location. The id is a 0-127
-value. Bytes 0-63 specify constants in EEPROM, starting at 0. Bytes 64-128 are
-in storage in RAM, at id-64. So there are 64 bytes of storage available. An
-internal I register is used to set the id to use. This keeps each instruction
-to a single byte. The I register is set with an internal SetI instruction. This
-register can only be relied upon for the instruction immediately following
-SetI because it is used for other internal purposes.
+Runtime has 4 Color registers for Color, and 4 scalar registers for int32/float.
+The opcode being executed determines whether the scalar registers have an
+int or float. There are operations for both, but 2 operand opcodes require
+both values to be the same type.
+
+The constants are is a read-only array of int32 or floats in ROM. In the opcodes
+the id for a constant is 0x00 to 0x7f. But only as much ROM memory is used as needed
+by the number of constants and tables defined. Theoretically you can have
+128 values, which would take up 512 bytes. This is half the available ROM
+space, so a program will generally no use that much.
+
+There is also a read/write memory area which contains int32 or float values.
+You can place colors in this memory, in which case it is stored as 3 
+consecutive float (hsv). These values are defined by the 'defs' statements.
+Like the constants, only enough ram space as is needed by the defs is
+allocated. The size of a def is in 4 byte units. So if it is to hold a
+color for instance, it would need 3 locations. In the opcodes the id for a 
+def is 0x80 to 0xff to distinguish them from constants.
 
 Effects
 
@@ -393,6 +402,8 @@ public:
         ForEachTooBig,
         IfTooBig,
         ElseTooBig,
+        TooManyConstants,
+        TooManyDefs,
     };
     
     Compiler() { }

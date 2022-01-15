@@ -118,9 +118,14 @@ private:
     
     struct Symbol
     {
-        Symbol(std::string name, uint8_t addr) : _name(name), _addr(addr) { }
+        Symbol(std::string name, uint8_t addr, bool rom)
+            : _name(name)
+            , _addr(addr)
+            , _rom(rom)
+        { }
         std::string _name;
         uint8_t _addr;
+        bool _rom;
     };
     
     struct Effect

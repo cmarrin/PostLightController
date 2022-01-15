@@ -180,8 +180,11 @@ CompileEngine::constant()
     expect(identifier(id), Compiler::Error::ExpectedIdentifier);
     expect(value(val), Compiler::Error::ExpectedValue);
     
+    // There is only enough room for 128 constant values
+    expect(_rom32.size() < 128, Compiler::Error::TooManyConstants);
+
     // Save constant
-    _symbols.emplace_back(id, _rom32.size());
+    _symbols.emplace_back(id, _rom32.size(), true);
     _rom32.push_back(val);
     
     return true;
@@ -201,7 +204,7 @@ CompileEngine::table()
     expect(Token::NewLine);
     
     // Set the start address of the table. tableEntries() will fill them in
-    _symbols.emplace_back(id, _rom32.size());
+    _symbols.emplace_back(id, _rom32.size(), true);
     
     tableEntries();
     expect(Token::Identifier, "end");
@@ -338,8 +341,11 @@ CompileEngine::def()
     int32_t size;
     expect(integer(size), Compiler::Error::ExpectedInt);
 
-    _symbols.emplace_back(id, _nextMem);
+    _symbols.emplace_back(id, _nextMem, false);
     _nextMem += size;
+
+    // There is only enough room for 128 def values
+    expect(_nextMem <= 128, Compiler::Error::TooManyDefs);
 
     return true;
 }
@@ -473,7 +479,8 @@ CompileEngine::handleId()
                     [id](const Symbol& sym) { return sym._name == id; });
     expect(it != _symbols.end(), Compiler::Error::UndefinedIdentifier);
 
-    return it->_addr;
+    // def memory (RAM) starts at 0x80.
+    return it->_rom ? it->_addr : (it->_addr + 0x80);
 }
 
 void
