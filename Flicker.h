@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "Color.h"
 #include "Effect.h"
 
 class Flicker : public Effect
