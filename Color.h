@@ -46,6 +46,10 @@ public:
 	float hue() const { return _hue; }
 	float sat() const { return _sat; }
 	float val() const { return _val; }
+ 
+    void setHue(float h) { _hue = h; }
+    void setSat(float s) { _sat = s; }
+    void setVal(float v) { _val = v; }
 	
 private:
 	void setColor(uint8_t a, uint8_t b, uint8_t c, bool gammaCorrect = true);
