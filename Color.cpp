@@ -18,14 +18,6 @@ Color::hsvToRGB(uint16_t hue, uint8_t sat, uint8_t val)
 {
     uint8_t r, g, b;
     
-	Serial.print("***** hsvToRGB: h=");
-	Serial.print(hue);
-	Serial.print(", s=");
-	Serial.print(sat);
-	Serial.print(", v=");
-	Serial.print(val);
-	Serial.print("\n");
-	
     hue = (uint32_t(hue) * 1530 + 32768) / 65536;
 
     if (hue < 510) { // Red to Green-1
