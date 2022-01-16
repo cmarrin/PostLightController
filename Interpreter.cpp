@@ -19,22 +19,37 @@ Interpreter::init(uint8_t cmd, const uint8_t* buf, uint8_t size)
     
     // Find command
     uint32_t constSize = uint32_t(getUInt8ROM(4)) * 4;
-    for (uint32_t i = _constOffset + constSize; ; ) {
-        uint8_t c = rom(i);
+    bool found = false;
+    uint16_t index = _constOffset + constSize;
+    
+    while (1) {
+        uint8_t c = rom(index);
         if (c == 0) {
-            _error = Error::CmdNotFound;
-            return false;
+            index++;
+            break;
         }
         if (c == cmd) {
             // found cmd
-            _numParams = getUInt8ROM(i + 1);
-            _initStart = getUInt16ROM(i + 2);
-            _loopStart = getUInt16ROM(i + 4);
-            break;
+            _numParams = getUInt8ROM(index + 1);
+            _initStart = getUInt16ROM(index + 2);
+            _loopStart = getUInt16ROM(index + 4);
+            
+            found = true;
+            
+            //Need to keep looping through all effects
+            // to find where the code starts
         }
         
-        i += 6;
+        index += 6;
     }
+    
+    if (!found) {
+        _error = Error::CmdNotFound;
+        return false;
+    }
+
+    _initStart += index;
+    _loopStart += index;
     
     // Execute init();
     execute(_initStart);

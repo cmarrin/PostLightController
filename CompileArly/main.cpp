@@ -23,6 +23,15 @@ public:
         return (i < 1024) ? _rom[i] : 0;
     }
     
+    void setROM(const std::vector<uint8_t>& buf)
+    {
+        size_t size = buf.size();
+        if (size > 1024){
+            size = 1024;
+        }
+        memcpy(_rom, &buf[0], size);
+    }
+    
 private:
     uint8_t _rom[1024];
 };
@@ -148,6 +157,8 @@ int main(int argc, char * const argv[])
     // Execute if needed
     if (execute) {
         Simulator sim;
+        sim.setROM(executable);
+        
         uint8_t buf[16];
         
         // Test 'c' command
