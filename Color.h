@@ -28,10 +28,10 @@ public:
 	
 	Color(float h, float s, float v, bool gammaCorrect = true)
 	{
-		setColor(fmin(round(h * 255.0f), 255.0f),
-				 fmin(round(s * 255.0f), 255.0f),
-				 fmin(round(v * 255.0f), 255.0f),
-				 gammaCorrect);
+        _hue = h;
+        _sat = s;
+        _val = v;
+        _gammaCorrect = gammaCorrect;
 	}
 	
 	uint32_t rgb() const
