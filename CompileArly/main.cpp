@@ -152,31 +152,56 @@ int main(int argc, char * const argv[])
         
         // Test 'c' command
         std::cout << "Simulating 'c' command...\n";
+        
+        bool success = true;
 
         buf[0] = 240;
         buf[1] = 224;
         buf[2] = 64;
-        sim.init('c', buf, 3);
-        
-        for (int i = 0; i < 10; ++i) {
-            sim.loop();
-        }
-        std::cout << "Complete\n\n";
-        
-        // Test 'f' command
-        std::cout << "Simulating 'f' command...\n";
+        success = sim.init('c', buf, 3);
+        if (success) {
+            for (int i = 0; i < 10; ++i) {
+                success = sim.loop();
+                if (!success) {
+                    break;
+                }
+            }
+            
+            if (success) {
+                std::cout << "Complete\n\n";
+            
+                // Test 'f' command
+                std::cout << "Simulating 'f' command...\n";
 
-        buf[0] = 20;
-        buf[1] = 224;
-        buf[2] = 200;
-        buf[3] = 0;
-        sim.init('f', buf, 4);
-        
-        for (int i = 0; i < 10; ++i) {
-            sim.loop();
+                buf[0] = 20;
+                buf[1] = 224;
+                buf[2] = 200;
+                buf[3] = 0;
+                success = sim.init('f', buf, 4);
+                if (success) {
+                    for (int i = 0; i < 10; ++i) {
+                        success = sim.loop();
+                        if (!success) {
+                            break;
+                        }
+                    }
+                    if (success) {
+                        std::cout << "Complete\n\n";
+                    }
+                }
+            }
         }
-        std::cout << "Complete\n\n";
+        
+        if (!success) {
+            const char* err = "unknown";
+            switch(sim.error()) {
+                case arly::Interpreter::Error::None: err = "internal error"; break;
+                case arly::Interpreter::Error::CmdNotFound: err = "command not found"; break;
+            }
+            std::cout << "Interpreter failed: " << err << "\n\n";
+            return 0;
+        }
     }
 
-    return 0;
+    return 1;
 }
