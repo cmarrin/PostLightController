@@ -83,6 +83,9 @@ Interpreter::execute(uint16_t addr)
         uint8_t index;
         
         switch(Op(cmd)) {
+			default:
+				_error = Error::InvalidOp;
+				return -1;
             case Op::LoadColorX    :
                 id = getId();
                 getRdRs(rd, rs);
