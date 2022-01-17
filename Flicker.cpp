@@ -6,6 +6,8 @@
 
 #include "Flicker.h"
 
+#include "Interpreter.h"
+
 const Flicker::Speed Flicker::_speedTable[ ] = {
     { 250, 255, 40 },
     { 220, 250, 30 },
@@ -74,10 +76,10 @@ Flicker::loop()
             led.off = 0;
 
             // Increment inc value for each step, in 1/10s
-            led.inc = randomFloat(IncMin, IncMax);
+            led.inc = arly::Interpreter::randomFloat(IncMin, IncMax);
 
             // Random number of steps to throb up and down
-            led.lim = led.inc + randomFloat(_speedTable[_buf[3]].stepsMin, _speedTable[_buf[3]].stepsMax);
+            led.lim = led.inc + arly::Interpreter::randomFloat(_speedTable[_buf[3]].stepsMin, _speedTable[_buf[3]].stepsMax);
         }
 
         // What is the relative brightness. led.off always starts at 0, so that is 
