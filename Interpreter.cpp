@@ -74,7 +74,7 @@ Interpreter::execute(uint16_t addr)
         uint8_t cmd = getUInt8ROM(_pc++);
         uint8_t r = 0;
         if (cmd >= 0x80) {
-            r = cmd * 0x03;
+            r = cmd & 0x03;
             cmd &= 0xfc;
         }
         
