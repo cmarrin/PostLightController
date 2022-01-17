@@ -25,7 +25,7 @@ public:
     
     virtual void setLight(uint8_t i, uint32_t rgb) override
     {
-        // FIXME: Implement
+        printf("    setLight[%d] <== 0x%08x\n", i, rgb);
     }
     
     virtual uint8_t numPixels() const override
