@@ -58,6 +58,7 @@
 #include "ConstantColor.h"
 #include "Flicker.h"
 #include "Flash.h"
+#include "Interpreter.h"
 
 constexpr int LEDPin = 6;
 constexpr int NumPixels = 8;
@@ -66,6 +67,30 @@ constexpr int ChecksumByte = BufferSize - 2;
 constexpr char StartChar = '(';
 constexpr char EndChar = ')';
 constexpr unsigned long SerialTimeOut = 2000; // ms
+
+class Device : public arly::Interpreter
+{
+public:
+    virtual uint8_t rom(uint16_t i) const override
+    {
+		(void) i;
+        return 0;
+    }
+    
+    virtual void setLight(uint8_t i, uint32_t rgb) override
+    {
+        // FIXME;
+		(void) i;
+		(void) rgb;
+    }
+    
+    virtual uint8_t numPixels() const override
+    {
+        return NumPixels;
+    }
+
+private:
+};
 
 class PostLightController
 {
@@ -98,6 +123,8 @@ public:
 
 	void loop()
 	{
+		_device.loop();
+		
 		int32_t delayInMs = _currentEffect ? _currentEffect->loop() : 0;
 		
 		if (delayInMs < 0) {
@@ -233,6 +260,8 @@ private:
 	int _bufIndex = 0;
 	bool _capturing = false;
 	unsigned long _timeSinceLastChar = 0;
+	
+	Device _device;
 };
 
 PostLightController controller;
