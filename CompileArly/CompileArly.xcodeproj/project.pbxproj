@@ -33,6 +33,7 @@
 		491DED252793225B00D007C2 /* Interpreter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Interpreter.h; path = ../Interpreter.h; sourceTree = "<group>"; };
 		491DED27279385B700D007C2 /* Color.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Color.cpp; path = ../Color.cpp; sourceTree = "<group>"; };
 		491DED28279385B700D007C2 /* Color.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Color.h; path = ../Color.h; sourceTree = "<group>"; };
+		491DED2A279462FE00D007C2 /* Opcodes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Opcodes.h; path = ../Opcodes.h; sourceTree = "<group>"; };
 		49DAA643278B212E00F67EEB /* CompileArly */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = CompileArly; sourceTree = BUILT_PRODUCTS_DIR; };
 		49DAA646278B212E00F67EEB /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		49DAA64E278B2E5500F67EEB /* PostLightEffects.arly */ = {isa = PBXFileReference; lastKnownFileType = text; path = PostLightEffects.arly; sourceTree = "<group>"; };
@@ -97,6 +98,7 @@
 				49DAA65E2791C0A500F67EEB /* Decompiler.h */,
 				491DED242793225B00D007C2 /* Interpreter.cpp */,
 				491DED252793225B00D007C2 /* Interpreter.h */,
+				491DED2A279462FE00D007C2 /* Opcodes.h */,
 				49DAA656278CD00500F67EEB /* Scanner.cpp */,
 				49DAA655278CD00500F67EEB /* Scanner.h */,
 				49DAA646278B212E00F67EEB /* main.cpp */,
