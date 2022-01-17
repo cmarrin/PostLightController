@@ -182,7 +182,7 @@ int main(int argc, char * const argv[])
         success = sim.init('c', buf, 3);
         if (success) {
             for (int i = 0; i < 10; ++i) {
-                success = sim.loop();
+                success = sim.loop() >= 0;
                 if (!success) {
                     break;
                 }
@@ -201,7 +201,7 @@ int main(int argc, char * const argv[])
                 success = sim.init('f', buf, 4);
                 if (success) {
                     for (int i = 0; i < 10; ++i) {
-                        success = sim.loop();
+                        success = sim.loop() >= 0;
                         if (!success) {
                             break;
                         }
@@ -218,7 +218,8 @@ int main(int argc, char * const argv[])
             switch(sim.error()) {
                 case arly::Interpreter::Error::None: err = "internal error"; break;
                 case arly::Interpreter::Error::CmdNotFound: err = "command not found"; break;
-                case arly::Interpreter::Error::NestedForEachNotAllowed: err = "nested while not allowed"; break;
+                case arly::Interpreter::Error::NestedForEachNotAllowed: err = "nested foreach not allowed"; break;
+                case arly::Interpreter::Error::UnexpectedOpInIf: err = "unexpected op in if (internal error)"; break;
             }
             std::cout << "Interpreter failed: " << err << "\n\n";
             return 0;
