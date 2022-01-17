@@ -46,6 +46,8 @@ public:
         None,
         CmdNotFound,
         NestedForEachNotAllowed,
+        UnexpectedOpInIf,
+		InvalidOp,
     };
     
     Interpreter() { }
