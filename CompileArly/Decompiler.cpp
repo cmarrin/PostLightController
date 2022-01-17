@@ -149,13 +149,13 @@ Decompiler::statement()
         return Op::End;
     }
     
-    // There is an Op::EndIf that is at the end of an if statement
-    // Handle it separately
-    if (Op(opInt) == Op::DummyEnd) {
+    // There is an end statement at the end of an if and foreach statement
+    // Handle them separately
+    if (Op(opInt) == Op::EndIf || Op(opInt) == Op::EndForEach) {
         decIndent();
         doIndent();
         _out->append("end\n\n");
-        return Op::DummyEnd;
+        return Op(opInt);
     }
     
     uint8_t r = 0;

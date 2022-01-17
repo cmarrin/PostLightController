@@ -18,11 +18,21 @@
 class Simulator : public arly::Interpreter
 {
 public:
-    virtual uint8_t rom(uint16_t i) const
+    virtual uint8_t rom(uint16_t i) const override
     {
         return (i < 1024) ? _rom[i] : 0;
     }
     
+    virtual void setLight(uint8_t i, uint32_t rgb) override
+    {
+        // FIXME: Implement
+    }
+    
+    virtual uint8_t numPixels() const override
+    {
+        return 8;
+    }
+
     void setROM(const std::vector<uint8_t>& buf)
     {
         size_t size = buf.size();
@@ -208,6 +218,7 @@ int main(int argc, char * const argv[])
             switch(sim.error()) {
                 case arly::Interpreter::Error::None: err = "internal error"; break;
                 case arly::Interpreter::Error::CmdNotFound: err = "command not found"; break;
+                case arly::Interpreter::Error::NestedForEachNotAllowed: err = "nested while not allowed"; break;
             }
             std::cout << "Interpreter failed: " << err << "\n\n";
             return 0;
