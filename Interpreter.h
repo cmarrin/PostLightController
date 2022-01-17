@@ -15,6 +15,17 @@
 
 #include <string.h>
 
+#ifdef ARDUINO
+#include <ArduinoSTL.h>
+#else
+    static inline int32_t random(int32_t min, int32_t max)
+    {
+        // FIXME: Making lots of assumptions here. Do checking
+        int r = rand() % (max - min);
+        return r + min;
+    }
+#endif
+
 namespace arly {
 
 class Interpreter
@@ -32,6 +43,14 @@ public:
 
     Error error() const { return _error; }
     
+	// Return a float with a random number between min and max.
+	// Multiply min and max by 100 and then divide the result 
+	// to give 2 decimal digits of precision
+	static float randomFloat(uint8_t min, uint8_t max)
+	{
+		return float(random(int32_t(min) * 100, int32_t(max) * 100)) / 100;
+	}
+	
 protected:
     virtual uint8_t rom(uint16_t i) const = 0;
 
