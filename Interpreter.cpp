@@ -311,18 +311,45 @@ Interpreter::execute(uint16_t addr)
                 _foreachLoopAddr = _pc;
                 
                 // See if we've already gone past count
-                //if (_v[_foreachIReg
+                if (_v[_foreachIReg] >= _foreachCount) {
+                    _pc += _foreachSz + 1;
+                    _foreachSz = -1;
+                }
                 break;
             case Op::EndForEach    :
-                // 
+                // End of loop. Iterate and check for end
+                if (++_v[_foreachIReg] < _foreachCount) {
+                    _pc = _foreachLoopAddr;
+                } else {
+                    // Finished loop
+                    _foreachSz = -1;
+                }
                 break;
             case Op::If            :
-                //Sz
+                id = getId();
+                if (_v[0] == 0) {
+                    // Skip if
+                    _pc += id;
+                    
+                    // Next instruction must be EndIf or Else
+                    cmd = getUInt8ROM(_pc++);
+                    if (Op(cmd) == Op::EndIf) {
+                        // We hit the end of the if, just continue
+                    } else if (Op(cmd) == Op::Else) {
+                        // We have an Else, execute it
+                        getId(); // Ignore Sz
+                    } else {
+                        _error = Error::UnexpectedOpInIf;
+                        return -1;
+                    }
+                }
                 break;
             case Op::Else          :
-                //Sz
+                // If we get here the corresponding If succeeded so ignore this
+                _pc += getId();
                 break;
             case Op::EndIf         :
+                // This is the end of an if, always ignore it
                 break;
             case Op::End           :
                 // This is the end of init or loop. If we hit
