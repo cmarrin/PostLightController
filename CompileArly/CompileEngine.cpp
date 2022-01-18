@@ -77,7 +77,7 @@ std::vector<OpData> CompileEngine::_opcodes = {
     { "else",           Op::Else            , OpParams::Sz },
     { "Log",            Op::Log             , OpParams::R },
     { "LogFloat",       Op::LogFloat        , OpParams::R },
-    { "LogColor",       Op::LogColor        , OpParams::R },
+    { "LogColor",       Op::LogColor        , OpParams::C },
 };
 
 bool
