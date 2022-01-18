@@ -223,7 +223,14 @@ int main(int argc, char * const argv[])
                 case arly::Interpreter::Error::InvalidOp: err = "invalid opcode"; break;
                 case arly::Interpreter::Error::OnlyMemAddressesAllowed: err = "only Mem addresses allowed"; break;
             }
-            std::cout << "Interpreter failed: " << err << "\n\n";
+            std::cout << "Interpreter failed: " << err;
+            
+            int16_t errorAddr = sim.errorAddr();
+            if (errorAddr >= 0) {
+                std::cout << " at addr " << errorAddr;
+            }
+            
+            std::cout << "\n\n";
             return 0;
         }
     }

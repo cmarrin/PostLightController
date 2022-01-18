@@ -47,6 +47,7 @@ Interpreter::init(uint8_t cmd, const uint8_t* buf, uint8_t size)
     
     if (!found) {
         _error = Error::CmdNotFound;
+        _errorAddr = -1;
         return false;
     }
 
@@ -85,6 +86,7 @@ Interpreter::execute(uint16_t addr)
         switch(Op(cmd)) {
 			default:
 				_error = Error::InvalidOp;
+                _errorAddr = _pc - 1;
 				return -1;
             case Op::MinInt        :
                 _v[0] = min(int32_t(_v[0]), int32_t(_v[1]));
@@ -108,6 +110,7 @@ Interpreter::execute(uint16_t addr)
                 // Only RAM
                 if (id < 0x80) {
                     _error = Error::OnlyMemAddressesAllowed;
+                    _errorAddr = _pc - 1;
                     return -1;
                 }
                 memset(_ram + id, _v[0], _v[1] * sizeof(uint32_t));
@@ -305,6 +308,7 @@ Interpreter::execute(uint16_t addr)
                 if (_foreachSz >= 0) {
                     // Can't do nested for loops
                     _error = Error::NestedForEachNotAllowed;
+                    _errorAddr = _pc - 1;
                     return -1;
                 }
                 
@@ -342,6 +346,7 @@ Interpreter::execute(uint16_t addr)
                         // We have an Else, execute it
                         getSz(); // Ignore Sz
                     } else {
+                        _errorAddr = _pc - 1;
                         _error = Error::UnexpectedOpInIf;
                         return -1;
                     }

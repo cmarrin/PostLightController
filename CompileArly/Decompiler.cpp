@@ -154,6 +154,7 @@ Decompiler::statement()
     if (Op(opInt) == Op::EndIf || Op(opInt) == Op::EndForEach) {
         decIndent();
         doIndent();
+        outputAddr();
         _out->append("end\n\n");
         return Op(opInt);
     }
@@ -184,6 +185,7 @@ Decompiler::statement()
 
     doIndent();
 
+    outputAddr();
     _out->append(opData._str);
     _out->append(" ");
     

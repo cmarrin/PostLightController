@@ -79,6 +79,13 @@ private:
     {
         _indent++;
     }
+    
+    void outputAddr()
+    {
+        _out->append("[");
+        _out->append(std::to_string(_it - _in->begin()));
+        _out->append("] ");
+    }
 
     Error _error = Error::None;
     const std::vector<uint8_t>* _in;

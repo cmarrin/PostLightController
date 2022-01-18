@@ -58,6 +58,9 @@ public:
 
     Error error() const { return _error; }
     
+    // Returns -1 if error was not at any pc addr
+    int16_t errorAddr() const { return _errorAddr; }
+    
 	// Return a float with a random number between min and max.
 	// Multiply min and max by 100 and then divide the result 
 	// to give 2 decimal digits of precision
@@ -189,6 +192,8 @@ private:
     }
     
     Error _error = Error::None;
+    int16_t _errorAddr = -1;
+    
     const uint8_t* _params = nullptr;
     uint8_t _paramsSize = 0;
     
