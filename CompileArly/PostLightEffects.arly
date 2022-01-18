@@ -55,40 +55,46 @@ effect f 4
         LoadZero r2
         Load r0 NumPixels
         foreach r2
+			// r3 holds the index of the current LED (r2 * 3)
+			Move r0  r2
+			Move r1  r2
+			AddInt
+			AddInt
+			Move r3  r0
             // add led.inc to led.off
-            LoadX r0 leds r2 0
-            LoadX r1 leds r2 1
+            LoadX r0 leds r3 0
+            LoadX r1 leds r3 1
             AddFloat
-            StoreX leds r2 0 r0
+            StoreX leds r3 0 r0
             
             // Check for going past lim (increasing) or below 0 (decreasing)
-            LoadX r0 leds r2 1
+            LoadX r0 leds r3 1
             LoadZero r1
             GTFloat
             if
-                LoadX r0 leds r2 0
-                LoadX r1 leds r2 2
-                GEFloat
+                LoadX r0 leds r3 0
+                LoadX r1 leds r3 2
+                GTFloat
                 if
-                    LoadX r0 leds r2 2
-                    StoreX leds r2 0 r0
-                    LoadX r0 leds r2 1
+                    LoadX r0 leds r3 2
+                    StoreX leds r3 0 r0
+                    LoadX r0 leds r3 1
                     NegFloat
-                    StoreX leds r2 1 r0
+                    StoreX leds r3 1 r0
                 end
             else
-                LoadX r0 leds r2 0
+                LoadX r0 leds r3 0
                 LoadZero r1
                 LEFloat
                 if
                     // We are done with the throb, select a new inc and lim
-                    StoreX leds r2 0 r1
+                    StoreX leds r3 0 r1
                     
                     // Increment inc value for each step a random amount
                     Load r0 IncMin
                     Load r1 IncMax
                     Random
-                    StoreX leds r2 1 r0
+                    StoreX leds r3 1 r0
             
                     // Random number of steps to throb up and down
                     LoadIntParam r0 3
@@ -100,12 +106,12 @@ effect f 4
                     Random
                     LoadX r1 leds r2 1
                     AddFloat
-                    StoreX leds r2 2 r0
+                    StoreX leds r3 2 r0
                 end
             end
             
             // Multiply val by brightness
-            LoadX r0 leds r2 0
+            LoadX r0 leds r3 0
             LoadByteMax r1
             ToFloat r1
             DivFloat
