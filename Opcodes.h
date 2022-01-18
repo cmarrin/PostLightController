@@ -317,8 +317,8 @@ enum class Op: uint8_t {
     ForEach         = 0xd0,
 
     Log             = 0xe0, // Print r as int32_t with addr - For debugging
-    LogFloat        = 0xe1, // Print r as float with addr - For debugging
-    LogColor        = 0xe2, // Print c with addr - For debugging
+    LogFloat        = 0xe4, // Print r as float with addr - For debugging
+    LogColor        = 0xe8, // Print c with addr - For debugging
 };
 
 enum class OpParams : uint8_t {
