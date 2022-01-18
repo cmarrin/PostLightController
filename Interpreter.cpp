@@ -86,46 +86,6 @@ Interpreter::execute(uint16_t addr)
 			default:
 				_error = Error::InvalidOp;
 				return -1;
-            case Op::LoadColorX    :
-                id = getId();
-                getRdRs(rd, rs);
-                index = id + (_v[rs] * 3);
-                _c[rd] = Color(getFloat(index), getFloat(index + 1), getFloat(index + 2));
-                break;
-            case Op::LoadX         :
-                id = getId();
-                getRdRsI(rd, rs, i);
-                index = id + _v[rs] + i;
-                _v[rd] = _ram[index];
-                break;
-            case Op::StoreColorX   :
-                id = getId();
-                getRdRs(rd, rs);
-                index = id + (_v[rd] * 3);
-                storeColor(index, rs);
-                break;
-            case Op::StoreX        :
-                id = getId();
-                getRdRsI(rd, rs, i);
-                index = id + _v[rd] + i;
-                _ram[index] = _v[rs];
-                break;
-            case Op::MoveColor     :
-                getRdRs(rd, rs);
-                _c[rd] = _c[rs];
-                break;
-            case Op::Move          :
-                getRdRs(rd, rs);
-                _v[rd] = _v[rs];
-                break;
-            case Op::LoadVal       :
-                getRdRs(rd, rs);
-                _v[rd] = floatToInt(_c[rs].val());
-                break;
-            case Op::StoreVal      :
-                getRdRs(rd, rs);
-                _c[rd].setVal(floatToInt(_c[rs].val()));
-                break;
             case Op::MinInt        :
                 _v[0] = min(int32_t(_v[0]), int32_t(_v[1]));
                 break;
@@ -144,6 +104,12 @@ Interpreter::execute(uint16_t addr)
                 break;
             case Op::Init          :
                 id = getId();
+                
+                // Only RAM
+                if (id < 0x80) {
+                    _error = Error::OnlyMemAddressesAllowed;
+                    return -1;
+                }
                 memset(_ram + id, _v[0], _v[1] * sizeof(uint32_t));
                 break;
             case Op::Random        :
@@ -250,21 +216,58 @@ Interpreter::execute(uint16_t addr)
                 break;
             case Op::LoadColor     :
                 id = getId();
-                _c[r] = Color(intToFloat(_ram[id]), intToFloat(_ram[id + 1]), intToFloat(_ram[id + 2]));
+                _c[r] = Color(getFloat(id, 0), getFloat(id, 0 + 1), getFloat(id, 0 + 2));
                 break;
             case Op::Load          :
                 id = getId();
-                _v[r] = _ram[id];
+                _v[r] = getInt(id, 0);
                 break;
             case Op::StoreColor    :
                 id = getId();
-                _ram[id] = floatToInt(_c[r].hue());
-                _ram[id + 1] = floatToInt(_c[r].sat());
-                _ram[id + 2] = floatToInt(_c[r].val());
+                storeColor(id, 0, r);
                 break;
             case Op::Store         :
                 id = getId();
-                _ram[id] = _v[r];
+                storeInt(id, 0, _v[r]);
+                break;
+            case Op::LoadColorX    :
+                id = getId();
+                getRdRs(rd, rs);
+                index = _v[rs] * 3;
+                _c[rd] = Color(getFloat(id, index), getFloat(id, index + 1), getFloat(id, index + 2));
+                break;
+            case Op::LoadX         :
+                id = getId();
+                getRdRsI(rd, rs, i);
+                index = _v[rs] + i;
+                _v[rd] = getInt(id, index);
+                break;
+            case Op::StoreColorX   :
+                id = getId();
+                getRdRs(rd, rs);
+                storeColor(id, _v[rd] * 3, rs);
+                break;
+            case Op::StoreX        :
+                id = getId();
+                getRdRsI(rd, rs, i);
+                index = _v[rd] + i;
+                storeInt(id, index, _v[rs]);
+                break;
+            case Op::MoveColor     :
+                getRdRs(rd, rs);
+                _c[rd] = _c[rs];
+                break;
+            case Op::Move          :
+                getRdRs(rd, rs);
+                _v[rd] = _v[rs];
+                break;
+            case Op::LoadVal       :
+                getRdRs(rd, rs);
+                _v[rd] = floatToInt(_c[rs].val());
+                break;
+            case Op::StoreVal      :
+                getRdRs(rd, rs);
+                _c[rd].setVal(floatToInt(_c[rs].val()));
                 break;
             case Op::LoadBlack     :
                 _c[r] = Color();

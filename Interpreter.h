@@ -48,6 +48,7 @@ public:
         NestedForEachNotAllowed,
         UnexpectedOpInIf,
 		InvalidOp,
+        OnlyMemAddressesAllowed,      
     };
     
     Interpreter() { }
@@ -77,26 +78,6 @@ private:
     uint8_t getUInt8ROM(uint16_t index)
     {
         return rom(index);
-    }
-    
-    // Index is in 4 byte elements
-    uint32_t getUInt32Const(uint16_t index)
-    {
-        index = (index * 4) + _constOffset;
-
-        // Little endian
-        return uint32_t(getUInt8ROM(index)) | 
-               (uint32_t(getUInt8ROM(index + 1)) << 8) | 
-               (uint32_t(getUInt8ROM(index + 1)) << 16) | 
-               (uint32_t(getUInt8ROM(index + 1)) << 24);
-    }
-    
-    float getFloatConst(uint16_t index)
-    {
-        uint32_t u = getUInt32Const(index);
-        float f;
-        memcpy(&f, &u, sizeof(float));
-        return f;
     }
     
     uint16_t getUInt16ROM(uint16_t index)
@@ -130,7 +111,68 @@ private:
         i = b & 0x0f;
     }
     
-    float getFloat(uint8_t index) { return intToFloat(_ram[index]); }
+    float getFloat(uint8_t id, uint8_t index)
+    {
+        if (id >= 0x80) {
+            // RAM address
+            return intToFloat(_ram[id - 0x80 + index]);
+        }
+        
+        // ROM address
+        uint16_t addr = ((id + index) * 4) + _constOffset;
+
+        // Little endian
+        uint32_t u = uint32_t(getUInt8ROM(addr)) | 
+                    (uint32_t(getUInt8ROM(addr + 1)) << 8) | 
+                    (uint32_t(getUInt8ROM(addr + 1)) << 16) | 
+                    (uint32_t(getUInt8ROM(addr + 1)) << 24);
+
+        float f;
+        memcpy(&f, &u, sizeof(float));
+        return f;
+    }
+    
+    uint32_t getInt(uint8_t id, uint8_t index)
+    {
+        if (id >= 0x80) {
+            // RAM address
+            return _ram[id - 0x80 + index];
+        }
+        
+        // ROM address
+        uint16_t addr = ((id + index) * 4) + _constOffset;
+
+        // Little endian
+        uint32_t u = uint32_t(getUInt8ROM(addr)) | 
+                    (uint32_t(getUInt8ROM(addr + 1)) << 8) | 
+                    (uint32_t(getUInt8ROM(addr + 1)) << 16) | 
+                    (uint32_t(getUInt8ROM(addr + 1)) << 24);
+
+        return u;
+    }
+    
+    void storeInt(uint8_t id, uint8_t index, uint32_t v)
+    {
+        // Only RAM
+        if (id < 0x80) {
+            return;
+        }
+        _ram[id - 0x80 + index] = v;
+    }
+
+    void storeColor(uint8_t id, uint8_t index, uint8_t creg)
+    {
+        if (id < 0x80) {
+            return;
+        }
+        
+        index = + (id - 0x80);
+        
+        const Color& c = _c[creg];
+        _ram[index] = floatToInt(c.hue());
+        _ram[index + 1] = floatToInt(c.sat());
+        _ram[index + 2] = floatToInt(c.val());
+    }
 
     float intToFloat(uint32_t i)
     {
@@ -146,14 +188,6 @@ private:
         return i;
     }
     
-    void storeColor(uint8_t ramIndex, uint8_t creg)
-    {
-        const Color& c = _c[creg];
-        _ram[ramIndex] = floatToInt(c.hue());
-        _ram[ramIndex + 1] = floatToInt(c.sat());
-        _ram[ramIndex + 2] = floatToInt(c.val());
-    }
-
     Error _error = Error::None;
     const uint8_t* _params = nullptr;
     uint8_t _paramsSize = 0;

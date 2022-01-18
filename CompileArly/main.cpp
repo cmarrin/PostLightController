@@ -220,6 +220,8 @@ int main(int argc, char * const argv[])
                 case arly::Interpreter::Error::CmdNotFound: err = "command not found"; break;
                 case arly::Interpreter::Error::NestedForEachNotAllowed: err = "nested foreach not allowed"; break;
                 case arly::Interpreter::Error::UnexpectedOpInIf: err = "unexpected op in if (internal error)"; break;
+                case arly::Interpreter::Error::InvalidOp: err = "invalid opcode"; break;
+                case arly::Interpreter::Error::OnlyMemAddressesAllowed: err = "only Mem addresses allowed"; break;
             }
             std::cout << "Interpreter failed: " << err << "\n\n";
             return 0;
