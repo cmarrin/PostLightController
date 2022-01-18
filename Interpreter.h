@@ -107,6 +107,7 @@ private:
     }
 
     uint8_t getId() { return getUInt8ROM(_pc++); }
+    uint8_t getSz() { return getUInt8ROM(_pc++); }
 
     void getI(uint8_t& i)
     {

@@ -306,7 +306,7 @@ Interpreter::execute(uint16_t addr)
                 }
                 
                 _foreachIReg = r;
-                _foreachSz = getId();
+                _foreachSz = getSz();
                 _foreachCount = _v[0];
                 _foreachLoopAddr = _pc;
                 
@@ -326,7 +326,7 @@ Interpreter::execute(uint16_t addr)
                 }
                 break;
             case Op::If            :
-                id = getId();
+                id = getSz();
                 if (_v[0] == 0) {
                     // Skip if
                     _pc += id;
@@ -337,7 +337,7 @@ Interpreter::execute(uint16_t addr)
                         // We hit the end of the if, just continue
                     } else if (Op(cmd) == Op::Else) {
                         // We have an Else, execute it
-                        getId(); // Ignore Sz
+                        getSz(); // Ignore Sz
                     } else {
                         _error = Error::UnexpectedOpInIf;
                         return -1;
@@ -346,7 +346,7 @@ Interpreter::execute(uint16_t addr)
                 break;
             case Op::Else          :
                 // If we get here the corresponding If succeeded so ignore this
-                _pc += getId();
+                _pc += getSz();
                 break;
             case Op::EndIf         :
                 // This is the end of an if, always ignore it
