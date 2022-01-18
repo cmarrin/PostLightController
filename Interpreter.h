@@ -151,8 +151,8 @@ private:
         // Little endian
         uint32_t u = uint32_t(getUInt8ROM(addr)) | 
                     (uint32_t(getUInt8ROM(addr + 1)) << 8) | 
-                    (uint32_t(getUInt8ROM(addr + 1)) << 16) | 
-                    (uint32_t(getUInt8ROM(addr + 1)) << 24);
+                    (uint32_t(getUInt8ROM(addr + 2)) << 16) | 
+                    (uint32_t(getUInt8ROM(addr + 3)) << 24);
 
         return u;
     }
