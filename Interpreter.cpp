@@ -369,7 +369,7 @@ Interpreter::execute(uint16_t addr)
                 break;
             case Op::LogFloat      :
                 // Log r and current addr
-                log(_pc - 1, r, intToFloat(_v[r]));
+                logFloat(_pc - 1, r, intToFloat(_v[r]));
                 break;
             case Op::LogColor           :
                 // Log color and current addr
