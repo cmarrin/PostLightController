@@ -270,7 +270,7 @@ Interpreter::execute(uint16_t addr)
                 break;
             case Op::StoreVal      :
                 getRdRs(rd, rs);
-                _c[rd].setVal(floatToInt(_c[rs].val()));
+                _c[rd].setVal(intToFloat(_v[rs]));
                 break;
             case Op::LoadBlack     :
                 _c[r] = Color();
