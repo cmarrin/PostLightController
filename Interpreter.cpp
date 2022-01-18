@@ -98,7 +98,7 @@ Interpreter::execute(uint16_t addr)
                 _v[0] = max(int32_t(_v[0]), int32_t(_v[1]));
                 break;
             case Op::MaxFloat      :
-                _v[0] = max(intToFloat(_v[0]), intToFloat(_v[1]));
+                _v[0] = floatToInt(fmaxf(intToFloat(_v[0]), intToFloat(_v[1])));
                 break;
             case Op::SetLight      :
                 getRdRs(rd, rs);
