@@ -200,11 +200,13 @@ int main(int argc, char * const argv[])
                 buf[3] = 0;
                 success = sim.init('f', buf, 4);
                 if (success) {
-                    for (int i = 0; i < 10; ++i) {
+                    for (int i = 0; i < 100; ++i) {
                         success = sim.loop() >= 0;
                         if (!success) {
                             break;
                         }
+                        std::cout << "[" << i << "]\n";
+
                     }
                     if (success) {
                         std::cout << "Complete\n\n";
