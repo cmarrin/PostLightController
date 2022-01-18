@@ -113,7 +113,7 @@ Interpreter::execute(uint16_t addr)
                     _errorAddr = _pc - 1;
                     return -1;
                 }
-                memset(_ram + id, _v[0], _v[1] * sizeof(uint32_t));
+                memset(_ram + id - 0x80, _v[0], _v[1] * sizeof(uint32_t));
                 break;
             case Op::Random        :
                 _v[0] = floatToInt(randomFloat(_v[0], _v[1]));
