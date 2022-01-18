@@ -33,6 +33,25 @@ public:
         return 8;
     }
 
+    void logAddr(uint16_t addr) const { std::cout << "[" << addr << "]"; }
+    
+    virtual void log(uint16_t addr, uint8_t r, int32_t v) const override
+    {
+        logAddr(addr);
+        std::cout << ": r[" << uint32_t(r) << "] = " << v << std::endl;
+    }
+    virtual void logFloat(uint16_t addr, uint8_t r, float v) const override
+    {
+        logAddr(addr);
+        std::cout << ": r[" << uint32_t(r) << "] = " << v << std::endl;
+    }
+
+    virtual void logColor(uint16_t addr, uint8_t r, const Color& c) const override
+    {
+        logAddr(addr);
+        std::cout << ": c[" << uint32_t(r) << "] = (" << c.hue() << ", " << c.sat() << ", " << c.val() << ")" << std::endl;
+    }
+
     void setROM(const std::vector<uint8_t>& buf)
     {
         size_t size = buf.size();
