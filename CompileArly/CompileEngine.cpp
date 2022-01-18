@@ -75,6 +75,9 @@ std::vector<OpData> CompileEngine::_opcodes = {
     { "foreach",        Op::ForEach         , OpParams::R_Sz },
     { "if",             Op::If              , OpParams::Sz },
     { "else",           Op::Else            , OpParams::Sz },
+    { "Log",            Op::Log             , OpParams::R },
+    { "LogFloat",       Op::LogFloat        , OpParams::R },
+    { "LogColor",       Op::LogColor        , OpParams::R },
 };
 
 bool

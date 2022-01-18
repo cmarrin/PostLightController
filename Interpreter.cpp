@@ -363,6 +363,17 @@ Interpreter::execute(uint16_t addr)
                 // This is the end of init or loop. If we hit
                 // this there was no return. Just do a return 0
                 return 0;
+            case Op::Log           :
+                // Log r and current addr
+                log(_pc - 1, r, int32_t(_v[r]));
+                break;
+            case Op::LogFloat      :
+                // Log r and current addr
+                log(_pc - 1, r, intToFloat(_v[r]));
+                break;
+            case Op::LogColor           :
+                // Log color and current addr
+                logColor(_pc - 1, r, _c[r]);
                 break;
         }
     }

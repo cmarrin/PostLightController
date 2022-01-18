@@ -73,6 +73,9 @@ protected:
     virtual uint8_t rom(uint16_t i) const = 0;
     virtual void setLight(uint8_t i, uint32_t rgb) = 0;
     virtual uint8_t numPixels() const = 0;
+    virtual void log(uint16_t addr, uint8_t r, int32_t v) const = 0;
+    virtual void logFloat(uint16_t addr, uint8_t r, float v) const = 0;
+    virtual void logColor(uint16_t addr, uint8_t r, const Color& c) const = 0;
 
 private:
     int32_t execute(uint16_t addr);
