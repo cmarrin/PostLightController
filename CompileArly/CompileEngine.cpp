@@ -666,6 +666,12 @@ CompileEngine::ifStatement()
     
     statements();
     
+    // Update sz
+    auto offset = _rom8.size() - szIndex - 1;
+    expect(offset < 256, Compiler::Error::ForEachTooBig);
+    
+    _rom8[szIndex] = uint8_t(offset);
+    
     if (match(Reserved::Else)) {
         expect(Token::NewLine);
 
@@ -686,13 +692,6 @@ CompileEngine::ifStatement()
     
     expect(match(Reserved::End), Compiler::Error::ExpectedEnd);
 
-    // Update sz
-    // rom is pointing at inst past 'end', we want to point at end
-    auto offset = _rom8.size() - szIndex - 1;
-    expect(offset < 256, Compiler::Error::ForEachTooBig);
-    
-    _rom8[szIndex] = uint8_t(offset);
-    
     // Finally output and EndIf. This lets us distinguish
     // Between an if and an if-else. If we skip an If we
     // will either see an Else of an EndIf instruction.
