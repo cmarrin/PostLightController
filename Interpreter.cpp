@@ -291,10 +291,10 @@ Interpreter::execute(uint16_t addr)
                 return _v[r];
                 break;
             case Op::ToFloat       :
-                _v[r] = intToFloat(_v[r]);
+                _v[r] = floatToInt(float(_v[r]));
                 break;
             case Op::ToInt         :
-                _v[r] = floatToInt(_v[r]);
+                _v[r] = int32_t(floatToInt(_v[r]));
                 break;
             case Op::SetAllLights  : {
                 uint32_t rgb = _c[r].rgb();
