@@ -9,7 +9,6 @@ const int IncMax            10
 const float BrightnessMin   0.4
 const float ValMin          0.15
 const int LedSize           24
-const int SpeedTableEntry   3
 const int NumPixels         8
 
 // 96 bytes
@@ -99,8 +98,9 @@ effect f 4
             
                     // Random number of steps to throb up and down
                     LoadIntParam r0 3
-                    Load r1 SpeedTableEntry
-                    MulInt
+                    Move r1 r0
+                    AddInt
+                    AddInt
                     Store currentLED r3
                     Move r3 r0
                     LoadX r0 SpeedTable r3 0
@@ -132,8 +132,9 @@ effect f 4
         end
         
         LoadIntParam r0 3
-        Load r1 SpeedTableEntry
-        MulInt
+        Move r2 r1
+        AddInt
+        AddInt
         Move r3 r0
         LoadX r0 SpeedTable r3 2
         Return r0
