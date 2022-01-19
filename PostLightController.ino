@@ -191,8 +191,8 @@ public:
 				_state = State::NotCapturing;
 				Serial.print("***** Too Long since last char, resetting\n");
 				showStatus(StatusColor::Red, 3, 2);
+				_state = State::NotCapturing;
 			}
-			_state = State::NotCapturing;
 		}
 
 	    if (_serial.available()) {
@@ -254,7 +254,8 @@ public:
 						_state = State::NotCapturing;
 					} else {
 						// Make sure checksum is right
-						_actualChecksum = (_actualChecksum & 0x3f) + 0x30;
+						_expectedChecksum += c;
+						_expectedChecksum = (_expectedChecksum & 0x3f) + 0x30;
 						
 						if (_expectedChecksum != _actualChecksum) {
 							Serial.print("CRC ERROR: expected=");
