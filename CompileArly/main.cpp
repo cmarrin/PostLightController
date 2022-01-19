@@ -218,13 +218,17 @@ int main(int argc, char * const argv[])
                 buf[2] = 200;
                 buf[3] = 0;
                 success = sim.init('f', buf, 4);
+                
                 if (success) {
-                    for (int i = 0; i < 100; ++i) {
-                        success = sim.loop() >= 0;
+                    int32_t delay;
+                
+                    for (int i = 0; i < 10; ++i) {
+                        delay = sim.loop();
+                        success = delay >= 0;
                         if (!success) {
                             break;
                         }
-                        std::cout << "[" << i << "]\n";
+                        std::cout << "[" << i << "]: delay = " << delay << "\n";
 
                     }
                     if (success) {
