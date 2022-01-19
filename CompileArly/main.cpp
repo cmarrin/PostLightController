@@ -67,7 +67,7 @@ private:
 
 // compile [-o <output file>] [-x] <input file>
 //
-//      -o      output compiled binary
+//      -o      output compiled binary root name (outputs to <name>0.arlx, <name<1>.arlx, etc.)
 //      -d      decompile and print result
 //      -x      simulate resulting binary
 //
@@ -147,22 +147,37 @@ int main(int argc, char * const argv[])
     if (outputFile.size()) {
         std::cout << "\nEmitting executable to '" << outputFile << "'\n";
         std::fstream outStream;
-        outStream.open(outputFile.c_str(),
+        
+        // Break it up into 64 byte chunks, prefix each file with start addr byte
+        size_t sizeRemaining = executable.size();
+        
+        for (uint8_t i = 0; ; i++) {
+            std::string name = outputFile + std::to_string(i) + ".arlx";
+        
+            outStream.open(name.c_str(),
                     std::fstream::out | std::fstream::binary | std::fstream::trunc);
-        if (outStream.fail()) {
-            std::cout << "Can't open '" << outputFile << "'\n";
-            return 0;
-        } else {
-            char* buf = reinterpret_cast<char*>(&(executable[0]));
-            outStream.write(buf, executable.size());
             if (outStream.fail()) {
-                std::cout << "Save failed\n";
+                std::cout << "Can't open '" << outputFile << "'\n";
                 return 0;
             } else {
-                outStream.close();
-                std::cout << "Executable saved\n";
+                char* buf = reinterpret_cast<char*>(&(executable[i * 64]));
+                size_t sizeToWrite = (sizeRemaining > 64) ? 64 : sizeRemaining;
+                outStream.put(i * 64);
+                outStream.write(buf, sizeToWrite);
+                if (outStream.fail()) {
+                    std::cout << "Save failed\n";
+                    return 0;
+                } else {
+                    sizeRemaining -= sizeToWrite;
+                    outStream.close();
+                    std::cout << "    Saved " << name << "\n";
+                    if (sizeRemaining == 0) {
+                        break;
+                    }
+                }
             }
         }
+        std::cout << "Executables saved\n";
     }
 
     // decompile if needed
