@@ -132,7 +132,7 @@ effect f 4
         end
         
         LoadIntParam r0 3
-        Move r2 r1
+        Move r1 r0
         AddInt
         AddInt
         Move r3 r0
