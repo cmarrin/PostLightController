@@ -135,8 +135,7 @@ effect f 4
         Move r1 r0
         AddInt
         AddInt
-        Move r3 r0
-        LoadX r0 SpeedTable r3 2
+        LoadX r0 SpeedTable r0 2
         Return r0
     end
 end
