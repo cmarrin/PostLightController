@@ -53,7 +53,6 @@ private:
     // Value is returned as an int32_t, but it might be a float
     bool value(int32_t& i);
     
-    bool integer(int32_t& i);
     void defs();
     bool def();
 
@@ -87,18 +86,14 @@ private:
     void expect(Token token, const char* str = nullptr);
     void expect(bool passed, Compiler::Error error);
     void expectWithoutRetire(Token token);
-    
-    // The match methods are similar to expect except that
-    // they don't throw on error, they just return false.
-    // They're used to try different tokens to see which
-    // one matches to determine what to do next.
-    bool match(Token token, const char* str = nullptr);
-    bool match(Reserved r);
+    bool match(Reserved r);    
     
     // These methods check to see if the next token is of the
     // appropriate type. Some versions just return true or
     // false, others also return details about the token
     bool identifier(std::string& id);
+    bool integerValue(int32_t& i);
+    bool floatValue(float& f);
     bool opcode();
     bool reserved();
     bool reserved(Reserved &r);

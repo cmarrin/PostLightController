@@ -296,23 +296,12 @@ CompileEngine::values()
 bool
 CompileEngine::value(int32_t& i)
 {
-    if (match(Token::Float)) {
-        float f = _scanner.getTokenValue().number;
+    float f;
+    if (floatValue(f)) {
         i = *(reinterpret_cast<int32_t*>(&f));
         return true;
     }
-    if (match(Token::Integer)) {
-        i = _scanner.getTokenValue().integer;
-        return true;
-    }
-    return false;
-}
-
-bool
-CompileEngine::integer(int32_t& i)
-{
-    if (match(Token::Integer)) {
-        i = _scanner.getTokenValue().integer;
+    if (integerValue(i)) {
         return true;
     }
     return false;
@@ -342,7 +331,7 @@ CompileEngine::def()
     expect(identifier(id), Compiler::Error::ExpectedIdentifier);
     
     int32_t size;
-    expect(integer(size), Compiler::Error::ExpectedInt);
+    expect(integerValue(size), Compiler::Error::ExpectedInt);
 
     _symbols.emplace_back(id, _nextMem, false);
     _nextMem += size;
@@ -467,7 +456,7 @@ uint8_t
 CompileEngine::handleI()
 {
     int32_t i;
-    expect(integer(i), Compiler::Error::ExpectedInt);
+    expect(integerValue(i), Compiler::Error::ExpectedInt);
     expect(i >= 0 && i <= 15, Compiler::Error::ParamOutOfRange);
     return uint8_t(i);
 }
@@ -748,21 +737,6 @@ CompileEngine::expectWithoutRetire(Token token)
 }
 
 bool
-CompileEngine::match(Token token, const char* str)
-{
-    if (_scanner.getToken() != token) {
-        return false;
-    }
-    
-    if (str && _scanner.getTokenString() != str) {
-        return false;
-    }
-    
-    _scanner.retireToken();
-    return true;
-}
-
-bool
 CompileEngine::match(Reserved r)
 {
     Reserved rr;
@@ -788,6 +762,30 @@ CompileEngine::identifier(std::string& id)
     }
     
     id = _scanner.getTokenString();
+    _scanner.retireToken();
+    return true;
+}
+
+bool
+CompileEngine::integerValue(int32_t& i)
+{
+    if (_scanner.getToken() != Token::Integer) {
+        return false;
+    }
+    
+    i = _scanner.getTokenValue().integer;
+    _scanner.retireToken();
+    return true;
+}
+
+bool
+CompileEngine::floatValue(float& f)
+{
+    if (_scanner.getToken() != Token::Float) {
+        return false;
+    }
+    
+    f = _scanner.getTokenValue().number;
     _scanner.retireToken();
     return true;
 }
