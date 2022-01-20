@@ -162,7 +162,13 @@ int main(int argc, char * const argv[])
             } else {
                 char* buf = reinterpret_cast<char*>(&(executable[i * 64]));
                 size_t sizeToWrite = (sizeRemaining > 64) ? 64 : sizeRemaining;
-                outStream.put(i * 64);
+                
+                // Write the 2 byte offset
+                uint16_t addr = uint16_t(i) * 64;
+                outStream.put(uint8_t(addr & 0xff));
+                outStream.put(uint8_t(addr >> 8));
+                
+                // Write the buffer
                 outStream.write(buf, sizeToWrite);
                 if (outStream.fail()) {
                     std::cout << "Save failed\n";

@@ -73,7 +73,7 @@ Hue is an angle on the color wheel. A 0-360 degree value is obtained with hue / 
 
 constexpr int LEDPin = 6;
 constexpr int NumPixels = 8;
-constexpr int BufferSize = 65;
+constexpr int BufferSize = 66;
 constexpr char StartChar = '(';
 constexpr char EndChar = ')';
 constexpr unsigned long SerialTimeOut = 2000; // ms
@@ -222,27 +222,27 @@ public:
 								_currentEffect->init('F', _buf, _bufSize);
 								break;
 								
-								case 'X':
-								if (_buf[0] + _bufSize - 1 > 1024) {
-									Serial.print("EEPROM buffer out of range: addr=");
-									Serial.print(_buf[0]);
-									Serial.print(", size=");
-									Serial.println(_bufSize - 1);
-									showStatus(StatusColor::Red, 5, 5);
-									_state = State::NotCapturing;
-								} else {
-									uint8_t startAddr = _buf[0];
-									Serial.print("Sending executable to EEPROM: addr=");
-									Serial.print(startAddr);
-									Serial.print(", size=");
-									Serial.println(_bufSize);
+								case 'X': {
+									uint16_t startAddr = uint16_t(_buf[0]) + (uint16_t(_buf[1]) << 8);
+									if (startAddr + _bufSize - 2 > 1024) {
+										Serial.print("EEPROM buffer out of range: addr=");
+										Serial.print(startAddr);
+										Serial.print(", size=");
+										Serial.println(_bufSize - 2);
+										showStatus(StatusColor::Red, 5, 5);
+										_state = State::NotCapturing;
+									} else {
+										Serial.print("Sending executable to EEPROM: addr=");
+										Serial.print(startAddr);
+										Serial.print(", size=");
+										Serial.println(_bufSize - 2);
 
-									for (uint8_t i = 0; i < _bufSize - 1; ++i) {
-										EEPROM[i + startAddr] = _buf[i + 1];
+										for (uint8_t i = 0; i < _bufSize - 2; ++i) {
+											EEPROM[i + startAddr] = _buf[i + 2];
+										}
 									}
+									break;
 								}
-								break;
-								
 								default:
 								// See if it's interpreted
 								if (!_interpretedEffect.init(_cmd, _buf, _bufSize)) {
