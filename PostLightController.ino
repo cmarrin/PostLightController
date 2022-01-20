@@ -114,8 +114,7 @@ public:
 		
 		if (delayInMs < 0) {
 			// An effect has finished. End it and clear the display
-			_currentEffect = &_constantColorEffect;
-			_currentEffect->init('C');
+			showStatus(StatusColor::Black);
 			delayInMs = 0;
 		}
 		
@@ -279,13 +278,19 @@ private:
 	    return sum & 0x3f;
 	}
 
-	enum class StatusColor { Red, Green, Yellow };
+	enum class StatusColor { Black, Red, Green, Yellow };
 	
-	void showStatus(StatusColor color, uint8_t numberOfBlinks, uint8_t interval)
+	void showStatus(StatusColor color, uint8_t numberOfBlinks = 0, uint8_t interval = 0)
 	{
 		// Flash full bright red at 1 second interval, 10 times
 		uint8_t buf[ ] = { 0x00, 0xff, 0xff, numberOfBlinks, interval };
-		buf[0] = (color == StatusColor::Red) ? 0 : ((color == StatusColor::Green) ? 85 : 42);
+		
+		if (color == StatusColor::Black) {
+			buf[2] = 0;
+		} else {
+			buf[0] = (color == StatusColor::Red) ? 0 : ((color == StatusColor::Green) ? 85 : 42);			
+		}
+		
 		_currentEffect = &_flashEffect;
 		_currentEffect->init('0', buf, sizeof(buf));		
 	}
