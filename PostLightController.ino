@@ -234,10 +234,30 @@ public:
 								default:
 								// See if it's interpreted
 								if (!_interpretedEffect.init(_cmd, _buf, _bufSize)) {
-									Serial.print("Unrecognized command: '");
-									Serial.print(char(_cmd));
-									Serial.println("'");
-									showStatus(StatusColor::Red, 8, 4);
+									String errorMsg;
+									switch(_interpretedEffect.error()) {
+								        case Device::Error::None:
+										errorMsg = "*** NONE ***";
+										break;
+								        case Device::Error::CmdNotFound:
+										errorMsg = "unrecognized command: '" + String(char(_cmd)) + "'";
+										break;
+								        case Device::Error::NestedForEachNotAllowed:
+										errorMsg = "nested foreach not allowed";
+										break;
+								        case Device::Error::UnexpectedOpInIf:
+										errorMsg = "unexpected op in If";
+										break;
+										case Device::Error::InvalidOp:
+										errorMsg = "invalid op";
+										break;
+								        case Device::Error::OnlyMemAddressesAllowed:
+										errorMsg = "only memory addresses allowed";
+										break;
+									}
+									Serial.print("Interpreted effect error: ");
+									Serial.println(errorMsg);
+									showStatus(StatusColor::Red, 5, 1);
 									_state = State::NotCapturing;
 								} else {
 									_currentEffect = &_interpretedEffect;
