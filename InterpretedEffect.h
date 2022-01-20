@@ -81,6 +81,8 @@ public:
 	
 	virtual bool init(uint8_t cmd, const uint8_t* buf, uint32_t size) override;
 	virtual int32_t loop() override;
+	
+	Device::Error error() const { return _device.error(); }
 				
 private:
 	Device _device;
