@@ -4,10 +4,10 @@
 
 #include "Flash.h"
 
-void
-Flash::init(const uint8_t* buf, uint32_t size)
+bool
+Flash::init(uint8_t cmd, const uint8_t* buf, uint32_t size)
 {
-	Effect::init(buf, size);
+	Effect::init(cmd, buf, size);
 	
 	_countCompleted = 0;
 	
@@ -28,6 +28,7 @@ Flash::init(const uint8_t* buf, uint32_t size)
 		Serial.print(", duration=");
 		Serial.println(_duration);
 	}
+	return true;
 }
 	
 int32_t

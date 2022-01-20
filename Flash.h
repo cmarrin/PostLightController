@@ -15,7 +15,7 @@ public:
 	Flash(Adafruit_NeoPixel* pixels) : Effect(pixels) { }
 	virtual ~Flash() { }
 	
-	virtual void init(const uint8_t* buf, uint32_t size) override;
+	virtual bool init(uint8_t cmd, const uint8_t* buf, uint32_t size) override;
 	virtual int32_t loop() override;
 		
 private:

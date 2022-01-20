@@ -15,10 +15,12 @@ public:
 	
 	virtual ~Effect() { }
 
-	virtual void init(const uint8_t* buf = nullptr, uint32_t size = 0)
+	virtual bool init(uint8_t cmd, const uint8_t* buf = nullptr, uint32_t size = 0)
 	{
+		(void) cmd;
 		_buf = buf;
 		_size = size;
+		return true;
 	}
 	
 	// Return delay in ms

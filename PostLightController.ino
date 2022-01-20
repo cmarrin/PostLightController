@@ -65,12 +65,11 @@ Hue is an angle on the color wheel. A 0-360 degree value is obtained with hue / 
 
 #include <SoftwareSerial.h>
 #include <Adafruit_NeoPixel.h>
-#include <EEPROM.h>
 
 #include "ConstantColor.h"
 #include "Flicker.h"
 #include "Flash.h"
-#include "Interpreter.h"
+#include "InterpretedEffect.h"
 
 constexpr int LEDPin = 6;
 constexpr int NumPixels = 8;
@@ -78,68 +77,6 @@ constexpr int BufferSize = 65;
 constexpr char StartChar = '(';
 constexpr char EndChar = ')';
 constexpr unsigned long SerialTimeOut = 2000; // ms
-
-class Device : public arly::Interpreter
-{
-public:
-    virtual uint8_t rom(uint16_t i) const override
-    {
-		(void) i;
-        return 0;
-    }
-    
-    virtual void setLight(uint8_t i, uint32_t rgb) override
-    {
-        // FIXME;
-		(void) i;
-		(void) rgb;
-    }
-    
-    virtual uint8_t numPixels() const override
-    {
-        return NumPixels;
-    }
-
-    void logAddr(uint16_t addr) const
-	{
-		Serial.print("[");
-		Serial.print(addr);
-		Serial.print("]");
-	}
-    
-    virtual void log(uint16_t addr, uint8_t r, int32_t v) const override
-    {
-        logAddr(addr);
-		Serial.print(": r[");
-		Serial.print(r);
-		Serial.print("] = ");
-		Serial.println(v);
-    }
-    virtual void logFloat(uint16_t addr, uint8_t r, float v) const override
-    {
-        logAddr(addr);
-		Serial.print(": r[");
-		Serial.print(r);
-		Serial.print("] = ");
-		Serial.println(v);
-    }
-
-    virtual void logColor(uint16_t addr, uint8_t r, const Color& c) const override
-    {
-        logAddr(addr);
-        Serial.print(": c[");
-		Serial.print(r);
-		Serial.print("] = (");
-		Serial.print(c.hue());
-		Serial.print(", ");
-		Serial.print(c.sat());
-		Serial.print(", ");
-		Serial.print(c.val());
-		Serial.println(")");
-    }
-
-private:
-};
 
 class PostLightController
 {
@@ -150,6 +87,7 @@ public:
 		, _constantColorEffect(&_pixels)
 		, _flickerEffect(&_pixels)
 		, _flashEffect(&_pixels)
+		, _interpretedEffect(&_pixels)
 	{ }
 	~PostLightController() { }
 	
@@ -172,14 +110,12 @@ public:
 
 	void loop()
 	{
-		_device.loop();
-		
 		int32_t delayInMs = _currentEffect ? _currentEffect->loop() : 0;
 		
 		if (delayInMs < 0) {
 			// An effect has finished. End it and clear the display
 			_currentEffect = &_constantColorEffect;
-			_currentEffect->init();
+			_currentEffect->init('C');
 			delayInMs = 0;
 		}
 		
@@ -201,6 +137,11 @@ public:
 			char c = char(_serial.read());
 			
 			// Run the state machine
+			Serial.print("*** char=0x");
+			Serial.print(int(c), HEX);
+			Serial.print(", state=");
+			Serial.println(int(_state));
+
 			switch(_state) {
 				case State::NotCapturing:
 					if (c == StartChar) {
@@ -273,10 +214,12 @@ public:
 							switch(_cmd) {
 								case 'C':
 								_currentEffect = &_constantColorEffect;
+								_currentEffect->init('C', _buf, _bufSize);
 								break;
 								
 								case 'F':
 								_currentEffect = &_flickerEffect;
+								_currentEffect->init('F', _buf, _bufSize);
 								break;
 								
 								case 'X':
@@ -289,6 +232,11 @@ public:
 									_state = State::NotCapturing;
 								} else {
 									uint8_t startAddr = _buf[0];
+									Serial.print("Sending executable to EEPROM: addr=");
+									Serial.print(startAddr);
+									Serial.print(", size=");
+									Serial.println(_bufSize);
+
 									for (uint8_t i = 0; i < _bufSize - 1; ++i) {
 										EEPROM[i + startAddr] = _buf[i + 1];
 									}
@@ -296,15 +244,17 @@ public:
 								break;
 								
 								default:
-								Serial.print("Unrecognized command: ");
-								Serial.println(_buf[2], HEX);
-								showStatus(StatusColor::Red, 8, 4);
-								_state = State::NotCapturing;
+								// See if it's interpreted
+								if (!_interpretedEffect.init(_cmd, _buf, _bufSize)) {
+									Serial.print("Unrecognized command: '");
+									Serial.print(char(_cmd));
+									Serial.println("'");
+									showStatus(StatusColor::Red, 8, 4);
+									_state = State::NotCapturing;
+								} else {
+									_currentEffect = &_interpretedEffect;
+								}
 								break;
-							}
-
-							if (_currentEffect) {
-								_currentEffect->init(_buf, _bufSize);
 							}
 						}
 					}
@@ -337,7 +287,7 @@ private:
 		uint8_t buf[ ] = { 0x00, 0xff, 0xff, numberOfBlinks, interval };
 		buf[0] = (color == StatusColor::Red) ? 0 : ((color == StatusColor::Green) ? 85 : 42);
 		_currentEffect = &_flashEffect;
-		_currentEffect->init(buf, sizeof(buf));		
+		_currentEffect->init('0', buf, sizeof(buf));		
 	}
 	
 	Adafruit_NeoPixel _pixels;
@@ -348,6 +298,7 @@ private:
 	ConstantColor _constantColorEffect;
 	Flicker _flickerEffect;
 	Flash _flashEffect;
+	InterpretedEffect _interpretedEffect;
 	
 	uint8_t _buf[BufferSize];
 	uint8_t _bufIndex = 0;
@@ -358,8 +309,6 @@ private:
 	uint8_t _actualChecksum = 0;
 	
 	uint8_t _cmd = '0';
-	
-	Device _device;
 	
 	// State machine
 	enum class State { NotCapturing, DeviceAddr, Cmd, Size, Data, Checksum, LeadOut };

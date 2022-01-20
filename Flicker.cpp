@@ -31,19 +31,19 @@ Flicker::~Flicker()
 	_leds = nullptr;
 }
 
-void
-Flicker::init(const uint8_t* buf, uint32_t size)
+bool
+Flicker::init(uint8_t cmd, const uint8_t* buf, uint32_t size)
 {
-	Effect::init(buf, size);
+	Effect::init(cmd, buf, size);
 	
 	if (size < 4 || !_buf) {
 		Serial.println("***** Flicker: Buffer not passed");
-		return;
+		return false;
 	}
 
 	if (_buf[3] > 7) {
 		Serial.println("***** Flicker: speed out of range");
-		return;
+		return false;
 	}
 
 	_color = Color(_buf[0], _buf[1], _buf[2]);
@@ -56,6 +56,8 @@ Flicker::init(const uint8_t* buf, uint32_t size)
 	Serial.print(_buf[2]);
 	Serial.print(", speed=");
 	Serial.println(_buf[3]);
+	
+	return true;
 }
 
 int32_t

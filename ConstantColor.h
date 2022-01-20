@@ -15,7 +15,7 @@ public:
 	ConstantColor(Adafruit_NeoPixel* pixels);
 	virtual ~ConstantColor();
 	
-	virtual void init(const uint8_t* buf, uint32_t size) override;
+	virtual bool init(uint8_t cmd, const uint8_t* buf, uint32_t size) override;
 	virtual int32_t loop() override;
 	
 	void setColor(const Color& color);

@@ -13,10 +13,10 @@ ConstantColor::~ConstantColor()
 {
 }
 
-void
-ConstantColor::init(const uint8_t* buf, uint32_t size)
+bool
+ConstantColor::init(uint8_t cmd, const uint8_t* buf, uint32_t size)
 {
-	Effect::init(buf, size);
+	Effect::init(cmd, buf, size);
 
 	if (size < 3 || !buf) {
 		Serial.println("***** Buffer not passed. Resetting...");
@@ -27,6 +27,7 @@ ConstantColor::init(const uint8_t* buf, uint32_t size)
 
 	Serial.print("ConstantColor started: color=0x");
 	Serial.println(_color.rgb(), HEX);
+	return true;
 }
 
 int32_t
