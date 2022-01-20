@@ -289,7 +289,7 @@ private:
 	    return sum & 0x3f;
 	}
 
-	enum class StatusColor { Black, Red, Green, Yellow };
+	enum class StatusColor { Red, Green, Yellow };
 
 	void showColor(uint8_t h, uint8_t s, uint8_t v)
 	{
@@ -302,11 +302,7 @@ private:
 		// Flash full bright red at 1 second interval, 10 times
 		uint8_t buf[ ] = { 0x00, 0xff, 0xff, numberOfBlinks, interval };
 		
-		if (color == StatusColor::Black) {
-			buf[2] = 0;
-		} else {
-			buf[0] = (color == StatusColor::Red) ? 0 : ((color == StatusColor::Green) ? 85 : 42);			
-		}
+		buf[0] = (color == StatusColor::Red) ? 0 : ((color == StatusColor::Green) ? 85 : 42);			
 		
 		_currentEffect = &_flashEffect;
 		_currentEffect->init('0', buf, sizeof(buf));		
