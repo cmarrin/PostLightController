@@ -205,6 +205,8 @@ public:
 							// Have a good buffer, handle the command
 							_state = State::NotCapturing;
 							
+							_currentEffect = nullptr;
+							
 							switch(_cmd) {
 								case 'C':
 								showColor(_buf[0], _buf[1], _buf[2]);
