@@ -36,11 +36,6 @@ Command List:
 
    Command 	Name         	Params						Description
    -------  ----            ------    					-----------
-	'C'     Constant Color 	color						Set lights to passed color
-
-	'F'		Flicker			color, speed				Flicker lights based on passed color at 
-														passed speed (0-7).
-
 	'X'		EEPROM[0]		addr, <data>				Write EEPROM starting at addr. Data can be
 														up to 64 bytes, due to buffering limitations.
 
@@ -66,8 +61,6 @@ Hue is an angle on the color wheel. A 0-360 degree value is obtained with hue / 
 #include <SoftwareSerial.h>
 #include <Adafruit_NeoPixel.h>
 
-#include "ConstantColor.h"
-#include "Flicker.h"
 #include "Flash.h"
 #include "InterpretedEffect.h"
 
@@ -84,8 +77,6 @@ public:
 	PostLightController()
 		: _pixels(NumPixels, LEDPin, NEO_GRB + NEO_KHZ800)
 		, _serial(11, 10)
-		, _constantColorEffect(&_pixels)
-		, _flickerEffect(&_pixels)
 		, _flashEffect(&_pixels)
 		, _interpretedEffect(&_pixels)
 	{ }
@@ -211,16 +202,6 @@ public:
 							_state = State::NotCapturing;
 							
 							switch(_cmd) {
-								case 'C':
-								_currentEffect = &_constantColorEffect;
-								_currentEffect->init('C', _buf, _bufSize);
-								break;
-								
-								case 'F':
-								_currentEffect = &_flickerEffect;
-								_currentEffect->init('F', _buf, _bufSize);
-								break;
-								
 								case 'X': {
 									uint16_t startAddr = uint16_t(_buf[0]) + (uint16_t(_buf[1]) << 8);
 									if (startAddr + _bufSize - 2 > 1024) {
@@ -300,8 +281,6 @@ private:
 	
 	Effect* _currentEffect = nullptr;
 	
-	ConstantColor _constantColorEffect;
-	Flicker _flickerEffect;
 	Flash _flashEffect;
 	InterpretedEffect _interpretedEffect;
 	
