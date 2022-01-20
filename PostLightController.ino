@@ -130,10 +130,11 @@ public:
 			char c = char(_serial.read());
 			
 			// Run the state machine
-			Serial.print("*** char=0x");
-			Serial.print(int(c), HEX);
-			Serial.print(", state=");
-			Serial.println(int(_state));
+			
+			// Serial.print("*** char=0x");
+			// Serial.print(int(c), HEX);
+			// Serial.print(", state=");
+			// Serial.println(int(_state));
 
 			switch(_state) {
 				case State::NotCapturing:
