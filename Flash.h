@@ -19,6 +19,8 @@ public:
 	virtual int32_t loop() override;
 		
 private:
+	void setAllLights(uint32_t color);
+	
 	Color _color;
 	uint8_t _count;
 	uint32_t _duration; // in ms

@@ -27,6 +27,9 @@ Flash::init(uint8_t cmd, const uint8_t* buf, uint32_t size)
 		Serial.print(_count);
 		Serial.print(", duration=");
 		Serial.println(_duration);
+		
+		// Start with the lights off
+		setAllLights(0);
 	}
 	return true;
 }
@@ -60,11 +63,17 @@ Flash::loop()
 	}
 	
 	if (showColor) {
-	    for (uint32_t i = 0; i < _pixels->numPixels(); i++) {
-	        _pixels->setPixelColor(i, color);
-	        _pixels->show();
-	    }
+		setAllLights(color);
 	}
 	
     return 0;
+}
+
+void
+Flash::setAllLights(uint32_t color)
+{
+    for (uint32_t i = 0; i < _pixels->numPixels(); i++) {
+        _pixels->setPixelColor(i, color);
+        _pixels->show();
+    }
 }
