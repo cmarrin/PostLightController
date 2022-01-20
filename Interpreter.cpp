@@ -16,6 +16,7 @@ Interpreter::init(uint8_t cmd, const uint8_t* buf, uint8_t size)
 {
     _params = buf;
     _paramsSize = size;
+	_error = Error::None;
     
     _constOffset = 8;
     
