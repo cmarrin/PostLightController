@@ -36,6 +36,8 @@ Command List:
 
    Command 	Name         	Params						Description
    -------  ----            ------    					-----------
+	'C'     Constant Color 	color						Set lights to passed color
+
 	'X'		EEPROM[0]		addr, <data>				Write EEPROM starting at addr. Data can be
 														up to 64 bytes, due to buffering limitations.
 
@@ -105,7 +107,8 @@ public:
 		
 		if (delayInMs < 0) {
 			// An effect has finished. End it and clear the display
-			showStatus(StatusColor::Black);
+			showColor(0, 0, 0);
+			_currentEffect = nullptr;
 			delayInMs = 0;
 		}
 		
@@ -202,6 +205,10 @@ public:
 							_state = State::NotCapturing;
 							
 							switch(_cmd) {
+								case 'C':
+								showColor(_buf[0], _buf[1], _buf[2]);
+								break;
+								
 								case 'X': {
 									uint16_t startAddr = uint16_t(_buf[0]) + (uint16_t(_buf[1]) << 8);
 									if (startAddr + _bufSize - 2 > 1024) {
@@ -260,6 +267,12 @@ private:
 	}
 
 	enum class StatusColor { Black, Red, Green, Yellow };
+
+	void showColor(uint8_t h, uint8_t s, uint8_t v)
+	{
+		uint8_t buf[ ] = { h, s, v, 0, 0 };
+		_flashEffect.init('0', buf, sizeof(buf));		
+	}
 	
 	void showStatus(StatusColor color, uint8_t numberOfBlinks = 0, uint8_t interval = 0)
 	{
