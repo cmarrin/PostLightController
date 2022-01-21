@@ -50,7 +50,7 @@ Proposed commands for later
 			Rainbow			color, speed, range, mode	Change color through the rainbow by changing hue 
 														from the passed color at the passed speed. Range
 														is how far from the passed color to go, 0 (very little)
-														to 7 (full range). If mode (1 bit) is 0 colors bounce 
+														to 7 (full range). If mode is 0 colors bounce 
 														back and forth between start color through range. If
 														it is 1 colors cycle the full color spectrum and
 														range is ignored.
