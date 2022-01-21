@@ -213,6 +213,9 @@ public:
 								break;
 								
 								case 'X': {
+									// Cancel effect
+									_currentEffect = nullptr;
+									
 									uint16_t startAddr = uint16_t(_buf[0]) + (uint16_t(_buf[1]) << 8);
 									if (startAddr + _bufSize - 2 > 1024) {
 										Serial.print("EEPROM buffer out of range: addr=");
