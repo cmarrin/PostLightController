@@ -15,10 +15,4 @@ gbr/PostLightController.drl
 CompileArly/DerivedData
 CompileArly/CompileArly.xcodeproj/xcuserdata
 CompileArly/CompileArly.xcodeproj/project.xcworkspace/xcuserdata
-PostLightEffects.arlx
-CompileArly/PostLightEffects
-CompileArly/PostLightEffects0.arlx
-CompileArly/PostLightEffects1.arlx
-CompileArly/PostLightEffects2.arlx
-CompileArly/PostLightEffects3.arlx
-CompileArly/PostLightEffects4.arlx
+CompileArly/PostLightEffects*.arlx
