@@ -197,7 +197,7 @@ private:
     Error _error = Error::None;
     int16_t _errorAddr = -1;
     
-    const uint8_t* _params = nullptr;
+    uint8_t _params[16];
     uint8_t _paramsSize = 0;
     
     uint32_t _ram[64];
