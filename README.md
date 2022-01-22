@@ -14,12 +14,12 @@ Software runs on Arduino Nano. SoftSerial is used to receive packets of data fom
 - ☑︎ Write Decompiler to see what code is getting generated
 - ☑︎ Write Interpreter for code
 - ☑︎ Write Simulator on Mac, specializing Interpreter and printing out pixel values, etc.
-- ☐ Add Interpreter to Arduino as a subclass of Effect
-- ☐ Add command(s) to upload Arly executable to Arduino
-- ☐ Add interpreted commands to node-red
-- ☐ Once everything is working remove ConstantColor and Flicker classes
-- ☐ Change packet to be variable length: start ('('), device addr ('0' = all devices), cmd, payload len (0-63), checksum, end (')')
-- ☐ Make node-red use variable length format
+- ☑︎ Add Interpreter to Arduino as a subclass of Effect
+- ☑︎ Add command(s) to upload Arly executable to Arduino
+- ☑︎ Add interpreted commands to node-red
+- ☑︎ Once everything is working remove ConstantColor and Flicker classes
+- ☑︎ Change packet to be variable length: start ('('), device addr ('0' = all devices), cmd, payload len (0-63), checksum, end (')')
+- ☑︎ Make node-red use variable length format
 
 ## Board Fab
 To send PostLightController board to seeedstudio (https://www.seeedstudio.com/fusion_pcb.html):
