@@ -22,17 +22,17 @@ Flash::init(uint8_t cmd, const uint8_t* buf, uint32_t size)
 		_duration = uint32_t(buf[4]) * 100; // Incoming duration is in 100ms units
 		_lastFlash = millis();
 		
-		Serial.print("Flash: color=0x");
+		Serial.print(F("Flash: color=0x"));
 		Serial.print(_color.rgb(), HEX);
-		Serial.print(" (");
+		Serial.print(F(" ("));
 		Serial.print(_buf[0]);
-		Serial.print(", ");
+		Serial.print(F(", "));
 		Serial.print(_buf[1]);
-		Serial.print(", ");
+		Serial.print(F(", "));
 		Serial.print(_buf[2]);
-		Serial.print("), count=");
+		Serial.print(F("), count="));
 		Serial.print(_count);
-		Serial.print(", duration=");
+		Serial.print(F(", duration="));
 		Serial.println(_duration);
 		
 		// If we will be flashing (count != 0) then start with the lights off.

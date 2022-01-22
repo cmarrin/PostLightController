@@ -19,9 +19,9 @@ InterpretedEffect::init(uint8_t cmd, const uint8_t* buf, uint32_t size)
 		return false;
 	}
 
-	Serial.print("InterpretedEffect started: cmd='");
+	Serial.print(F("InterpretedEffect started: cmd='"));
 	Serial.print(char(cmd));
-	Serial.println("'");
+	Serial.println(F("'"));
 
 	return true;
 }

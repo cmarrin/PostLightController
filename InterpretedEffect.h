@@ -33,40 +33,40 @@ public:
 
     void logAddr(uint16_t addr) const
 	{
-		Serial.print("[");
+		Serial.print(F("["));
 		Serial.print(addr);
-		Serial.print("]");
+		Serial.print(F("]"));
 	}
     
     virtual void log(uint16_t addr, uint8_t r, int32_t v) const override
     {
         logAddr(addr);
-		Serial.print(": r[");
+		Serial.print(F(": r["));
 		Serial.print(r);
-		Serial.print("] = ");
+		Serial.print(F("] = "));
 		Serial.println(v);
     }
     virtual void logFloat(uint16_t addr, uint8_t r, float v) const override
     {
         logAddr(addr);
-		Serial.print(": r[");
+		Serial.print(F(": r["));
 		Serial.print(r);
-		Serial.print("] = ");
+		Serial.print(F("] = "));
 		Serial.println(v);
     }
 
     virtual void logColor(uint16_t addr, uint8_t r, const Color& c) const override
     {
         logAddr(addr);
-        Serial.print(": c[");
+        Serial.print(F(": c["));
 		Serial.print(r);
-		Serial.print("] = (");
+		Serial.print(F("] = ("));
 		Serial.print(c.hue());
-		Serial.print(", ");
+		Serial.print(F(", "));
 		Serial.print(c.sat());
-		Serial.print(", ");
+		Serial.print(F(", "));
 		Serial.print(c.val());
-		Serial.println(")");
+		Serial.println(F(")"));
     }
 
 private:

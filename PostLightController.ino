@@ -94,7 +94,7 @@ public:
 	    _pixels.begin(); // This initializes the NeoPixel library.
 	    _pixels.setBrightness(255);
 		
-		Serial.println("Post Light Controller v0.1");
+		Serial.println(F("Post Light Controller v0.1"));
 	
 		showStatus(StatusColor::Green, 3, 2);
 		
@@ -118,7 +118,7 @@ public:
 		if (_state != State::NotCapturing) {
 			if (newTime - _timeSinceLastChar > SerialTimeOut) {
 				_state = State::NotCapturing;
-				Serial.print("***** Too Long since last char, resetting\n");
+				Serial.print(F("***** Too Long since last char, resetting\n"));
 				showStatus(StatusColor::Red, 3, 2);
 				_state = State::NotCapturing;
 			}
@@ -158,7 +158,7 @@ public:
 				case State::Size:
 					_bufSize = c - '0';
 					if (_bufSize > BufferSize) {
-						Serial.print("Buffer size too big. Size=");
+						Serial.print(F("Buffer size too big. Size="));
 						Serial.println(_bufSize);
 						showStatus(StatusColor::Red, 6, 1);
 						_state = State::NotCapturing;
@@ -184,7 +184,7 @@ public:
 				}
 				case State::LeadOut:
 					if (c != EndChar) {
-						Serial.println("Expected lead-out char");
+						Serial.println(F("Expected lead-out char"));
 						showStatus(StatusColor::Red, 6, 1);
 						_state = State::NotCapturing;
 					} else {
@@ -193,11 +193,11 @@ public:
 						_expectedChecksum = (_expectedChecksum & 0x3f) + 0x30;
 						
 						if (_expectedChecksum != _actualChecksum) {
-							Serial.print("CRC ERROR: expected=");
+							Serial.print(F("CRC ERROR: expected="));
 							Serial.print(_expectedChecksum);
-							Serial.print(", actual=");
+							Serial.print(F(", actual="));
 							Serial.print(_actualChecksum);
-							Serial.print(", cmd: ");
+							Serial.print(F(", cmd: "));
 							Serial.println(_cmd);
 							showStatus(StatusColor::Red, 5, 5);
 							_state = State::NotCapturing;
@@ -218,16 +218,16 @@ public:
 									
 									uint16_t startAddr = uint16_t(_buf[0]) + (uint16_t(_buf[1]) << 8);
 									if (startAddr + _bufSize - 2 > 1024) {
-										Serial.print("EEPROM buffer out of range: addr=");
+										Serial.print(F("EEPROM buffer out of range: addr="));
 										Serial.print(startAddr);
-										Serial.print(", size=");
+										Serial.print(F(", size="));
 										Serial.println(_bufSize - 2);
 										showStatus(StatusColor::Red, 5, 5);
 										_state = State::NotCapturing;
 									} else {
-										Serial.print("Sending executable to EEPROM: addr=");
+										Serial.print(F("Sending executable to EEPROM: addr="));
 										Serial.print(startAddr);
-										Serial.print(", size=");
+										Serial.print(F(", size="));
 										Serial.println(_bufSize - 2);
 
 										for (uint8_t i = 0; i < _bufSize - 2; ++i) {
@@ -242,25 +242,25 @@ public:
 									String errorMsg;
 									switch(_interpretedEffect.error()) {
 								        case Device::Error::None:
-										errorMsg = "*** NONE ***";
+										errorMsg = F("*** NONE ***");
 										break;
 								        case Device::Error::CmdNotFound:
-										errorMsg = "unrecognized command: '" + String(char(_cmd)) + "'";
+										errorMsg = String(F("unrecognized command: '")) + String(char(_cmd)) + String(F("'"));
 										break;
 								        case Device::Error::NestedForEachNotAllowed:
-										errorMsg = "nested foreach not allowed";
+										errorMsg = F("nested foreach not allowed");
 										break;
 								        case Device::Error::UnexpectedOpInIf:
-										errorMsg = "unexpected op in If";
+										errorMsg = F("unexpected op in If");
 										break;
 										case Device::Error::InvalidOp:
-										errorMsg = "invalid op";
+										errorMsg = F("invalid op");
 										break;
 								        case Device::Error::OnlyMemAddressesAllowed:
-										errorMsg = "only memory addresses allowed";
+										errorMsg = F("only memory addresses allowed");
 										break;
 									}
-									Serial.print("Interpreted effect error: ");
+									Serial.print(F("Interpreted effect error: "));
 									Serial.println(errorMsg);
 									showStatus(StatusColor::Red, 5, 1);
 									_state = State::NotCapturing;
