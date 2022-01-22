@@ -10,6 +10,9 @@ const float BrightnessMin   0.4
 const float ValMin          0.15
 const int LedSize           24
 const int NumPixels         8
+const int NumLevels         8
+const int PulseDelay        25
+const int PulseSpeedMult    35
 
 table int FlickerSpeedTable
     250 255 40
@@ -135,6 +138,110 @@ effect f 4
         AddInt
         AddInt
         LoadX r0 FlickerSpeedTable r0 2
+        Return r0
+    end
+end
+
+// Pulse: color, speed, depth (5 bytes)
+//
+// Pulse lights with passed color, dimming at passed
+// speed (0-7). Passed depth is amount of dimming.
+//
+// Depth is how close to ValMin you should get.
+//
+//      min = c.val - (float(depth + 1) / 8 * (c.val - ValMin))
+//
+// Speed is computed as number of cycles to go from min to max
+//
+//      inc = (max - min) / (float(NumLevels - speed) * PulseSpeedMult)
+
+
+// 0 (slight dimming) to 7 (dimming to 0 brightness)
+//
+effect p 5
+    float inc 1
+    float cur 1
+    float min 1
+    float max 1
+    int increasing 1
+    
+    init
+        LoadZero r0
+        Store increasing r0
+        
+        LoadColorParam c0 0
+        LoadVal r0 c0
+        Store cur r0
+        Store max r0
+        
+        // min = c.val - (float(depth + 1) / 8 * (c.val - ValMin))
+        LoadIntParam r0 4
+        LoadIntOne r1
+        AddInt
+        ToFloat r0
+        Load r1 NumLevels
+        ToFloat r1
+        DivFloat
+        Move r2 r0
+        Load r0 cur
+        Load r1 ValMin
+        SubFloat
+        Move r1 r2
+        MulFloat
+        Move r1 r0
+        Load r0 cur
+        SubFloat
+        Store min r0
+
+        // inc = (max - min) / float((NumLevels - speed) * PulseSpeedMult)
+        Load r0 max
+        Load r1 min
+        SubFloat
+        Move r2 r0
+        Load r0 NumLevels
+        LoadIntParam r1 3
+        SubInt
+        Load r1 PulseSpeedMult
+        MulInt
+        ToFloat r0
+        Move r1 r0
+        Move r0 r2
+        DivFloat
+        Store inc r0
+    end
+        
+    loop
+        Load r0 increasing
+        if
+            Load r0 cur
+            Load r1 inc
+            AddFloat
+            Move r3 r0
+            Load r1 max
+            GEFloat
+            if
+                LoadZero r0
+                Store increasing r0
+                Load r3 cur
+            end
+        else
+            Load r0 cur
+            Load r1 inc
+            SubFloat
+            Move r3 r0
+            Load r1 min
+            LEFloat
+            if
+                LoadIntOne r0
+                Store increasing r0
+                Load r3 cur
+            end
+        end
+        
+        Store cur r3
+        StoreVal c0 r3
+        SetAllLights c0
+        Load r0 PulseDelay
         Return r0
     end
 end
