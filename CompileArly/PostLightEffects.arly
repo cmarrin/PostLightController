@@ -11,8 +11,7 @@ const float ValMin          0.15
 const int LedSize           24
 const int NumPixels         8
 
-// 96 bytes
-table int SpeedTable
+table int FlickerSpeedTable
     250 255 40
     250 255 30
     180 240 20
@@ -103,8 +102,8 @@ effect f 4
                     AddInt
                     Store currentLED r3
                     Move r3 r0
-                    LoadX r0 SpeedTable r3 0
-                    LoadX r1 SpeedTable r3 1
+                    LoadX r0 FlickerSpeedTable r3 0
+                    LoadX r1 FlickerSpeedTable r3 1
                     Random
                     Load r3 currentLED
                     LoadX r1 leds r3 1
@@ -135,7 +134,7 @@ effect f 4
         Move r1 r0
         AddInt
         AddInt
-        LoadX r0 SpeedTable r0 2
+        LoadX r0 FlickerSpeedTable r0 2
         Return r0
     end
 end
