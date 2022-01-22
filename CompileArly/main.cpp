@@ -71,6 +71,21 @@ private:
 //      -d      decompile and print result
 //      -x      simulate resulting binary
 //
+
+struct Test
+{
+    char _cmd;
+    std::vector<uint8_t> _buf;
+};
+
+static std::vector<Test> Tests = {
+    { 'p', { 40, 224, 250, 7, 7 } },
+    { 'c', { 240, 224, 64 } },
+    { 'f', { 20, 224, 200, 0 } },
+};
+
+static constexpr int NumLoops = 10;
+
 int main(int argc, char * const argv[])
 {
     std::cout << "Arly Compiler v0.1\n\n";
@@ -209,76 +224,44 @@ int main(int argc, char * const argv[])
         Simulator sim;
         sim.setROM(executable);
         
-        uint8_t buf[16];
+        for (const Test& test : Tests) {
+            std::cout << "Simulating '" << test._cmd << "' command...\n";
         
-        // Test 'c' command
-        std::cout << "Simulating 'c' command...\n";
-        
-        bool success = true;
-
-        buf[0] = 240;
-        buf[1] = 224;
-        buf[2] = 64;
-        success = sim.init('c', buf, 3);
-        if (success) {
-            for (int i = 0; i < 10; ++i) {
-                success = sim.loop() >= 0;
-                if (!success) {
-                    break;
-                }
-            }
-            
+            bool success = sim.init(test._cmd, &test._buf[0], test._buf.size());
             if (success) {
-                std::cout << "Complete\n\n";
+                for (int i = 0; i < NumLoops; ++i) {
+                    int32_t delay = sim.loop();
+                    if (delay < 0) {
+                        success = false;
+                        break;
+                    }
+                    std::cout << "[" << i << "]: delay = " << delay << "\n";
+                }
             
-                // Test 'f' command
-                std::cout << "Simulating 'f' command...\n";
-
-                buf[0] = 20;
-                buf[1] = 224;
-                buf[2] = 200;
-                buf[3] = 0;
-                success = sim.init('f', buf, 4);
-                
                 if (success) {
-                    int32_t delay;
-                
-                    for (int i = 0; i < 10; ++i) {
-                        delay = sim.loop();
-                        success = delay >= 0;
-                        if (!success) {
-                            break;
-                        }
-                        std::cout << "[" << i << "]: delay = " << delay << "\n";
-
+                    std::cout << "Complete\n\n";
+                } else {
+                    const char* err = "unknown";
+                    switch(sim.error()) {
+                        case arly::Interpreter::Error::None: err = "internal error"; break;
+                        case arly::Interpreter::Error::CmdNotFound: err = "command not found"; break;
+                        case arly::Interpreter::Error::NestedForEachNotAllowed: err = "nested foreach not allowed"; break;
+                        case arly::Interpreter::Error::UnexpectedOpInIf: err = "unexpected op in if (internal error)"; break;
+                        case arly::Interpreter::Error::InvalidOp: err = "invalid opcode"; break;
+                        case arly::Interpreter::Error::OnlyMemAddressesAllowed: err = "only Mem addresses allowed"; break;
                     }
-                    if (success) {
-                        std::cout << "Complete\n\n";
+                    std::cout << "Interpreter failed: " << err;
+                    
+                    int16_t errorAddr = sim.errorAddr();
+                    if (errorAddr >= 0) {
+                        std::cout << " at addr " << errorAddr;
                     }
+                    
+                    std::cout << "\n\n";
                 }
             }
         }
         
-        if (!success) {
-            const char* err = "unknown";
-            switch(sim.error()) {
-                case arly::Interpreter::Error::None: err = "internal error"; break;
-                case arly::Interpreter::Error::CmdNotFound: err = "command not found"; break;
-                case arly::Interpreter::Error::NestedForEachNotAllowed: err = "nested foreach not allowed"; break;
-                case arly::Interpreter::Error::UnexpectedOpInIf: err = "unexpected op in if (internal error)"; break;
-                case arly::Interpreter::Error::InvalidOp: err = "invalid opcode"; break;
-                case arly::Interpreter::Error::OnlyMemAddressesAllowed: err = "only Mem addresses allowed"; break;
-            }
-            std::cout << "Interpreter failed: " << err;
-            
-            int16_t errorAddr = sim.errorAddr();
-            if (errorAddr >= 0) {
-                std::cout << " at addr " << errorAddr;
-            }
-            
-            std::cout << "\n\n";
-            return 0;
-        }
     }
 
     return 1;
