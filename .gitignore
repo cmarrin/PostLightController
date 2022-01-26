@@ -16,3 +16,9 @@ CompileArly/DerivedData
 CompileArly/CompileArly.xcodeproj/xcuserdata
 CompileArly/CompileArly.xcodeproj/project.xcworkspace/xcuserdata
 CompileArly/PostLightEffects*.arlx
+Test/Color.cpp
+Test/Color.h
+Test/Interpreter.cpp
+Test/Interpreter.h
+Test/Opcodes.h
+Test/Test.ino
