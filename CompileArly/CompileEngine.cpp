@@ -181,7 +181,7 @@ CompileEngine::constant()
     
     expect(type(t), Compiler::Error::ExpectedType);
     expect(identifier(id), Compiler::Error::ExpectedIdentifier);
-    expect(value(val), Compiler::Error::ExpectedValue);
+    expect(value(val, t), Compiler::Error::ExpectedValue);
     
     // There is only enough room for 128 constant values
     expect(_rom32.size() < 128, Compiler::Error::TooManyConstants);
@@ -209,7 +209,7 @@ CompileEngine::table()
     // Set the start address of the table. tableEntries() will fill them in
     _symbols.emplace_back(id, _rom32.size(), true);
     
-    tableEntries();
+    tableEntries(t);
     expect(Token::Identifier, "end");
     return true;
 }
@@ -267,10 +267,10 @@ CompileEngine::type(Type& t)
 }
 
 void
-CompileEngine::tableEntries()
+CompileEngine::tableEntries(Type t)
 {
     while (1) {
-        if (!values()) {
+        if (!values(t)) {
             break;
         }
         expect(Token::NewLine);
@@ -278,12 +278,12 @@ CompileEngine::tableEntries()
 }
 
 bool
-CompileEngine::values()
+CompileEngine::values(Type t)
 {
     bool haveValues = false;
     while(1) {
         int32_t val;
-        if (!value(val)) {
+        if (!value(val, t)) {
             break;
         }
         haveValues = true;
@@ -294,14 +294,25 @@ CompileEngine::values()
 }
 
 bool
-CompileEngine::value(int32_t& i)
+CompileEngine::value(int32_t& i, Type t)
 {
     float f;
     if (floatValue(f)) {
-        i = *(reinterpret_cast<int32_t*>(&f));
+        // If we're expecting an Integer, convert it
+        if (t == Type::Int) {
+            i = roundf(f);
+        } else {
+            i = *(reinterpret_cast<int32_t*>(&f));
+        }
         return true;
     }
+    
     if (integerValue(i)) {
+        // If we're expecting a float, convert it
+        if (t == Type::Float) {
+            f = float(i);
+            i = *(reinterpret_cast<int32_t*>(&f));
+        }
         return true;
     }
     return false;

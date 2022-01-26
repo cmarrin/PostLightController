@@ -4,17 +4,16 @@
 // Total 234 bytes
 
 // 20 bytes
-const int IncMin            1
-const int IncMax            10
-const float BrightnessMin   0.4
-const float ValMin          0.15
+const float IncMin          1
+const float IncMax          10
+const float BrightnessMin   0.3
 const int LedSize           24
 const int NumPixels         8
 const int NumLevels         8
 const int PulseDelay        25
 const int PulseSpeedMult    35
 
-table int FlickerSpeedTable
+table float FlickerSpeedTable
     250 255 40
     250 255 30
     180 240 20
@@ -41,8 +40,8 @@ end
 // Flicker (114 bytes)
 effect f 4
     float leds 24
-    int stepsMin 1
-    int stepsMax 1
+    float stepsMin 1
+    float stepsMax 1
     int speedDelay 1
     
     init
@@ -64,6 +63,7 @@ effect f 4
         LoadX r1 FlickerSpeedTable r0 1
         Store stepsMax r1
         LoadX r1 FlickerSpeedTable r0 2
+        ToInt r1
         Store speedDelay r1
     end
     

@@ -46,12 +46,12 @@ private:
     
     bool type(Type& t);
     
-    void tableEntries();
+    void tableEntries(Type);
     
-    bool values();
+    bool values(Type);
 
     // Value is returned as an int32_t, but it might be a float
-    bool value(int32_t& i);
+    bool value(int32_t& i, Type);
     
     void defs();
     bool def();
