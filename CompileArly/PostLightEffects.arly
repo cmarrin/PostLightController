@@ -121,10 +121,10 @@ effect f 4
                     
                     // Increment inc value for each step a random amount
                     
-                    // ld.inc = Random(incMin, incMax)
+                    // ld.inc = Random(IncMin, IncMax)
                     Load r0 IncMin
                     Load r1 IncMax
-                    Random
+                    RandomFloat
                     StoreX leds r3 1 r0
             
                     // Random number of steps to throb up and down
@@ -132,7 +132,7 @@ effect f 4
                     // led.lim = led.inc + Random(stepsMin, stepsMax);
                     Load r0 stepsMin
                     Load r1 stepsMax
-                    Random
+                    RandomFloat
                     LoadX r1 leds r3 1
                     AddFloat
                     StoreX leds r3 2 r0

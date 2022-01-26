@@ -116,8 +116,11 @@ Interpreter::execute(uint16_t addr)
                 }
                 memset(_ram + id - 0x80, _v[0], _v[1] * sizeof(uint32_t));
                 break;
-            case Op::Random        :
-                _v[0] = floatToInt(randomFloat(_v[0], _v[1]));
+            case Op::RandomInt     :
+                _v[0] = random(int32_t(_v[0]), int32_t(_v[1]));
+                break;
+            case Op::RandomFloat   :
+                _v[0] = floatToInt(random(intToFloat(_v[0]), intToFloat(_v[1])));
                 break;
             case Op::Bor           :
                 _v[0] |= _v[1];

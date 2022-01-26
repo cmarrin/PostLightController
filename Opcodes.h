@@ -166,7 +166,8 @@ Opcodes:
 
     SetLight rd rs          - light(v[rd]) = c[rs]
     Init id                 - Init mem at id with value in r[0] for r[1] values
-    Random                  - random(v[0], v[1]), using Effect::randomFloat
+    RandomInt               - random(v[0], v[1]), integer params, integer return
+    RandomFloat             - random(v[0], v[1]), float params, float return
 
     If sz                   - If v[0] is non-zero execute statements in first clause. 
                               If zero skip the statements. Number of bytes to skip is 
@@ -258,13 +259,14 @@ enum class Op: uint8_t {
     SetLight        = 0x1c,
 
     Init            = 0x1d,
-    Random          = 0x1e,
+    RandomInt       = 0x1e,
+    RandomFloat     = 0x1f,
 
-    If              = 0x1f,
-    Else            = 0x20,
-    EndIf           = 0x21, // At the end of if
-    EndForEach      = 0x22, // At the end of foreach
-    End             = 0x23, // Indicates the end of init or loop
+    If              = 0x20,
+    Else            = 0x21,
+    EndIf           = 0x22, // At the end of if
+    EndForEach      = 0x23, // At the end of foreach
+    End             = 0x24, // Indicates the end of init or loop
 
 // 12 unused opcodes
 

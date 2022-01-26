@@ -7,6 +7,7 @@
 
 #include "CompileEngine.h"
 
+#include <cmath>
 #include <map>
 
 using namespace arly;
@@ -26,7 +27,8 @@ std::vector<OpData> CompileEngine::_opcodes = {
     { "MaxFloat",       Op::MaxFloat        , OpParams::None },
     { "SetLight",       Op::SetLight        , OpParams::Rd_Cs },
     { "Init",           Op::Init            , OpParams::Id },
-    { "Random",         Op::Random          , OpParams::None },
+    { "RandomInt",      Op::RandomInt       , OpParams::None },
+    { "RandomFloat",    Op::RandomFloat     , OpParams::None },
     { "Bor",            Op::Bor             , OpParams::None },
     { "Bxor",           Op::Bxor            , OpParams::None },
     { "Band",           Op::Band            , OpParams::None },

@@ -62,11 +62,17 @@ public:
     int16_t errorAddr() const { return _errorAddr; }
     
 	// Return a float with a random number between min and max.
-	// Multiply min and max by 100 and then divide the result 
-	// to give 2 decimal digits of precision
-	static float randomFloat(uint8_t min, uint8_t max)
+	// The random function takes ints. Multiply inputs by 1000 then divide the result
+    // by the same to get a floating point result. That effectively makes the range
+    // +/-2,000,000.
+	static float random(float min, float max)
 	{
-		return float(random(int32_t(min) * 100, int32_t(max) * 100)) / 100;
+		return float(::random(int32_t(min * 1000), int32_t(max * 1000))) / 1000;
+	}
+	
+	static int32_t random(int32_t min, int32_t max)
+	{
+		return ::random(min, max);
 	}
 	
 protected:
