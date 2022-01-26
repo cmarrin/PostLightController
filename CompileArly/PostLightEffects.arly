@@ -4,8 +4,8 @@
 // Total 234 bytes
 
 // 20 bytes
-const float IncMin          1
-const float IncMax          10
+const float IncMin          0.004
+const float IncMax          0.04
 const float BrightnessMin   0.3
 const int LedSize           24
 const int NumPixels         8
@@ -14,14 +14,14 @@ const int PulseDelay        25
 const int PulseSpeedMult    35
 
 table float FlickerSpeedTable
-    250 255 40
-    250 255 30
-    180 240 20
-    150 200 20
-     70 120 20
-     20  80 20
-      8  40 10
-      2   5 10
+    0.98 1    40
+    0.98 1    30
+    0.71 0.94 20
+    0.59 0.78 20
+    0.27 0.47 20
+    0.08 0.31 20
+    0.03 0.16 10
+    0.01 0.02 10
 end
 
 // Constant Color (4 bytes)
@@ -141,12 +141,9 @@ effect f 4
             
             // Multiply val by brightness
             
-            // brightness = BrightnessMin + (led.off / 255);
-            LoadX r0 leds r3 0
-            LoadByteMax r1
-            ToFloat r1
-            DivFloat
-            Load r1 BrightnessMin
+            // brightness = BrightnessMin + led.off;
+            Load r0 BrightnessMin
+            LoadX r1 leds r3 0
             AddFloat
 
             // val = max(_color.val() * brightness, BrightnessMin)
