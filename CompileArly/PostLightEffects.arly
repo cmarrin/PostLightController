@@ -193,7 +193,6 @@ effect p 5
         
         LoadColorParam c0 0
         LoadVal r0 c0
-        Store cur r0
         Store max r0
         
         // min = c.val - (float(depth + 1) / 8 * (c.val - BrightnessMin))
@@ -205,13 +204,13 @@ effect p 5
         ToFloat r1
         DivFloat
         Move r2 r0
-        Load r0 cur
-        Load r1 ValMin
+        Load r0 max
+        Load r1 BrightnessMin
         SubFloat
         Move r1 r2
         MulFloat
         Move r1 r0
-        Load r0 cur
+        Load r0 max
         SubFloat
         Store min r0
 
@@ -230,6 +229,12 @@ effect p 5
         Move r0 r2
         DivFloat
         Store inc r0
+
+        // Start with a random value for cur
+        Load r0 min
+        Load r1 max
+        RandomFloat
+        Store cur r0
     end
         
     loop
