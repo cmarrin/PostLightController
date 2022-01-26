@@ -12,9 +12,9 @@
 using namespace arly;
 
 std::vector<OpData> CompileEngine::_opcodes = {
-    { "LoadColorX",     Op::LoadColor       , OpParams::Cd_Id_Rs },
+    { "LoadColorX",     Op::LoadColor       , OpParams::Cd_Id_Rs_I },
     { "LoadX",          Op::LoadX           , OpParams::Rd_Id_Rs_I },
-    { "StoreColorX",    Op::StoreColorX     , OpParams::Id_Rd_Cs },
+    { "StoreColorX",    Op::StoreColorX     , OpParams::Id_Rd_I_Cs },
     { "StoreX",         Op::StoreX          , OpParams::Id_Rd_I_Rs },
     { "MoveColor",      Op::MoveColor       , OpParams::Cd_Cs },
     { "Move",           Op::Move            , OpParams::Rd_Rs },
@@ -507,20 +507,20 @@ CompileEngine::handleOpParamsRdRs(Op op, uint8_t rd, uint8_t rs)
 }
 
 void
-CompileEngine::handleOpParamsRdRs(Op op, uint8_t a, uint8_t rd, uint8_t rs)
+CompileEngine::handleOpParamsRdRs(Op op, uint8_t id, uint8_t rd, uint8_t i, uint8_t rs)
 {
     _rom8.push_back(uint8_t(op));
-    _rom8.push_back(a);
-    _rom8.push_back((rd << 6) | (rs << 4));
+    _rom8.push_back(id);
+    _rom8.push_back((rd << 6) | (rs << 4) | (i & 0x0f));
     expectWithoutRetire(Token::NewLine);
 }
 
 void
-CompileEngine::handleOpParamsRdRsSplit(Op op, uint8_t rd, uint8_t a, uint8_t rs)
+CompileEngine::handleOpParamsRdRsSplit(Op op, uint8_t rd, uint8_t id, uint8_t rs, uint8_t i)
 {
     _rom8.push_back(uint8_t(op));
-    _rom8.push_back(a);
-    _rom8.push_back((rd << 6) | (rs << 4));
+    _rom8.push_back(id);
+    _rom8.push_back((rd << 6) | (rs << 4) | (i & 0x0f));
     expectWithoutRetire(Token::NewLine);
 }
 
@@ -541,8 +541,6 @@ CompileEngine::opStatement()
     _scanner.retireToken();
     
     // Get the params in the sequence specified in OpParams
-    uint8_t i;
-    
     switch(par) {
         case OpParams::None: handleOpParams(uint8_t(op)); break;
         case OpParams::R: handleOpParams(handleR(op)); break;
@@ -555,29 +553,22 @@ CompileEngine::opStatement()
         case OpParams::Id_R: handleOpParamsReverse(handleId(), handleR(op)); break;
         case OpParams::Id_C: handleOpParamsReverse(handleId(), handleC(op)); break;
 
-        case OpParams::Rd_Id_Rs: handleOpParamsRdRsSplit(op, handleR(), handleId(), handleR()); break;
-        case OpParams::Cd_Id_Rs: handleOpParamsRdRsSplit(op, handleC(), handleId(), handleR()); break;
-
-        case OpParams::Id_Rd_Rs: handleOpParamsRdRs(op, handleId(), handleR(), handleR()); break;
-        case OpParams::Id_Rd_Cs: handleOpParamsRdRs(op, handleId(), handleR(), handleC()); break;
         case OpParams::Rd_Rs: handleOpParamsRdRs(op, handleR(), handleR()); break;
         case OpParams::Cd_Rs: handleOpParamsRdRs(op, handleC(), handleR()); break;
         case OpParams::Rd_Cs: handleOpParamsRdRs(op, handleR(), handleC()); break;
         case OpParams::Cd_Cs: handleOpParamsRdRs(op, handleC(), handleC()); break;
 
+        case OpParams::Cd_Id_Rs_I:
+            handleOpParamsRdRsSplit(op, handleC(), handleId(), handleR(), handleI());
+            break;
         case OpParams::Rd_Id_Rs_I:
-            _rom8.push_back(uint8_t(op));
-            i = handleR();
-            _rom8.push_back(handleId());
-            _rom8.push_back((i << 6) | (handleR() << 4) | handleI());
-            expectWithoutRetire(Token::NewLine);
+            handleOpParamsRdRsSplit(op, handleR(), handleId(), handleR(), handleI());
+            break;
+        case OpParams::Id_Rd_I_Cs:
+            handleOpParamsRdRs(op, handleId(), handleR(), handleI(), handleC());
             break;
         case OpParams::Id_Rd_I_Rs:
-            _rom8.push_back(uint8_t(op));
-            _rom8.push_back(handleId());
-            i = handleR();
-            _rom8.push_back((i << 6) | handleI() | (handleR() << 4));
-            expectWithoutRetire(Token::NewLine);
+            handleOpParamsRdRs(op, handleId(), handleR(), handleI(), handleR());
             break;
         case OpParams::Id:
             _rom8.push_back(uint8_t(op));

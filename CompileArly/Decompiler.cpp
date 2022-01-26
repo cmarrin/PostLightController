@@ -236,17 +236,7 @@ Decompiler::statement()
             _out->append("] ");
             _out->append(regString(r, true));
             break;
-        case OpParams::Rd_Id_Rs:
-            id = getUInt8();
-            rdrsi = getUInt8();
-            
-            _out->append(regString(rdrsi >> 6));
-            _out->append(" [");
-            _out->append(std::to_string(id));
-            _out->append("] ");
-            _out->append(regString((rdrsi >> 4) & 0x03));
-            break;
-        case OpParams::Cd_Id_Rs:
+        case OpParams::Cd_Id_Rs_I:
             id = getUInt8();
             rdrsi = getUInt8();
             
@@ -255,6 +245,8 @@ Decompiler::statement()
             _out->append(std::to_string(id));
             _out->append("] ");
             _out->append(regString((rdrsi >> 4) & 0x03));
+            _out->append(" ");
+            _out->append(std::to_string(rdrsi & 0x0f));
             break;
         case OpParams::Rd_Id_Rs_I:
             id = getUInt8();
@@ -268,18 +260,7 @@ Decompiler::statement()
             _out->append(" ");
             _out->append(std::to_string(rdrsi & 0x0f));
             break;
-        case OpParams::Id_Rd_Rs:
-            id = getUInt8();
-            rdrsi = getUInt8();
-            
-            _out->append("[");
-            _out->append(std::to_string(id));
-            _out->append("] ");
-            _out->append(regString(rdrsi >> 6, true));
-            _out->append(" ");
-            _out->append(regString((rdrsi >> 4) & 0x03));
-            break;
-        case OpParams::Id_Rd_Cs:
+        case OpParams::Id_Rd_I_Cs:
             id = getUInt8();
             rdrsi = getUInt8();
             
@@ -287,6 +268,8 @@ Decompiler::statement()
             _out->append(std::to_string(id));
             _out->append("] ");
             _out->append(regString(rdrsi >> 6));
+            _out->append(" ");
+            _out->append(std::to_string(rdrsi & 0x0f));
             _out->append(" ");
             _out->append(regString((rdrsi >> 4) & 0x03, true));
             break;

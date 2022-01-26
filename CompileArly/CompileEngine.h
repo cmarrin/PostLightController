@@ -72,8 +72,8 @@ private:
     void handleOpParams(uint8_t a, uint8_t b);
     void handleOpParamsReverse(uint8_t a, uint8_t b);
     void handleOpParamsRdRs(Op op, uint8_t rd, uint8_t rs);
-    void handleOpParamsRdRs(Op op, uint8_t a, uint8_t rd, uint8_t rs);
-    void handleOpParamsRdRsSplit(Op op, uint8_t rd, uint8_t a, uint8_t rs);
+    void handleOpParamsRdRs(Op op, uint8_t id, uint8_t rd, uint8_t i, uint8_t rs);
+    void handleOpParamsRdRsSplit(Op op, uint8_t rd, uint8_t a, uint8_t rs, uint8_t i);
     
     bool opStatement();
     bool forStatement();

@@ -140,10 +140,13 @@ Opcodes:
     LoadFloatOne r          - v[r] = 1.0f
     LoadIntByteMax r        - v[r] = 255
     
-    LoadColorX rd id rs     - c[rd] = mem[id + (v[rs] * 3)]
-    LoadX rd, id, rs, i     - v[rd] = mem[id + v[rs] + i]
-    StoreColorX id rd rs    - mem[id + (v[rd] * 3)] = c[rs]
-    StoreX id rd i rs       - mem[id + v[rd] + i] = v[rs]
+    // Load value from indexed location (ROM or RAM)
+    LoadColorIX rd id rs i   - c[rd] = mem[id + (v[rs] * 3)]
+    LoadIX rd, id, rs, i     - v[rd] = mem[id + v[rs] + i]
+    
+    // Store value to indexed location (RAM only)
+    StoreColorIX id rd i rs  - mem[id + (v[rd] * 3)] = c[rs]
+    StoreIX id rd i rs       - mem[id + v[rd] + i] = v[rs]
     
     MoveColor rd, rs        - c[rd] = c[rs]
     Move rd, rs             - v[rd] = v[rs]
@@ -234,6 +237,9 @@ Opcodes:
 
 // Ops of 0x80 and above have an r param in the lower 2 bits.
 enum class Op: uint8_t {
+
+// 16 unused opcodes
+
     LoadColorX      = 0x10,
     LoadX           = 0x11,
     StoreColorX     = 0x12,
@@ -259,6 +265,8 @@ enum class Op: uint8_t {
     EndIf           = 0x21, // At the end of if
     EndForEach      = 0x22, // At the end of foreach
     End             = 0x23, // Indicates the end of init or loop
+
+// 12 unused opcodes
 
     Bor             = 0x30,
     Bxor            = 0x31,
@@ -293,6 +301,8 @@ enum class Op: uint8_t {
 
     NegInt          = 0x4b,
     NegFloat        = 0x4c,
+    
+// 52 unused opcodes
 
     LoadColorParam  = 0x80,
     LoadIntParam    = 0x84,
@@ -314,11 +324,16 @@ enum class Op: uint8_t {
     ToInt           = 0xb8,
     SetAllLights    = 0xbc,
 
-    ForEach         = 0xd0,
+    ForEach         = 0xc0,
+    
+// 7 unused opcodes
 
     Log             = 0xe0, // Print r as int32_t with addr - For debugging
     LogFloat        = 0xe4, // Print r as float with addr - For debugging
     LogColor        = 0xe8, // Print c with addr - For debugging
+    
+// 5 unused opcodes
+
 };
 
 enum class OpParams : uint8_t {
@@ -331,11 +346,9 @@ enum class OpParams : uint8_t {
     C_Id,       // b[1:0] = 'c0'-'c3', b+1 = <id>
     Id_R,       // b+1 = <id>, b[1:0] = 'r0'-'r3'
     Id_C,       // b+1 = <id>, b[1:0] = 'c0'-'c3'
-    Rd_Id_Rs,   // b+2[7:6] = 'r0'-'r3', b+1 = <id>, b+2[5:4] = 'r0'-'r3'
-    Cd_Id_Rs,   // b+2[7:6] = 'c0'-'c3', b+1 = <id>, b+2[5:4] = 'r0'-'r3'
+    Cd_Id_Rs_I, // b+2[7:6] = 'c0'-'c3', b+1 = <id>, b+2[5:4] = 'r0'-'r3', b+2[3:0] = <int>
     Rd_Id_Rs_I, // b+2[7:6] = 'r0'-'r3' b+1 = <id>, b+2[5:4] = 'r0'-'r3', b+2[3:0] = <int>
-    Id_Rd_Rs,   // b+1 = <id>, b+2[7:6] = 'r0'-'r3', b+2[5:4] = 'r0'-'r3'
-    Id_Rd_Cs,   // b+1 = <id>, b+2[7:6] = 'r0'-'r3', b+2[5:4] = 'c0'-'c3'
+    Id_Rd_I_Cs, // b+1 = <id>, b+2[7:6] = 'r0'-'r3', b+2[5:4] = 'c0'-'c3', b+2[3:0] = <int>
     Id_Rd_I_Rs, // b+1 = <id>, b+2[7:6] = 'r0'-'r3', b+2[3:0] = <int>, b+2[5:4] = 'r0'-'r3'
     Rd_Rs,      // b+1[7:6] = 'r0'-'r3', b+1[5:4] = 'r0'-'r3'
     Cd_Rs,      // b+1[7:6] = 'c0'-'c3', b+1[5:4] = 'r0'-'r3'
