@@ -128,8 +128,6 @@ private:
 
     Token _currentToken = Token::None;
     Scanner::TokenType _currentTokenValue;
-    
-    bool _lastCharIsNewLine = false;
 };
 
 }

@@ -86,7 +86,8 @@ private:
     void expect(Token token, const char* str = nullptr);
     void expect(bool passed, Compiler::Error error);
     void expectWithoutRetire(Token token);
-    bool match(Reserved r);    
+    bool match(Reserved r);
+    void ignoreNewLines();
     
     // These methods check to see if the next token is of the
     // appropriate type. Some versions just return true or

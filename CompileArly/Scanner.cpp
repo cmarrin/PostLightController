@@ -179,13 +179,15 @@ Token Scanner::scanComment()
 		return Token::Comment;
 	}
 	if (c == '/') {
-		// Comment
+		// Single line comment
 		for ( ; ; ) {
 			c = get();
 			if (c == C_EOF) {
 				return Token::EndOfFile;
 			}
 			if (c == '\n') {
+                // Don't eat the newline for single line comments. We need to return it later
+                putback(c);
 				break;
 			}
 		}
@@ -218,29 +220,20 @@ uint8_t Scanner::get() const
 Token Scanner::getToken(TokenType& tokenValue)
 {
 	uint8_t c;
-	Token token = Token::EndOfFile;
-	
+	Token token = Token::EndOfFile;	
 	while (token == Token::EndOfFile && (c = get()) != C_EOF) {
         if (isspace(c)) {
             continue;
         }
-        if (isnewline(c)) {
-            // If this is a blank line, ignore
-            if (_lastCharIsNewLine) {
-                continue;
-            }
-            _lastCharIsNewLine = true;
-            return Token::NewLine;
-        }
-        
-        _lastCharIsNewLine = false;
         
 		switch(c) {
+            case '\n':
+                token = Token::NewLine;
+				break;
 			case '/':
 				token = scanComment();
 				if (token == Token::Comment) {
 					// For now we ignore comments
-                    _lastCharIsNewLine = true;
                     token = Token::EndOfFile;
 					break;
 				}

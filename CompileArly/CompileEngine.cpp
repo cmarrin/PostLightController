@@ -141,6 +141,7 @@ void
 CompileEngine::constants()
 {
     while(1) {
+        ignoreNewLines();
         if (!constant()) {
             return;
         }
@@ -152,6 +153,7 @@ void
 CompileEngine::tables()
 {
     while(1) {
+        ignoreNewLines();
         if (!table()) {
             return;
         }
@@ -163,6 +165,7 @@ void
 CompileEngine::effects()
 {
     while(1) {
+        ignoreNewLines();
         if (!effect()) {
             return;
         }
@@ -211,6 +214,7 @@ CompileEngine::table()
     // Set the start address of the table. tableEntries() will fill them in
     _symbols.emplace_back(id, _rom32.size(), true);
     
+    ignoreNewLines();
     tableEntries(t);
     expect(Token::Identifier, "end");
     return true;
@@ -250,6 +254,8 @@ CompileEngine::effect()
     defs();
     init();
     loop();
+
+    ignoreNewLines();
     expect(match(Reserved::End), Compiler::Error::ExpectedEnd);
     return true;
 }
@@ -272,6 +278,7 @@ void
 CompileEngine::tableEntries(Type t)
 {
     while (1) {
+        ignoreNewLines();
         if (!values(t)) {
             break;
         }
@@ -324,6 +331,7 @@ void
 CompileEngine::defs()
 {
     while(1) {
+        ignoreNewLines();
         if (!def()) {
             return;
         }
@@ -358,6 +366,8 @@ CompileEngine::def()
 bool
 CompileEngine::init()
 {
+    ignoreNewLines();
+
     if (!match(Reserved::Init)) {
         return false;
     }
@@ -366,6 +376,8 @@ CompileEngine::init()
     _effects.back()._initAddr = uint16_t(_rom8.size());
     
     statements();
+
+    ignoreNewLines();
     expect(match(Reserved::End), Compiler::Error::ExpectedEnd);
     expect(Token::NewLine);
 
@@ -376,6 +388,8 @@ CompileEngine::init()
 bool
 CompileEngine::loop()
 {
+    ignoreNewLines();
+
     if (!match(Reserved::Loop)) {
         return false;
     }
@@ -384,6 +398,8 @@ CompileEngine::loop()
     _effects.back()._loopAddr = uint16_t(_rom8.size());
 
     statements();
+
+    ignoreNewLines();
     expect(match(Reserved::End), Compiler::Error::ExpectedEnd);
     expect(Token::NewLine);
 
@@ -395,6 +411,7 @@ void
 CompileEngine::statements()
 {
     while(1) {
+        ignoreNewLines();
         if (!statement()) {
             return;
         }
@@ -752,6 +769,17 @@ CompileEngine::match(Reserved r)
     }
     _scanner.retireToken();
     return true;
+}
+
+void
+CompileEngine::ignoreNewLines()
+{
+    while (1) {
+        if (_scanner.getToken() != Token::NewLine) {
+            break;
+        }
+        _scanner.retireToken();
+    }
 }
 
 bool
