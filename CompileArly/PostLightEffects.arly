@@ -39,7 +39,7 @@ end
 
 // Flicker (114 bytes)
 effect f 4
-    float leds 24
+    float leds 32       // cur, inc, min, max
     float stepsMin 1
     float stepsMax 1
     int speedDelay 1
@@ -55,9 +55,8 @@ effect f 4
         
         // Init min, max and delay from SpeedTable
         LoadIntParam r0 3
-        Move r1 r0
-        AddInt
-        AddInt
+        LoadIntConst r1 3
+        MulInt
         LoadX r1 FlickerSpeedTable r0 0
         Store stepsMin r1
         LoadX r1 FlickerSpeedTable r0 1
@@ -73,11 +72,10 @@ effect f 4
         
         // for (i = 0; i < NumPixels; ++i)
         foreach r2
-			// r3 holds the index of the current LED (r2 * 3)
+			// r3 holds the index of the current LED (r2 * 4)
 			Move r0  r2
-			Move r1  r2
-			AddInt
-			AddInt
+			LoadIntConst r1  4
+			MulInt
 			Move r3  r0
             
             // led.off += led.inc
@@ -193,7 +191,7 @@ effect p 5
         
         // min = c.val - (float(depth + 1) / 8 * (c.val - BrightnessMin))
         LoadIntParam r0 4
-        LoadIntOne r1
+        LoadIntConst r1 1
         AddInt
         ToFloat r0
         Load r1 NumLevels
@@ -255,7 +253,7 @@ effect p 5
             Load r1 min
             LEFloat
             if
-                LoadIntOne r0
+                LoadIntConst r0 1
                 Store increasing r0
                 Load r3 cur
             end
