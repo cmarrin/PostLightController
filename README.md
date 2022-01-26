@@ -1,6 +1,35 @@
 # PostLightController
-## Code for Pond controller
-Software runs on Arduino Nano. SoftSerial is used to receive packets of data fom the host (running Node-Red).
+
+## Introduction
+This is a controller for post lights along my fence. Each post has a NeoPixels 8 pixel ring and an Arduino Nano to drive it.
+It receives serial data from a Raspberry Pi with 0-5v levels and no line conditioning other than 0.01uf capacitors on the input
+and output serial lines. Data comes in on pin 11 and is sent out on pin 10. Post Light Controllers are connected in serial. The
+previous controller sends data to the next. Each serial packet contains an address. An address of 0 sends the packet to all
+controller, so every byte is simply passed on. If the address is 1, this packet is for the receiving controller. It consumes it
+and doesn't send it on. If it is greater than 1 the address is decremented and the packet is sent to the next controller. So for
+instance an address of 5 is consumed by the 5th controller in the chain.
+
+SoftSerial is used to receive and send packets. Each packet consists of a variable number of bytes, starting with a lead-in ('('),
+address, command and size. This is followed by <size> bytes of payload then by a checksum byte and a lead-out (')'). The command
+tells the controller what sequence to run. For instance it can set a constant color ('c') of flicker the lights to looks like a
+burning candle ('f'). The payload is specific to the command. But most commands start with a color as a byte each of hue,
+saturation and value (brightness). 
+	
+## Interpreter
+	
+In order to avoid having to reprogram each post light controller whenever a command is added or changed, the system has an interpreter
+for a custom language, Arly. This is a simple language, almost at the machine code level. The runtime engine has 4 registers that
+can hold an int32 or float and 4 color registers. Basic math functions are available for both ints and floats, as well as register
+moving and load/store of values, either direct or indexed. For loops and if-then statements are available. There are also special 
+instructions for setting the lights, generating a random number, etc. Read/write store of 64 ints or floats can be defined for each 
+command, single int or float constants and constant tables (int or float) can be defined. Constants and the binary program to be 
+interpreted are stored in EEPROM.
+	
+The interpreter is very simple. For instance nested for loops are not allowed and loops and if-else clauses are limited to 64 bytes
+in length. Arly is written in a source format which is compiled into binary in 64 byte blocks. Each block is preceeded by a 2 byte
+address where that block is loaded in EEPROM. The controllers have an 'X' command to upload the blocks to EEPROM. To avoid wearing
+out the EEPROM it is only written to with the 'X' command. All interpreted instructions that store values, place them in the 64
+word RAM store.
 
 ### TODO
 - ☑︎ Get rid of color table
