@@ -9,6 +9,7 @@
 #include "Decompiler.h"
 #include "Interpreter.h"
 #include <iostream>
+#include <filesystem>
 #include <fstream>
 #include <getopt.h>
 
@@ -160,6 +161,14 @@ int main(int argc, char * const argv[])
     
     // Write executable if needed
     if (outputFile.size()) {
+        // Delete any old copies
+        for (int i = 0; ; ++i) {
+            std::string name = outputFile + std::to_string(i) + ".arlx";
+            if (remove(name.c_str()) != 0) {
+                break;
+            }
+        }
+
         std::cout << "\nEmitting executable to '" << outputFile << "'\n";
         std::fstream outStream;
         
