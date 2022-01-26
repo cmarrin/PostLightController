@@ -67,7 +67,7 @@ private:
     uint8_t handleC(Op op);
     uint8_t handleI();
     uint8_t handleId();
-    
+    uint8_t handleConst();  
     void handleOpParams(uint8_t a);
     void handleOpParams(uint8_t a, uint8_t b);
     void handleOpParamsReverse(uint8_t a, uint8_t b);

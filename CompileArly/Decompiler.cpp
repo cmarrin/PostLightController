@@ -315,6 +315,11 @@ Decompiler::statement()
             _out->append(std::to_string(getUInt8()));
             _out->append("]");
             break;
+        case OpParams::R_Const:
+            _out->append(regString(r));
+            _out->append(" ");
+            _out->append(std::to_string(getUInt8()));
+            break;
         case OpParams::R_Sz:
             _out->append(regString(r));
             _out->append(" [");

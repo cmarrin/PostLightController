@@ -67,9 +67,7 @@ std::vector<OpData> CompileEngine::_opcodes = {
     { "Store",          Op::Store           , OpParams::Id_R },
     { "LoadBlack",      Op::LoadBlack       , OpParams::C },
     { "LoadZero",       Op::LoadZero        , OpParams::R },
-    { "LoadIntOne",     Op::LoadIntOne      , OpParams::R },
-    { "LoadFloatOne",   Op::LoadFloatOne    , OpParams::R },
-    { "LoadByteMax",    Op::LoadByteMax     , OpParams::R },
+    { "LoadIntConst",   Op::LoadIntConst    , OpParams::R_Const },
     { "Return",         Op::Return          , OpParams::R },
     { "ToFloat",        Op::ToFloat         , OpParams::R },
     { "ToInt",          Op::ToInt           , OpParams::R },
@@ -492,6 +490,14 @@ CompileEngine::handleI()
 }
 
 uint8_t
+CompileEngine::handleConst()
+{
+    int32_t i;
+    expect(integerValue(i), Compiler::Error::ExpectedInt);
+    return uint8_t(i);
+}
+
+uint8_t
 CompileEngine::handleId()
 {
     std::string id;
@@ -604,6 +610,9 @@ CompileEngine::opStatement()
             _rom8.push_back(uint8_t(op));
             _rom8.push_back(handleId());
             expectWithoutRetire(Token::NewLine);
+            break;
+        case OpParams::R_Const:
+            handleOpParams(handleR(op), handleConst()); break;
             break;
         case OpParams::R_Sz:
         case OpParams::Sz:

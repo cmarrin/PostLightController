@@ -282,14 +282,8 @@ Interpreter::execute(uint16_t addr)
             case Op::LoadZero      :
                 _v[r] = 0;
                 break;
-            case Op::LoadIntOne    :
-                _v[r] = 1;
-                break;
-            case Op::LoadFloatOne  :
-                _v[r] = floatToInt(1.0f);
-                break;
-            case Op::LoadByteMax   :
-                _v[r] = 255;
+            case Op::LoadIntConst  :
+                _v[r] = getConst();
                 break;
             case Op::Return        :
                 return _v[r];

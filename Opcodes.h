@@ -317,9 +317,7 @@ enum class Op: uint8_t {
 
     LoadBlack       = 0x9c,
     LoadZero        = 0xa0,
-    LoadIntOne      = 0xa4,
-    LoadFloatOne    = 0xa8,
-    LoadByteMax     = 0xac,
+    LoadIntConst    = 0xa4,
 
     Return          = 0xb0,
     ToFloat         = 0xb4,
@@ -357,6 +355,7 @@ enum class OpParams : uint8_t {
     Rd_Cs,      // b+1[7:6] = 'r0'-'r3', b+1[5:4] = 'c0'-'c3'
     Cd_Cs,      // b+1[7:6] = 'c0'-'c3', b+1[5:4] = 'c0'-'c3'
     Id,         // b+1 = <id>
+    R_Const,    // b+1 = 0-255
     R_Sz,       // foreach case
     Sz,         // If, Else case
 };
