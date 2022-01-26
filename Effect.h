@@ -6,7 +6,9 @@
 
 #pragma once
 
-#include <Adafruit_NeoPixel.h>
+#include <stdint.h>
+
+class Adafruit_NeoPixel;
 
 class Effect
 {
