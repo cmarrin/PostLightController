@@ -819,6 +819,7 @@ CompileEngine::expectWithoutRetire(Token token)
     if (_scanner.getToken() != token) {
         _expectedToken = token;
         _expectedString = "";
+        _error = Compiler::Error::ExpectedToken;
         throw true;
     }
 }
