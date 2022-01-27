@@ -216,6 +216,7 @@ private:
     uint8_t _numParams = 0;
     uint16_t _initStart = 0;
     uint16_t _loopStart = 0;
+    uint16_t _codeOffset = 0; // Used by Call to go to the correct absolute address
     
     int16_t _foreachSz = -1; // -1 means no foreach is active
     uint8_t _foreachIReg = 0;
