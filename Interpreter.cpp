@@ -238,24 +238,24 @@ Interpreter::execute(uint16_t addr)
                 id = getId();
                 storeInt(id, 0, _v[r]);
                 break;
-            case Op::LoadColorX    :
+            case Op::LoadColorI    :
                 id = getId();
                 getRdRs(rd, rs);
                 index = _v[rs] * 3;
                 _c[rd] = Color(getFloat(id, index), getFloat(id, index + 1), getFloat(id, index + 2));
                 break;
-            case Op::LoadX         :
+            case Op::LoadI         :
                 id = getId();
                 getRdRsI(rd, rs, i);
                 index = _v[rs] + i;
                 _v[rd] = getInt(id, index);
                 break;
-            case Op::StoreColorX   :
+            case Op::StoreColorI   :
                 id = getId();
                 getRdRs(rd, rs);
                 storeColor(id, _v[rd] * 3, rs);
                 break;
-            case Op::StoreX        :
+            case Op::StoreI        :
                 id = getId();
                 getRdRsI(rd, rs, i);
                 index = _v[rd] + i;

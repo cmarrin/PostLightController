@@ -63,11 +63,11 @@ effect f 4
         LoadIntParam r0 3
         LoadIntConst r1 3
         MulInt
-        LoadX r1 FlickerSpeedTable r0 0
+        LoadI r1 FlickerSpeedTable r0 0
         Store stepsMin r1
-        LoadX r1 FlickerSpeedTable r0 1
+        LoadI r1 FlickerSpeedTable r0 1
         Store stepsMax r1
-        LoadX r1 FlickerSpeedTable r0 2
+        LoadI r1 FlickerSpeedTable r0 2
         ToInt r1
         Store speedDelay r1
     end
@@ -85,42 +85,42 @@ effect f 4
 			Move r3  r0
             
             // led.off += led.inc
-            LoadX r0 leds r3 0
-            LoadX r1 leds r3 1
+            LoadI r0 leds r3 0
+            LoadI r1 leds r3 1
             AddFloat
-            StoreX leds r3 0 r0
+            StoreI leds r3 0 r0
             
             // Check for going past lim (increasing) or below 0 (decreasing)
 
             // if (led.inc > 0)
-            LoadX r0 leds r3 1
+            LoadI r0 leds r3 1
             LoadZero r1
             GTFloat
             if
                 // if (led.off >= led.lim)
-                LoadX r0 leds r3 0
-                LoadX r1 leds r3 2
+                LoadI r0 leds r3 0
+                LoadI r1 leds r3 2
                 GTFloat
                 if
                     // led.off = led.lim
-                    LoadX r0 leds r3 2
-                    StoreX leds r3 0 r0
+                    LoadI r0 leds r3 2
+                    StoreI leds r3 0 r0
                     
                     //led.inc = - led.inc
-                    LoadX r0 leds r3 1
+                    LoadI r0 leds r3 1
                     NegFloat
-                    StoreX leds r3 1 r0
+                    StoreI leds r3 1 r0
                 end
             else
                 // if (led.off <= 0)
-                LoadX r0 leds r3 0
+                LoadI r0 leds r3 0
                 LoadZero r1
                 LEFloat
                 if
                     // We are done with the throb, select a new inc and lim
                     
                     // led.off = 0
-                    StoreX leds r3 0 r1
+                    StoreI leds r3 0 r1
                     
                     // Increment inc value for each step a random amount
                     
@@ -128,7 +128,7 @@ effect f 4
                     Load r0 IncMin
                     Load r1 IncMax
                     RandomFloat
-                    StoreX leds r3 1 r0
+                    StoreI leds r3 1 r0
             
                     // Random number of steps to throb up and down
                     
@@ -136,9 +136,9 @@ effect f 4
                     Load r0 stepsMin
                     Load r1 stepsMax
                     RandomFloat
-                    LoadX r1 leds r3 1
+                    LoadI r1 leds r3 1
                     AddFloat
-                    StoreX leds r3 2 r0
+                    StoreI leds r3 2 r0
                 end
             end
             
@@ -146,7 +146,7 @@ effect f 4
             
             // brightness = BrightnessMin + led.off;
             Load r0 BrightnessMin
-            LoadX r1 leds r3 0
+            LoadI r1 leds r3 0
             AddFloat
 
             // val = max(_color.val() * brightness, BrightnessMin)

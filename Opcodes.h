@@ -141,15 +141,29 @@ Opcodes:
     LoadIntOne r            - v[r] = 1
     LoadFloatOne r          - v[r] = 1.0f
     LoadIntByteMax r        - v[r] = 255
+
+    // These opcodes work with indirect addresses. The general form is [id][r][off].
+    // [id] is a memory array to read or write. [r] holds an index into that
+    // array. In the case of colors, this index is multiplied by 3. [off] is an 
+    // offset into that array index, to access individual elements of a structured
+    // array entry, for instance. 3 forms are available. The 'I' variants directly
+    // access the value at the final memory location and load or store data. The
+    // 'X' variants simply load the final memory location into the given  destination
+    // register. The 'IX' variants use the memory location loaded in the 'X' variant
+    // to access the data there.
     
-    // Load value from indexed location (ROM or RAM)
-    LoadColorIX rd id rs i   - c[rd] = mem[id + (v[rs] * 3)]
-    LoadIX rd, id, rs, i     - v[rd] = mem[id + v[rs] + i]
+    LoadI rd id rs i         - v[rd] = mem[id + v[rs] + i]
+    StoreI id rd i rs        - mem[id + v[rd] + i] = v[rs]
+    LoadColorI rd id rs i    - c[rd] = mem[id + (v[rs] * 3) + i]
+    StoreColorI id rd i rs   - mem[id + (v[rd] * 3) + i] = c[rs]
     
-    // Store value to indexed location (RAM only)
-    StoreColorIX id rd i rs  - mem[id + (v[rd] * 3)] = c[rs]
-    StoreIX id rd i rs       - mem[id + v[rd] + i] = v[rs]
+    LoadX rd id rs i        - v[rd] = id + v[rs] + i
+    LoadColorX rd id rs i   - v[rd] = id + (v[rs] * 3) + i
     
+    LoadIX rd rs i          - v[rd] = mem[v[rs] + i]
+    LoadColorIX rd rs i     - c[rd] = mem[v[rs] + i]
+
+
     MoveColor rd, rs        - c[rd] = c[rs]
     Move rd, rs             - v[rd] = v[rs]
     
@@ -246,34 +260,29 @@ enum class Op: uint8_t {
 
 // 16 unused opcodes
 
-    LoadColorX      = 0x10,
-    LoadX           = 0x11,
-    StoreColorX     = 0x12,
-    StoreX          = 0x13,
+    MoveColor       = 0x10,
+    Move            = 0x11,
 
-    MoveColor       = 0x14,
-    Move            = 0x15,
+    LoadVal         = 0x12,
+    StoreVal        = 0x13,
+    MinInt          = 0x14,
+    MinFloat        = 0x15,
+    MaxInt          = 0x16,
+    MaxFloat        = 0x17,
 
-    LoadVal         = 0x16,
-    StoreVal        = 0x17,
-    MinInt          = 0x18,
-    MinFloat        = 0x19,
-    MaxInt          = 0x1a,
-    MaxFloat        = 0x1b,
+    SetLight        = 0x18,
 
-    SetLight        = 0x1c,
+    Init            = 0x19,
+    RandomInt       = 0x1a,
+    RandomFloat     = 0x1b,
 
-    Init            = 0x1d,
-    RandomInt       = 0x1e,
-    RandomFloat     = 0x1f,
+    If              = 0x1c,
+    Else            = 0x1d,
+    EndIf           = 0x1e, // At the end of if
+    EndForEach      = 0x1f, // At the end of foreach
+    End             = 0x20, // Indicates the end of init or loop
 
-    If              = 0x20,
-    Else            = 0x21,
-    EndIf           = 0x22, // At the end of if
-    EndForEach      = 0x23, // At the end of foreach
-    End             = 0x24, // Indicates the end of init or loop
-
-// 12 unused opcodes
+// 15 unused opcodes
 
     Bor             = 0x30,
     Bxor            = 0x31,
@@ -311,6 +320,11 @@ enum class Op: uint8_t {
     
     Return          = 0x4d,
     
+    LoadColorI      = 0x50,
+    LoadI           = 0x51,
+    StoreColorI     = 0x52,
+    StoreI          = 0x53,
+
 // 52 unused opcodes
 
     LoadColorParam  = 0x80,

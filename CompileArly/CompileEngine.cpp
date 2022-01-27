@@ -13,10 +13,10 @@
 using namespace arly;
 
 std::vector<OpData> CompileEngine::_opcodes = {
-    { "LoadColorX",     Op::LoadColor       , OpParams::Cd_Id_Rs_I },
-    { "LoadX",          Op::LoadX           , OpParams::Rd_Id_Rs_I },
-    { "StoreColorX",    Op::StoreColorX     , OpParams::Id_Rd_I_Cs },
-    { "StoreX",         Op::StoreX          , OpParams::Id_Rd_I_Rs },
+    { "LoadColorI",     Op::LoadColorI      , OpParams::Cd_Id_Rs_I },
+    { "LoadI",          Op::LoadI           , OpParams::Rd_Id_Rs_I },
+    { "StoreColorI",    Op::StoreColorI     , OpParams::Id_Rd_I_Cs },
+    { "StoreI",         Op::StoreI          , OpParams::Id_Rd_I_Rs },
     { "MoveColor",      Op::MoveColor       , OpParams::Cd_Cs },
     { "Move",           Op::Move            , OpParams::Rd_Rs },
     { "LoadVal",        Op::LoadVal         , OpParams::Rd_Cs },
