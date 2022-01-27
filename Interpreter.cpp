@@ -285,7 +285,7 @@ Interpreter::execute(uint16_t addr)
             case Op::LoadIntConst  :
                 _v[r] = getConst();
                 break;
-            case Op::Return        :
+            case Op::Exit          :
                 return _v[r];
                 break;
             case Op::ToFloat       :

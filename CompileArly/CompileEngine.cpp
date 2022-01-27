@@ -68,7 +68,7 @@ std::vector<OpData> CompileEngine::_opcodes = {
     { "LoadBlack",      Op::LoadBlack       , OpParams::C },
     { "LoadZero",       Op::LoadZero        , OpParams::R },
     { "LoadIntConst",   Op::LoadIntConst    , OpParams::R_Const },
-    { "Return",         Op::Return          , OpParams::R },
+    { "Exit",           Op::Exit            , OpParams::R },
     { "ToFloat",        Op::ToFloat         , OpParams::R },
     { "ToInt",          Op::ToInt           , OpParams::R },
     { "SetAllLights",   Op::SetAllLights    , OpParams::C },

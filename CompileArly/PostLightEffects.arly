@@ -33,7 +33,7 @@ effect c 3
     loop
         SetAllLights c0
         LoadZero r0
-        Return r0
+        Exit r0
     end
 end
 
@@ -154,7 +154,7 @@ effect f 4
         
         // return speedDelay
         Load r0 speedDelay
-        Return r0
+        Exit r0
     end
 end
 
@@ -263,7 +263,7 @@ effect p 5
         StoreVal c0 r3
         SetAllLights c0
         Load r0 PulseDelay
-        Return r0
+        Exit r0
     end
 end
 

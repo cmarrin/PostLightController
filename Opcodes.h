@@ -158,7 +158,7 @@ Opcodes:
     MaxInt                  - v[0] = max(v[0], v[1]) (values are int32_t)
     MaxFloat                - v[0] = max(v[0], v[1]) (values are float)
     
-    Return r                - return v[r] (assumes v[r] is int32_t)
+    Exit r                  - exit interpreter and return value in v[r] (assumes v[r] is int32_t)
     ToFloat r               - v[r] = float(v[r])
     ToInt r                 - v[r] = int32_t(v[r])
     
@@ -319,7 +319,7 @@ enum class Op: uint8_t {
     LoadZero        = 0xa0,
     LoadIntConst    = 0xa4,
 
-    Return          = 0xb0,
+    Exit            = 0xb0,
     ToFloat         = 0xb4,
     ToInt           = 0xb8,
     SetAllLights    = 0xbc,
