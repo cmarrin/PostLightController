@@ -249,25 +249,29 @@ int main(int argc, char * const argv[])
             
                 if (success) {
                     std::cout << "Complete\n\n";
-                } else {
-                    const char* err = "unknown";
-                    switch(sim.error()) {
-                        case arly::Interpreter::Error::None: err = "internal error"; break;
-                        case arly::Interpreter::Error::CmdNotFound: err = "command not found"; break;
-                        case arly::Interpreter::Error::NestedForEachNotAllowed: err = "nested foreach not allowed"; break;
-                        case arly::Interpreter::Error::UnexpectedOpInIf: err = "unexpected op in if (internal error)"; break;
-                        case arly::Interpreter::Error::InvalidOp: err = "invalid opcode"; break;
-                        case arly::Interpreter::Error::OnlyMemAddressesAllowed: err = "only Mem addresses allowed"; break;
-                    }
-                    std::cout << "Interpreter failed: " << err;
-                    
-                    int16_t errorAddr = sim.errorAddr();
-                    if (errorAddr >= 0) {
-                        std::cout << " at addr " << errorAddr;
-                    }
-                    
-                    std::cout << "\n\n";
                 }
+            }
+            
+            if (!success) {
+                const char* err = "unknown";
+                switch(sim.error()) {
+                    case arly::Interpreter::Error::None: err = "internal error"; break;
+                    case arly::Interpreter::Error::CmdNotFound: err = "command not found"; break;
+                    case arly::Interpreter::Error::NestedForEachNotAllowed: err = "nested foreach not allowed"; break;
+                    case arly::Interpreter::Error::UnexpectedOpInIf: err = "unexpected op in if (internal error)"; break;
+                    case arly::Interpreter::Error::InvalidOp: err = "invalid opcode"; break;
+                    case arly::Interpreter::Error::OnlyMemAddressesAllowed: err = "only Mem addresses allowed"; break;
+                    case arly::Interpreter::Error::StackOverrun: err = "can't call, stack full"; break;
+                    case arly::Interpreter::Error::StackUnderrun: err = "can't return, stack empty"; break;
+                }
+                std::cout << "Interpreter failed: " << err;
+                
+                int16_t errorAddr = sim.errorAddr();
+                if (errorAddr >= 0) {
+                    std::cout << " at addr " << errorAddr;
+                }
+                
+                std::cout << "\n\n";
             }
         }
         
