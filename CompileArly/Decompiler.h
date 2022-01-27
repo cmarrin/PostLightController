@@ -83,7 +83,7 @@ private:
     void outputAddr()
     {
         _out->append("[");
-        _out->append(std::to_string(_it - _in->begin()));
+        _out->append(std::to_string(_it - _in->begin() - 1));
         _out->append("] ");
     }
 
