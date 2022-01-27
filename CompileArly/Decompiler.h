@@ -92,6 +92,7 @@ private:
     std::vector<uint8_t>::const_iterator _it;
     std::string* _out;
     int32_t _indent = 0;
+    uint16_t _codeOffset = 0; // Used by Call
 };
 
 }

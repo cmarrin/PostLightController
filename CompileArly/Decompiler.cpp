@@ -71,7 +71,8 @@ Decompiler::effects()
     };
     
     std::vector<Entry> entries;
-    
+
+    // Accumulate all Effect entries
     while(1) {
         uint8_t cmd = getUInt8();
         if (!cmd) {
@@ -79,6 +80,9 @@ Decompiler::effects()
         }
         entries.emplace_back(cmd, getUInt8(), getUInt16(), getUInt16());
     }
+
+    // Save start of code address for Call
+    _codeOffset = _it - _in->begin();
     
     for (auto& entry : entries) {
         doIndent();
