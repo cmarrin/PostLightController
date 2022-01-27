@@ -259,6 +259,12 @@ public:
 								        case Device::Error::OnlyMemAddressesAllowed:
 										errorMsg = F("only memory addresses allowed");
 										break;
+								        case Device::Error::StackOverrun:
+										errorMsg = F("can't call, stack full");
+										break;
+								        case Device::Error::StackUnderrun:
+										errorMsg = F("can't return, stack empty");
+										break;
 									}
 									Serial.print(F("Interpreted effect error: "));
 									Serial.println(errorMsg);
