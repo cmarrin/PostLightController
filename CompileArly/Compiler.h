@@ -43,6 +43,7 @@ enum class Reserved {
     Int,
     R0, R1, R2, R3,
     C0, C1, C2, C3,
+    Function,
 };
 
 class Compiler

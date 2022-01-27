@@ -24,9 +24,15 @@ table float FlickerSpeedTable
     0.01 0.02 10
 end
 
+function animate
+    AddFloat
+    Return
+end
+
 // Constant Color (4 bytes)
 effect c 3
     init
+        Call animate
         LoadColorParam c0 0
     end
         

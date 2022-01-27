@@ -15,12 +15,14 @@ namespace arly {
 
 /* Arly Language
 
-program         ::= constants tables effects
+program         ::= constants tables functions effects
 constants       ::= { constant <n> }
 constant        ::= 'const' type <id> value
 tables          ::= { table <n> }
 table           ::= 'table' type <id> <n> tableEntries 'end'
 tableEntries    ::= { values <n> }
+functions       ::= {function <n>
+function        ::= 'function' <id> <n> defs statements 'end'
 effects         ::= { effect <n> }
 effect          ::= 'effect' <id> <integer> <n> defs init loop 'end'
 defs            ::= { def <n> }
@@ -182,6 +184,9 @@ Opcodes:
                               sz is number of bytes in loop
     EndFor                  - End of for loop
     
+    Call target             - Call function [target]
+    Return                  - Return from effect
+    
     21 ops always use r0 and r1 leaving result in r0
     
     BOr                     - v[0] = v[0] | v[1] (assumes int32_t)
@@ -304,6 +309,8 @@ enum class Op: uint8_t {
     NegInt          = 0x4b,
     NegFloat        = 0x4c,
     
+    Return          = 0x4d,
+    
 // 52 unused opcodes
 
     LoadColorParam  = 0x80,
@@ -325,6 +332,7 @@ enum class Op: uint8_t {
     SetAllLights    = 0xbc,
 
     ForEach         = 0xc0,
+    Call            = 0xc4,
     
 // 7 unused opcodes
 
@@ -356,6 +364,7 @@ enum class OpParams : uint8_t {
     Cd_Cs,      // b+1[7:6] = 'c0'-'c3', b+1[5:4] = 'c0'-'c3'
     Id,         // b+1 = <id>
     R_Const,    // b+1 = 0-255
+    Target,     // b+1 = call target bits 7:2, b[2:0] = call target bits 1:0
     R_Sz,       // foreach case
     Sz,         // If, Else case
 };

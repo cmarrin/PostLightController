@@ -84,6 +84,21 @@ Decompiler::effects()
     // Save start of code address for Call
     _codeOffset = _it - _in->begin();
     
+    if (!entries.empty() && entries[0]._init > 0) {
+        // Any code before the first init block is functions
+        _out->append("functions\n");
+        incIndent();
+
+        auto initStartIt = _it + entries[0]._init;
+
+        while(initStartIt != _it) {
+            if (statement() == Op::End) {
+                break;
+            }
+        }
+        _out->append("\n");
+    }
+
     for (auto& entry : entries) {
         doIndent();
         incIndent();
@@ -196,6 +211,7 @@ Decompiler::statement()
     // Get params
     uint8_t id;
     uint8_t rdrsi;
+    uint16_t targ;
     
     switch(opData._par) {
         case OpParams::None:
@@ -317,6 +333,12 @@ Decompiler::statement()
         case OpParams::Id:
             _out->append("[");
             _out->append(std::to_string(getUInt8()));
+            _out->append("]");
+            break;
+        case OpParams::Target:
+            targ = (uint16_t(getUInt8()) << 2) | r;
+            _out->append("[");
+            _out->append(std::to_string(targ + _codeOffset));
             _out->append("]");
             break;
         case OpParams::R_Const:

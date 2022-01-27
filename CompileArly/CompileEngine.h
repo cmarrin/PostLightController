@@ -39,9 +39,11 @@ private:
     
     void constants();
     void tables();
+    void functions();
     void effects();
     bool constant();
     bool table();
+    bool function();
     bool effect();
     
     bool type(Type& t);
@@ -67,6 +69,7 @@ private:
     uint8_t handleC(Op op);
     uint8_t handleI();
     uint8_t handleId();
+    uint16_t handleCallTarget();
     uint8_t handleConst();  
     void handleOpParams(uint8_t a);
     void handleOpParams(uint8_t a, uint8_t b);
@@ -124,6 +127,16 @@ private:
         bool _rom;
     };
     
+    struct Function
+    {
+        Function(std::string name, uint16_t addr)
+            : _name(name)
+            , _addr(addr)
+        { }
+        std::string _name;
+        uint16_t _addr;
+    };
+    
     struct Effect
     {
         Effect(char cmd, uint8_t count)
@@ -138,6 +151,7 @@ private:
     };
     
     std::vector<Symbol> _symbols;
+    std::vector<Function> _functions;
     std::vector<Effect> _effects;
     std::vector<uint32_t> _rom32;
     std::vector<uint8_t> _rom8;

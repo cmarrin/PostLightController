@@ -69,6 +69,8 @@ std::vector<OpData> CompileEngine::_opcodes = {
     { "LoadZero",       Op::LoadZero        , OpParams::R },
     { "LoadIntConst",   Op::LoadIntConst    , OpParams::R_Const },
     { "Exit",           Op::Exit            , OpParams::R },
+    { "Call",           Op::Call            , OpParams::Target },
+    { "Return",         Op::Return          , OpParams::None },
     { "ToFloat",        Op::ToFloat         , OpParams::R },
     { "ToInt",          Op::ToInt           , OpParams::R },
     { "SetAllLights",   Op::SetAllLights    , OpParams::C },
@@ -86,6 +88,7 @@ CompileEngine::program()
     try {
         constants();
         tables();
+        functions();
         effects();
     }
     catch(...) {
@@ -160,6 +163,18 @@ CompileEngine::tables()
 }
 
 void
+CompileEngine::functions()
+{
+    while(1) {
+        ignoreNewLines();
+        if (!function()) {
+            return;
+        }
+        expect(Token::NewLine);
+    }
+}
+
+void
 CompileEngine::effects()
 {
     while(1) {
@@ -214,6 +229,29 @@ CompileEngine::table()
     
     ignoreNewLines();
     tableEntries(t);
+    expect(Token::Identifier, "end");
+    return true;
+}
+
+bool
+CompileEngine::function()
+{
+    if (!match(Reserved::Function)) {
+        return false;
+    }
+    
+    std::string id;
+
+    expect(identifier(id), Compiler::Error::ExpectedIdentifier);
+    
+    // Remember the function
+    _functions.emplace_back(id, uint16_t(_rom8.size()));
+    
+    ignoreNewLines();
+    
+    defs();
+    statements();
+    
     expect(Token::Identifier, "end");
     return true;
 }
@@ -511,6 +549,19 @@ CompileEngine::handleId()
     return it->_rom ? it->_addr : (it->_addr + 0x80);
 }
 
+uint16_t
+CompileEngine::handleCallTarget()
+{
+    std::string targ;
+    expect(identifier(targ), Compiler::Error::ExpectedIdentifier);
+    
+    auto it = find_if(_functions.begin(), _functions.end(),
+                    [targ](const Function& fun) { return fun._name == targ; });
+    expect(it != _functions.end(), Compiler::Error::UndefinedIdentifier);
+
+    return it->_addr;
+}
+
 void
 CompileEngine::handleOpParams(uint8_t a)
 {
@@ -611,6 +662,12 @@ CompileEngine::opStatement()
             _rom8.push_back(handleId());
             expectWithoutRetire(Token::NewLine);
             break;
+        case OpParams::Target: {
+            uint16_t targ = handleCallTarget();
+            _rom8.push_back(uint8_t(op) | uint8_t(targ & 0x03));
+            _rom8.push_back(uint8_t(targ >> 2));
+            break;
+        }
         case OpParams::R_Const:
             handleOpParams(handleR(op), handleConst()); break;
             break;
@@ -897,6 +954,7 @@ CompileEngine::isReserved(Token token, const std::string str, Reserved& r)
         { "c1",         Reserved::C1 },
         { "c2",         Reserved::C2 },
         { "c3",         Reserved::C3 },
+        { "function",   Reserved::Function },
     };
 
     if (token != Token::Identifier) {

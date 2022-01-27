@@ -48,7 +48,9 @@ public:
         NestedForEachNotAllowed,
         UnexpectedOpInIf,
 		InvalidOp,
-        OnlyMemAddressesAllowed,      
+        OnlyMemAddressesAllowed,
+        StackOverrun,
+        StackUnderrun,
     };
     
     Interpreter() { }
@@ -206,7 +208,11 @@ private:
     
     uint8_t _params[16];
     uint8_t _paramsSize = 0;
-    
+
+    static constexpr uint8_t CallStackSize = 16;
+    uint16_t _callStack[CallStackSize];
+    uint8_t _callStackCur = 0;
+
     uint32_t _ram[64];
     uint32_t _v[4];
     Color _c[4];

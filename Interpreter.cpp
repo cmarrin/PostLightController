@@ -83,6 +83,7 @@ Interpreter::execute(uint16_t addr)
         uint8_t id;
         uint8_t rd, rs, i;
         uint8_t index;
+        uint16_t targ;
         
         switch(Op(cmd)) {
 			default:
@@ -287,6 +288,25 @@ Interpreter::execute(uint16_t addr)
                 break;
             case Op::Exit          :
                 return _v[r];
+                break;
+            case Op::Call          :
+                if (_callStackCur >= CallStackSize) {
+                    _error = Error::StackOverrun;
+                    _errorAddr = _pc - 1;
+                    return -1;
+                }
+                
+                targ = (uint16_t(getId()) << 2) | r;
+                _callStack[_callStackCur++] = _pc;
+                _pc = targ + _codeOffset;
+                break;
+            case Op::Return        :
+                if (_callStackCur == 0) {
+                    _error = Error::StackUnderrun;
+                    _errorAddr = _pc - 1;
+                    return -1;
+                }
+                _pc = _callStack[--_callStackCur];
                 break;
             case Op::ToFloat       :
                 _v[r] = floatToInt(float(_v[r]));
