@@ -19,7 +19,9 @@
 #else
     static inline int32_t random(int32_t min, int32_t max)
     {
-        // FIXME: Making lots of assumptions here. Do checking
+        if (min >= max) {
+            return max;
+        }
         int r = rand() % (max - min);
         return r + min;
     }
