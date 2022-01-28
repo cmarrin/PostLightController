@@ -265,7 +265,11 @@ public:
 								        case Device::Error::StackUnderrun:
 										errorMsg = F("can't return, stack empty");
 										break;
+								        case Device::Error::AddressOutOfRange:
+										errorMsg = F("address out of range");
+										break;
 									}
+
 									Serial.print(F("Interpreted effect error: "));
 									Serial.println(errorMsg);
 									showStatus(StatusColor::Red, 5, 1);

@@ -161,7 +161,9 @@ Opcodes:
     LoadColorX rd id rs i   - v[rd] = id + (v[rs] * 3) + i
     
     LoadIX rd rs i          - v[rd] = mem[v[rs] + i]
+    StoreIX rd i rs         - mem[v[rd] + i] = v[rs]
     LoadColorIX rd rs i     - c[rd] = mem[v[rs] + i]
+    StoreColorIX rd i rs    - mem[v[rd] + i] = c[rs]
 
 
     MoveColor rd, rs        - c[rd] = c[rs]
@@ -320,10 +322,17 @@ enum class Op: uint8_t {
     
     Return          = 0x4d,
     
-    LoadColorI      = 0x50,
-    LoadI           = 0x51,
-    StoreColorI     = 0x52,
-    StoreI          = 0x53,
+    LoadI           = 0x50,
+    StoreI          = 0x51,
+    LoadColorI      = 0x52,
+    StoreColorI     = 0x53,
+    
+    LoadX           = 0x54,
+    LoadColorX      = 0x55,
+    LoadIX          = 0x56,
+    StoreIX         = 0x57,
+    LoadColorIX     = 0x58,
+    StoreColorIX    = 0x59,
 
 // 52 unused opcodes
 
@@ -372,6 +381,8 @@ enum class OpParams : uint8_t {
     Rd_Id_Rs_I, // b+2[7:6] = 'r0'-'r3' b+1 = <id>, b+2[5:4] = 'r0'-'r3', b+2[3:0] = <int>
     Id_Rd_I_Cs, // b+1 = <id>, b+2[7:6] = 'r0'-'r3', b+2[5:4] = 'c0'-'c3', b+2[3:0] = <int>
     Id_Rd_I_Rs, // b+1 = <id>, b+2[7:6] = 'r0'-'r3', b+2[3:0] = <int>, b+2[5:4] = 'r0'-'r3'
+    Rd_Rs_I,    // b+2[7:6] = 'r0'-'r3', b+2[3:0] = <int>, b+2[5:4] = 'r0'-'r3'
+    Rd_I_Rs,    // b+2[7:6] = 'r0'-'r3', b+2[3:0] = <int>, b+2[5:4] = 'r0'-'r3'
     Rd_Rs,      // b+1[7:6] = 'r0'-'r3', b+1[5:4] = 'r0'-'r3'
     Cd_Rs,      // b+1[7:6] = 'c0'-'c3', b+1[5:4] = 'r0'-'r3'
     Rd_Cs,      // b+1[7:6] = 'r0'-'r3', b+1[5:4] = 'c0'-'c3'

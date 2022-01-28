@@ -129,7 +129,7 @@ private:
         i = b & 0x0f;
     }
     
-    float getFloat(uint8_t id, uint8_t index)
+    float getFloat(uint8_t id, uint8_t index = 0)
     {
         if (id >= 0x80) {
             // RAM address
@@ -150,7 +150,7 @@ private:
         return f;
     }
     
-    uint32_t getInt(uint8_t id, uint8_t index)
+    uint32_t getInt(uint8_t id, uint8_t index = 0)
     {
         if (id >= 0x80) {
             // RAM address
@@ -169,6 +169,8 @@ private:
         return u;
     }
     
+    void storeInt(uint8_t id, uint32_t v) { storeInt(id, 0, v); }
+    
     void storeInt(uint8_t id, uint8_t index, uint32_t v)
     {
         // Only RAM
@@ -185,6 +187,8 @@ private:
         }
     }
 
+    void storeColor(uint8_t index, uint8_t creg) { storeColor(index, 0, creg); }
+    
     void storeColor(uint8_t id, uint8_t index, uint8_t creg)
     {
         if (id < 0x80) {

@@ -13,10 +13,18 @@
 using namespace arly;
 
 std::vector<OpData> CompileEngine::_opcodes = {
-    { "LoadColorI",     Op::LoadColorI      , OpParams::Cd_Id_Rs_I },
     { "LoadI",          Op::LoadI           , OpParams::Rd_Id_Rs_I },
-    { "StoreColorI",    Op::StoreColorI     , OpParams::Id_Rd_I_Cs },
     { "StoreI",         Op::StoreI          , OpParams::Id_Rd_I_Rs },
+    { "LoadColorI",     Op::LoadColorI      , OpParams::Cd_Id_Rs_I },
+    { "StoreColorI",    Op::StoreColorI     , OpParams::Id_Rd_I_Cs },
+
+    { "LoadX",          Op::LoadX           , OpParams::Rd_Id_Rs_I },
+    { "LoadColorX",     Op::LoadColorX      , OpParams::Rd_Id_Rs_I },
+    { "LoadIX",         Op::LoadIX          , OpParams::Rd_Rs_I },
+    { "StoreIX",        Op::StoreIX         , OpParams::Rd_I_Rs },
+    { "LoadColorIX",    Op::LoadColorIX     , OpParams::Rd_Rs_I },
+    { "StoreColorIX",   Op::StoreColorIX    , OpParams::Rd_I_Rs },
+
     { "MoveColor",      Op::MoveColor       , OpParams::Cd_Cs },
     { "Move",           Op::Move            , OpParams::Rd_Rs },
     { "LoadVal",        Op::LoadVal         , OpParams::Rd_Cs },
@@ -594,6 +602,22 @@ CompileEngine::handleOpParamsRdRs(Op op, uint8_t rd, uint8_t rs)
 }
 
 void
+CompileEngine::handleOpParamsRdRsI(Op op, uint8_t rd, uint8_t rs, uint8_t i)
+{
+    _rom8.push_back(uint8_t(op));
+    _rom8.push_back((rd << 6) | (rs << 4) | (i & 0x0f));
+    expectWithoutRetire(Token::NewLine);
+}
+
+void
+CompileEngine::handleOpParamsRdIRs(Op op, uint8_t rd, uint8_t i, uint8_t rs)
+{
+    _rom8.push_back(uint8_t(op));
+    _rom8.push_back((rd << 6) | (rs << 4) | (i & 0x0f));
+    expectWithoutRetire(Token::NewLine);
+}
+
+void
 CompileEngine::handleOpParamsRdRs(Op op, uint8_t id, uint8_t rd, uint8_t i, uint8_t rs)
 {
     _rom8.push_back(uint8_t(op));
@@ -656,6 +680,12 @@ CompileEngine::opStatement()
             break;
         case OpParams::Id_Rd_I_Rs:
             handleOpParamsRdRs(op, handleId(), handleR(), handleI(), handleR());
+            break;
+        case OpParams::Rd_Rs_I:
+            handleOpParamsRdRsI(op, handleR(), handleR(), handleI());
+            break;
+        case OpParams::Rd_I_Rs:
+            handleOpParamsRdIRs(op, handleR(), handleI(), handleR());
             break;
         case OpParams::Id:
             _rom8.push_back(uint8_t(op));

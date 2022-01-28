@@ -24,15 +24,60 @@ table float FlickerSpeedTable
     0.01 0.02 10
 end
 
+// r0 contains index of structure: cur, inc, min, max
+// Animate cur between min and max but adding inc
+// Return:  r0 = integer 1 if we just reversed into the positive
+//          direction, 0 otherwise
 function animate
+    Move r3 r0
+    
+    // r3 has base index
+    // r2 has cur
+    
+    // cur += inc
+    LoadIX r0 r3 0
+    LoadIX r1 r3 1
     AddFloat
+    StoreIX r3 0 r0
+    Move r2 r0
+    
+    // if (0 <= inc)
+    LoadZero r0
+    LEFloat
+    if
+        // if cur > max
+        Move r0 r2
+        LoadIX r1 r3 3
+        GTFloat
+        if
+            // Reverse direction
+            StoreIX r3 0 r1
+            LoadIX r0 r3 1
+            NegFloat
+            StoreIX r3 1 r0
+        end
+    else
+        // if (cur < min)
+        Move r0 r2
+        LoadIX r1 r3 2
+        LTFloat
+        if
+            // Reverse direction
+            StoreIX r3 0 r1
+            LoadIX r0 r3 1
+            NegFloat
+            StoreIX r3 1 r0
+            LoadIntConst r0 1
+            Return
+        end
+    end
+    LoadZero r0
     Return
 end
 
 // Constant Color (4 bytes)
 effect c 3
     init
-        Call animate
         LoadColorParam c0 0
     end
         
@@ -181,19 +226,18 @@ end
 // 0 (slight dimming) to 7 (dimming to 0 brightness)
 //
 effect p 5
-    float inc 1
-    float cur 1
-    float min 1
-    float max 1
-    int increasing 1
+    float state 4 // cur, inc, min, max
     
     init
-        LoadZero r0
-        Store increasing r0
-        
         LoadColorParam c0 0
         LoadVal r0 c0
-        Store max r0
+        
+        // Keep index in r3
+        LoadZero r1
+        LoadX r3 state r1 0
+
+        // max = c.val
+        StoreIX r3 3 r0
         
         // min = c.val - (float(depth + 1) / 8 * (c.val - BrightnessMin))
         LoadIntParam r0 4
@@ -204,19 +248,19 @@ effect p 5
         ToFloat r1
         DivFloat
         Move r2 r0
-        Load r0 max
+        LoadVal r0 c0
         Load r1 BrightnessMin
         SubFloat
         Move r1 r2
         MulFloat
         Move r1 r0
-        Load r0 max
+        LoadVal r0 c0
         SubFloat
-        Store min r0
+        StoreIX r3 2 r0
 
         // inc = (max - min) / float((NumLevels - speed) * PulseSpeedMult)
-        Load r0 max
-        Load r1 min
+        LoadIX r0 r3 3
+        LoadIX r1 r3 2
         SubFloat
         Move r2 r0
         Load r0 NumLevels
@@ -228,45 +272,21 @@ effect p 5
         Move r1 r0
         Move r0 r2
         DivFloat
-        Store inc r0
+        StoreIX r3 1 r0
 
         // Start with a random value for cur
-        Load r0 min
-        Load r1 max
+        LoadIX r0 r3 2
+        LoadIX r1 r3 3
         RandomFloat
-        Store cur r0
+        StoreIX r3 0 r0
     end
         
     loop
-        Load r0 increasing
-        if
-            Load r0 cur
-            Load r1 inc
-            AddFloat
-            Move r3 r0
-            Load r1 max
-            GEFloat
-            if
-                LoadZero r0
-                Store increasing r0
-                Load r3 cur
-            end
-        else
-            Load r0 cur
-            Load r1 inc
-            SubFloat
-            Move r3 r0
-            Load r1 min
-            LEFloat
-            if
-                LoadIntConst r0 1
-                Store increasing r0
-                Load r3 cur
-            end
-        end
-        
-        Store cur r3
-        StoreVal c0 r3
+        LoadZero r0
+        LoadX r0 state r0 0
+        Call animate
+        LoadIX r0 r3 0
+        StoreVal c0 r0
         SetAllLights c0
         Load r0 PulseDelay
         Exit r0
