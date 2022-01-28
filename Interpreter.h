@@ -53,6 +53,7 @@ public:
         OnlyMemAddressesAllowed,
         StackOverrun,
         StackUnderrun,
+        AddressOutOfRange,
     };
     
     Interpreter() { }
@@ -174,7 +175,14 @@ private:
         if (id < 0x80) {
             return;
         }
-        _ram[id - 0x80 + index] = v;
+
+        uint32_t addr = uint32_t(id) - 0x80 + uint32_t(index);
+        if (addr >= 64) {
+            _error = Error::AddressOutOfRange;
+            _errorAddr = _pc - 1;
+        } else {
+            _ram[addr] = v;
+        }
     }
 
     void storeColor(uint8_t id, uint8_t index, uint8_t creg)
