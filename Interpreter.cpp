@@ -73,6 +73,10 @@ Interpreter::execute(uint16_t addr)
     _pc = addr;
     
     while(1) {
+        if (_error != Error::None) {
+            return -1;
+        }
+        
         uint8_t cmd = getUInt8ROM(_pc++);
         uint8_t r = 0;
         if (cmd >= 0x80) {
