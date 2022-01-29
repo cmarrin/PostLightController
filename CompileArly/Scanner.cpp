@@ -9,6 +9,8 @@
 
 #include "Scanner.h"
 
+#include <map>
+
 using namespace arly;
 
 Token Scanner::scanIdentifier()
@@ -207,7 +209,36 @@ Token Scanner::scanSpecial()
         return Token::EndOfFile;
     }
     
-    return static_cast<Token>(c);
+    // See if it's a 2 char sequence
+    static std::map<std::string, Token> specialSequence = {
+        { "++",         Token::Inc },
+        { "--",         Token::Dec },
+        { "+=",         Token::AddSto },
+        { "-=",         Token::SubSto },
+        { "*=",         Token::MulSto },
+        { "/=",         Token::DivSto },
+        { "&=",         Token::AndSto },
+        { "|=",         Token::OrSto },
+        { "^=",         Token::XorSto },
+        { "||",         Token::LOr },
+        { "&&",         Token::LAnd },
+        { "==",         Token::EQ },
+        { "!=",         Token::NE },
+        { "<=",         Token::LE },
+        { ">=",         Token::GE },
+    };
+
+    char buf[3];
+    buf[0] = c;
+    buf[1] = get();
+    buf[2] = '\0';
+    auto it = specialSequence.find(buf);
+    if (it == specialSequence.end()) {
+        putback(buf[1]);
+        return static_cast<Token>(c);
+    }
+
+    return it->second;
 }
 
 uint8_t Scanner::get() const

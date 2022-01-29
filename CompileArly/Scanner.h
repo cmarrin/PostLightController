@@ -49,7 +49,24 @@ enum class Token : uint8_t {
     Integer     = 0x8a,
     Special     = 0x8c,
     Error       = 0x8d,
-    EndOfFile   = 0x8e,
+    
+    AddSto      = 0xa0,
+    SubSto      = 0xa1,
+    MulSto      = 0xa2,
+    DivSto      = 0xa3,
+    AndSto      = 0xa4,
+    OrSto       = 0xa5,
+    XorSto      = 0xa6,
+    LOr         = 0xa7,
+    LAnd        = 0xa8,
+    LE          = 0xa9,
+    EQ          = 0xaa,
+    NE          = 0xab,
+    GE          = 0xac,
+    Inc         = 0xad,
+    Dec         = 0xae,
+    
+    EndOfFile   = 0xff,
 };
 
 static inline bool isdigit(uint8_t c)		{ return c >= '0' && c <= '9'; }
