@@ -27,6 +27,18 @@ static constexpr uint8_t MAX_ID_LENGTH = 32;
 // have values above 0x7f. Script parsers rely on these facts. Don't change 
 // them unless you change those other places.
 enum class Token : uint8_t {
+    Equal       = '=',
+    Plus        = '+',
+    Minus       = '-',
+    Mul         = '*',
+    Div         = '/',
+    Mod         = '%',
+    And         = '&',
+    Or          = '|',
+    Xor         = '^',
+    Not         = '!',
+    LT          = '<',
+    GT          = '>',
     None        = 0x83,
     Unknown     = 0x84,
     Comment     = 0x85,
@@ -54,6 +66,10 @@ static inline bool isspace(uint8_t c)       { return c == ' ' || c == '\r' || c 
 static inline bool isnewline(uint8_t c)     { return c == '\n'; }
 static inline uint8_t tolower(uint8_t c)    { return isUpper(c) ? (c - 'A' + 'a') : c; }
 static inline uint8_t toupper(uint8_t c)    { return isLower(c) ? (c - 'a' + 'A') : c; }
+static inline bool isSpecial(uint8_t c)
+{
+    return (c >= '!' && c <= '/') || (c >= ':' && c <= '@') || ( c >= '[' && c <= '`') || (c >= '{' && c <= '~');
+}
 
 static constexpr uint8_t C_EOF = 0xff;
 
@@ -118,6 +134,7 @@ private:
   	Token scanIdentifier();
   	Token scanNumber(TokenType& tokenValue);
   	Token scanComment();
+    Token scanSpecial();
   	int32_t scanDigits(int32_t& number, bool hex);
   	bool scanFloat(int32_t& mantissa, int32_t& exp);
     

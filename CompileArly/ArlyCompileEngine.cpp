@@ -342,8 +342,17 @@ CompileEngine::values(Type t)
 bool
 CompileEngine::value(int32_t& i, Type t)
 {
+    bool neg = false;
+    if (match(Token::Minus)) {
+        neg = true;
+    }
+    
     float f;
     if (floatValue(f)) {
+        if (neg) {
+            f = -f;
+        }
+
         // If we're expecting an Integer, convert it
         if (t == Type::Int) {
             i = roundf(f);
@@ -354,6 +363,10 @@ CompileEngine::value(int32_t& i, Type t)
     }
     
     if (integerValue(i)) {
+        if (neg) {
+            i = -i;
+        }
+        
         // If we're expecting a float, convert it
         if (t == Type::Float) {
             f = float(i);
@@ -861,6 +874,16 @@ CompileEngine::match(Reserved r)
         return false;
     }
     if (r != rr) {
+        return false;
+    }
+    _scanner.retireToken();
+    return true;
+}
+
+bool
+CompileEngine::match(Token t)
+{
+    if (_scanner.getToken() != t) {
         return false;
     }
     _scanner.retireToken();

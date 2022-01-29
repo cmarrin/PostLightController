@@ -199,6 +199,17 @@ Token Scanner::scanComment()
 	return Token('/');
 }
 
+Token Scanner::scanSpecial()
+{
+	uint8_t c = get();
+    if (!isSpecial(c)) {
+        putback(c);
+        return Token::EndOfFile;
+    }
+    
+    return static_cast<Token>(c);
+}
+
 uint8_t Scanner::get() const
 {
     if (_lastChar != C_EOF) {
@@ -242,6 +253,9 @@ Token Scanner::getToken(TokenType& tokenValue)
 			default:
 				putback(c);
 				if ((token = scanNumber(tokenValue)) != Token::EndOfFile) {
+					break;
+				}
+				if ((token = scanSpecial()) != Token::EndOfFile) {                    
 					break;
 				}
 				if ((token = scanIdentifier()) != Token::EndOfFile) {

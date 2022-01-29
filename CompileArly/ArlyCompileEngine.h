@@ -33,7 +33,7 @@ ifStatement     ::= 'if' <n> statements { 'else' <n> statements } 'end'
 
 type            ::= 'float' | 'int'
 values          ::= { value }
-value           ::= <float> | <integer>
+value           ::= ['-'] <float> | ['-'] <integer>
 opParams        ::= { value }
 opParam         ::= <id> | <integer>
 
@@ -127,6 +127,7 @@ private:
     void expect(bool passed, Compiler::Error error);
     void expectWithoutRetire(Token token);
     bool match(Reserved r);
+    bool match(Token r);
     void ignoreNewLines();
     
     // These methods check to see if the next token is of the
