@@ -17,11 +17,11 @@ tables          ::= { table <n> }
 table           ::= 'table' type <id> <n> tableEntries 'end'
 tableEntries    ::= { values <n> }
 functions       ::= {function <n>
-function        ::= 'function' <id> <n> defs statements 'end'
+function        ::= 'function' <id> <n> vars statements 'end'
 effects         ::= { effect <n> }
-effect          ::= 'effect' <id> <integer> <n> defs init loop 'end'
-defs            ::= { def <n> }
-def             ::= type <id> <integer>
+effect          ::= 'effect' <id> <integer> <n> vars init loop 'end'
+vars            ::= { var <n> }
+var             ::= type <id> <integer>
 init            ::= 'init' <n> statements 'end' <n>
 loop            ::= 'loop' <n> statements 'end' <n>
 
@@ -90,8 +90,8 @@ private:
     // Value is returned as an int32_t, but it might be a float
     bool value(int32_t& i, Type);
     
-    void defs();
-    bool def();
+    void vars();
+    bool var();
 
     bool init();
     bool loop();

@@ -250,7 +250,7 @@ CompileEngine::function()
     
     ignoreNewLines();
     
-    defs();
+    vars();
     statements();
     
     expect(Token::Identifier, "end");
@@ -288,7 +288,7 @@ CompileEngine::effect()
 
     expect(Token::NewLine);
     
-    defs();
+    vars();
     init();
     loop();
 
@@ -378,11 +378,11 @@ CompileEngine::value(int32_t& i, Type t)
 }
 
 void
-CompileEngine::defs()
+CompileEngine::vars()
 {
     while(1) {
         ignoreNewLines();
-        if (!def()) {
+        if (!var()) {
             return;
         }
         expect(Token::NewLine);
@@ -390,7 +390,7 @@ CompileEngine::defs()
 }
 
 bool
-CompileEngine::def()
+CompileEngine::var()
 {
     Type t;
     std::string id;
@@ -407,8 +407,8 @@ CompileEngine::def()
     _symbols.emplace_back(id, _nextMem, false);
     _nextMem += size;
 
-    // There is only enough room for 128 def values
-    expect(_nextMem <= 128, Compiler::Error::TooManyDefs);
+    // There is only enough room for 128 var values
+    expect(_nextMem <= 128, Compiler::Error::TooManyVars);
 
     return true;
 }
@@ -559,7 +559,7 @@ CompileEngine::handleId()
                     [id](const Symbol& sym) { return sym._name == id; });
     expect(it != _symbols.end(), Compiler::Error::UndefinedIdentifier);
 
-    // def memory (RAM) starts at 0x80.
+    // var memory (RAM) starts at 0x80.
     return it->_rom ? it->_addr : (it->_addr + 0x80);
 }
 

@@ -67,7 +67,7 @@ public:
         IfTooBig,
         ElseTooBig,
         TooManyConstants,
-        TooManyDefs,
+        TooManyVars,
     };
     
     Compiler() { }

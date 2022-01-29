@@ -152,7 +152,7 @@ int main(int argc, char * const argv[])
             case arly::Compiler::Error::IfTooBig: err = "too many instructions in if"; break;
             case arly::Compiler::Error::ElseTooBig: err = "too many instructions in else"; break;
             case arly::Compiler::Error::TooManyConstants: err = "too many constants"; break;
-            case arly::Compiler::Error::TooManyDefs: err = "too many defs"; break;
+            case arly::Compiler::Error::TooManyVars: err = "too many vars"; break;
         }
         
         std::cout << "Compile failed: " << err << " on line " << compiler.lineno() << "\n";
