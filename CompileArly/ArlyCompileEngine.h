@@ -6,6 +6,41 @@
 //
 // Arly compiler internals
 
+/*
+
+Arly Source Format
+
+program         ::= constants tables functions effects
+constants       ::= { constant <n> }
+constant        ::= 'const' type <id> value
+tables          ::= { table <n> }
+table           ::= 'table' type <id> <n> tableEntries 'end'
+tableEntries    ::= { values <n> }
+functions       ::= {function <n>
+function        ::= 'function' <id> <n> defs statements 'end'
+effects         ::= { effect <n> }
+effect          ::= 'effect' <id> <integer> <n> defs init loop 'end'
+defs            ::= { def <n> }
+def             ::= type <id> <integer>
+init            ::= 'init' <n> statements 'end' <n>
+loop            ::= 'loop' <n> statements 'end' <n>
+
+statements      ::= { statement <n> }
+statement       ::= opStatement | forStatement | ifStatement
+opStatement     ::= op opParams
+forStatement    ::= 'foreach' <id> <n> statements 'end'
+ifStatement     ::= 'if' <n> statements { 'else' <n> statements } 'end'
+
+type            ::= 'float' | 'int'
+values          ::= { value }
+value           ::= <float> | <integer>
+opParams        ::= { value }
+opParam         ::= <id> | <integer>
+
+op              ::= <list of opcodes in opcodes.h>
+
+*/
+
 #pragma once
 
 #include "Compiler.h"
