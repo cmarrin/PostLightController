@@ -12,7 +12,7 @@
 		49DAA647278B212E00F67EEB /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49DAA646278B212E00F67EEB /* main.cpp */; };
 		49DAA651278B3AFE00F67EEB /* Compiler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49DAA64F278B3AFE00F67EEB /* Compiler.cpp */; };
 		49DAA657278CD00500F67EEB /* Scanner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49DAA656278CD00500F67EEB /* Scanner.cpp */; };
-		49DAA65D2791B78A00F67EEB /* CompileEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49DAA65B2791B78A00F67EEB /* CompileEngine.cpp */; };
+		49DAA65D2791B78A00F67EEB /* ArlyCompileEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49DAA65B2791B78A00F67EEB /* ArlyCompileEngine.cpp */; };
 		49DAA6602791C0A500F67EEB /* Decompiler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49DAA65F2791C0A500F67EEB /* Decompiler.cpp */; };
 /* End PBXBuildFile section */
 
@@ -42,8 +42,8 @@
 		49DAA655278CD00500F67EEB /* Scanner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Scanner.h; sourceTree = "<group>"; };
 		49DAA656278CD00500F67EEB /* Scanner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Scanner.cpp; sourceTree = "<group>"; };
 		49DAA65A2790B05000F67EEB /* PostLightEffects.arlx */ = {isa = PBXFileReference; lastKnownFileType = file; path = PostLightEffects.arlx; sourceTree = "<group>"; };
-		49DAA65B2791B78A00F67EEB /* CompileEngine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CompileEngine.cpp; sourceTree = "<group>"; };
-		49DAA65C2791B78A00F67EEB /* CompileEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CompileEngine.h; sourceTree = "<group>"; };
+		49DAA65B2791B78A00F67EEB /* ArlyCompileEngine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ArlyCompileEngine.cpp; sourceTree = "<group>"; };
+		49DAA65C2791B78A00F67EEB /* ArlyCompileEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArlyCompileEngine.h; sourceTree = "<group>"; };
 		49DAA65E2791C0A500F67EEB /* Decompiler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Decompiler.h; sourceTree = "<group>"; };
 		49DAA65F2791C0A500F67EEB /* Decompiler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Decompiler.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -92,8 +92,8 @@
 				491DED28279385B700D007C2 /* Color.h */,
 				49DAA64F278B3AFE00F67EEB /* Compiler.cpp */,
 				49DAA650278B3AFE00F67EEB /* Compiler.h */,
-				49DAA65B2791B78A00F67EEB /* CompileEngine.cpp */,
-				49DAA65C2791B78A00F67EEB /* CompileEngine.h */,
+				49DAA65B2791B78A00F67EEB /* ArlyCompileEngine.cpp */,
+				49DAA65C2791B78A00F67EEB /* ArlyCompileEngine.h */,
 				49DAA65F2791C0A500F67EEB /* Decompiler.cpp */,
 				49DAA65E2791C0A500F67EEB /* Decompiler.h */,
 				491DED242793225B00D007C2 /* Interpreter.cpp */,
@@ -167,7 +167,7 @@
 				49DAA6602791C0A500F67EEB /* Decompiler.cpp in Sources */,
 				49DAA657278CD00500F67EEB /* Scanner.cpp in Sources */,
 				491DED262793225B00D007C2 /* Interpreter.cpp in Sources */,
-				49DAA65D2791B78A00F67EEB /* CompileEngine.cpp in Sources */,
+				49DAA65D2791B78A00F67EEB /* ArlyCompileEngine.cpp in Sources */,
 				49DAA647278B212E00F67EEB /* main.cpp in Sources */,
 				49DAA651278B3AFE00F67EEB /* Compiler.cpp in Sources */,
 			);

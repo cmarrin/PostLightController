@@ -7,7 +7,7 @@
 
 #include "Decompiler.h"
 
-#include "CompileEngine.h"
+#include "ArlyCompileEngine.h"
 
 using namespace arly;
 
