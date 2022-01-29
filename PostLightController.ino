@@ -268,6 +268,9 @@ public:
 								        case Device::Error::AddressOutOfRange:
 										errorMsg = F("address out of range");
 										break;
+								        case Device::Error::InvalidColorComp:
+										errorMsg = F("invalid color component");
+										break;
 									}
 
 									Serial.print(F("Interpreted effect error: "));
