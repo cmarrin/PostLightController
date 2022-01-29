@@ -57,7 +57,8 @@ private:
     
     uint16_t getUInt8() { return *_it++; }
     
-    std::string regString(uint8_t r, bool isColor = false);
+    std::string regString(uint8_t r);
+    std::string colorString(uint8_t c);
     
     void doIndent()
     {
