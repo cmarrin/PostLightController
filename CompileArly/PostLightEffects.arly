@@ -1,9 +1,13 @@
 // Arly script for different Post Light Controller effects
 //
 
-// Total 234 bytes
+def ColorVal    2
+def LEDCur      0
+def LEDInc      1
+def LEDMin      2
+def LEDMax      3
+def SpeedTableEntrySize 3
 
-// 20 bytes
 const float IncMin          0.004
 const float IncMax          0.04
 const float BrightnessMin   0.3
@@ -35,10 +39,10 @@ function animate
     // r2 has cur
     
     // cur += inc
-    LoadIX r0 r3 0
-    LoadIX r1 r3 1
+    LoadIX r0 r3 LEDCur
+    LoadIX r1 r3 LEDInc
     AddFloat
-    StoreIX r3 0 r0
+    StoreIX r3 LEDCur r0
     Move r2 r0
     
     // if (0 <= inc)
@@ -47,26 +51,26 @@ function animate
     if
         // if cur > max
         Move r0 r2
-        LoadIX r1 r3 3
+        LoadIX r1 r3 LEDMax
         GTFloat
         if
             // Reverse direction
-            StoreIX r3 0 r1
-            LoadIX r0 r3 1
+            StoreIX r3 LEDCur r1
+            LoadIX r0 r3 LEDInc
             NegFloat
-            StoreIX r3 1 r0
+            StoreIX r3 LEDInc r0
         end
     else
         // if (cur < min)
         Move r0 r2
-        LoadIX r1 r3 2
+        LoadIX r1 r3 LEDMin
         LTFloat
         if
             // Reverse direction
-            StoreIX r3 0 r1
-            LoadIX r0 r3 1
+            StoreIX r3 LEDCur r1
+            LoadIX r0 r3 LEDInc
             NegFloat
-            StoreIX r3 1 r0
+            StoreIX r3 LEDInc r0
             LoadIntConst r0 1
             Return
         end
@@ -106,7 +110,7 @@ effect f 4
         
         // Init min, max and delay from SpeedTable
         LoadIntParam r0 3
-        LoadIntConst r1 3
+        LoadIntConst r1 SpeedTableEntrySize
         MulInt
         LoadI r1 FlickerSpeedTable r0 0
         Store stepsMin r1
@@ -124,48 +128,48 @@ effect f 4
         // for (i = 0; i < NumPixels; ++i)
         foreach r2
 			// r3 holds the index of the current LED (r2 * 4)
-			Move r0  r2
-			LoadIntConst r1  4
+			Move r0 r2
+			LoadIntConst r1 4
 			MulInt
 			Move r3  r0
             
-            // led.off += led.inc
-            LoadI r0 leds r3 0
-            LoadI r1 leds r3 1
+            // led.cur += led.inc
+            LoadI r0 leds r3 LEDCur
+            LoadI r1 leds r3 LEDInc
             AddFloat
             StoreI leds r3 0 r0
             
             // Check for going past lim (increasing) or below 0 (decreasing)
 
             // if (led.inc > 0)
-            LoadI r0 leds r3 1
+            LoadI r0 leds r3 LEDInc
             LoadZero r1
             GTFloat
             if
                 // if (led.off >= led.lim)
-                LoadI r0 leds r3 0
+                LoadI r0 leds r3 LEDCur
                 LoadI r1 leds r3 2
                 GTFloat
                 if
-                    // led.off = led.lim
+                    // led.cur = led.lim
                     LoadI r0 leds r3 2
-                    StoreI leds r3 0 r0
+                    StoreI leds r3 LEDCur r0
                     
                     //led.inc = - led.inc
-                    LoadI r0 leds r3 1
+                    LoadI r0 leds r3 LEDInc
                     NegFloat
-                    StoreI leds r3 1 r0
+                    StoreI leds r3 LEDInc r0
                 end
             else
-                // if (led.off <= 0)
-                LoadI r0 leds r3 0
+                // if (led.cur <= 0)
+                LoadI r0 leds r3 LEDCur
                 LoadZero r1
                 LEFloat
                 if
                     // We are done with the throb, select a new inc and lim
                     
-                    // led.off = 0
-                    StoreI leds r3 0 r1
+                    // led.cur = 0
+                    StoreI leds r3 LEDCur r1
                     
                     // Increment inc value for each step a random amount
                     
@@ -173,7 +177,7 @@ effect f 4
                     Load r0 IncMin
                     Load r1 IncMax
                     RandomFloat
-                    StoreI leds r3 1 r0
+                    StoreI leds r3 LEDInc r0
             
                     // Random number of steps to throb up and down
                     
@@ -181,7 +185,7 @@ effect f 4
                     Load r0 stepsMin
                     Load r1 stepsMax
                     RandomFloat
-                    LoadI r1 leds r3 1
+                    LoadI r1 leds r3 LEDInc
                     AddFloat
                     StoreI leds r3 2 r0
                 end
@@ -189,16 +193,16 @@ effect f 4
             
             // Multiply val by brightness
             
-            // brightness = BrightnessMin + led.off;
+            // brightness = BrightnessMin + led.cur;
             Load r0 BrightnessMin
-            LoadI r1 leds r3 0
+            LoadI r1 leds r3 LEDCur
             AddFloat
 
             // val = max(_color.val() * brightness, BrightnessMin)
             MoveColor c1 c0
-            LoadColorComp r1 c1 2
+            LoadColorComp r1 c1 ColorVal
             MulFloat
-            StoreColorComp c1 2 r0
+            StoreColorComp c1 ColorVal r0
             
             SetLight r2 c1
         end
@@ -230,14 +234,14 @@ effect p 5
     
     init
         LoadColorParam c0 0
-        LoadColorComp r0 c0 2
+        LoadColorComp r0 c0 ColorVal
         
         // Keep index in r3
         LoadZero r1
-        LoadX r3 state r1 0
+        LoadX r3 state r1 LEDCur
 
         // max = c.val
-        StoreIX r3 3 r0
+        StoreIX r3 LEDMax r0
         
         // min = c.val - (float(depth + 1) / 8 * (c.val - BrightnessMin))
         LoadIntParam r0 4
@@ -248,19 +252,19 @@ effect p 5
         ToFloat r1
         DivFloat
         Move r2 r0
-        LoadColorComp r0 c0 2
+        LoadColorComp r0 c0 ColorVal
         Load r1 BrightnessMin
         SubFloat
         Move r1 r2
         MulFloat
         Move r1 r0
-        LoadColorComp r0 c0 2
+        LoadColorComp r0 c0 ColorVal
         SubFloat
-        StoreIX r3 2 r0
+        StoreIX r3 LEDMin r0
 
         // inc = (max - min) / float((NumLevels - speed) * PulseSpeedMult)
-        LoadIX r0 r3 3
-        LoadIX r1 r3 2
+        LoadIX r0 r3 LEDMax
+        LoadIX r1 r3 LEDMin
         SubFloat
         Move r2 r0
         Load r0 NumLevels
@@ -272,21 +276,21 @@ effect p 5
         Move r1 r0
         Move r0 r2
         DivFloat
-        StoreIX r3 1 r0
+        StoreIX r3 LEDInc r0
 
         // Start with a random value for cur
-        LoadIX r0 r3 2
-        LoadIX r1 r3 3
+        LoadIX r0 r3 LEDMin
+        LoadIX r1 r3 LEDMax
         RandomFloat
-        StoreIX r3 0 r0
+        StoreIX r3 LEDCur r0
     end
         
     loop
         LoadZero r0
         LoadX r0 state r0 0
         Call animate
-        LoadIX r0 r3 0
-        StoreColorComp c0 2 r0
+        LoadIX r0 r3 LEDCur
+        StoreColorComp c0 ColorVal r0
         SetAllLights c0
         Load r0 PulseDelay
         Exit r0

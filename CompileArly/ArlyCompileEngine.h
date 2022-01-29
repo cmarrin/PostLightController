@@ -10,7 +10,9 @@
 
 Arly Source Format
 
-program         ::= constants tables functions effects
+program         ::= defs constants tables functions effects
+defs            ::= { def <n> }
+def             ::= 'def' <id> <integer>
 constants       ::= { constant <n> }
 constant        ::= 'const' type <id> value
 tables          ::= { table <n> }
@@ -72,10 +74,12 @@ public:
 private:
     enum class Type { Float, Int };
     
+    void defs();
     void constants();
     void tables();
     void functions();
     void effects();
+    bool def();
     bool constant();
     bool table();
     bool function();
@@ -153,6 +157,16 @@ private:
     Token _expectedToken = Token::None;
     std::string _expectedString;
     
+    struct Def
+    {
+        Def(std::string name, uint8_t value)
+            : _name(name)
+            , _value(value)
+        { }
+        std::string _name;
+        uint8_t _value;
+    };
+    
     struct Symbol
     {
         Symbol(std::string name, uint8_t addr, bool rom)
@@ -188,6 +202,7 @@ private:
         uint16_t _loopAddr = 0;
     };
     
+    std::vector<Def> _defs;
     std::vector<Symbol> _symbols;
     std::vector<Function> _functions;
     std::vector<Effect> _effects;

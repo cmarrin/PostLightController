@@ -87,6 +87,7 @@ bool
 CompileEngine::program()
 {
     try {
+        defs();
         constants();
         tables();
         functions();
@@ -140,6 +141,18 @@ CompileEngine::opcode(Op op, std::string& str, OpParams& par)
 }
 
 void
+CompileEngine::defs()
+{
+    while(1) {
+        ignoreNewLines();
+        if (!def()) {
+            return;
+        }
+        expect(Token::NewLine);
+    }
+}
+
+void
 CompileEngine::constants()
 {
     while(1) {
@@ -185,6 +198,26 @@ CompileEngine::effects()
         }
         expect(Token::NewLine);
     }
+}
+
+bool
+CompileEngine::def()
+{
+    if (!match(Reserved::Def)) {
+        return false;
+    }
+    
+    std::string id;
+    int32_t val;
+    
+    expect(identifier(id), Compiler::Error::ExpectedIdentifier);
+    expect(integerValue(val), Compiler::Error::ExpectedValue);
+    
+    // A def is always a positive integer less than 256
+    expect(val >= 0 && val < 256, Compiler::Error::DefOutOfRange);
+    
+    _defs.emplace_back(id, val);
+    return true;
 }
 
 bool
@@ -535,9 +568,8 @@ CompileEngine::handleC(Op op)
 uint8_t
 CompileEngine::handleI()
 {
-    int32_t i;
-    expect(integerValue(i), Compiler::Error::ExpectedInt);
-    expect(i >= 0 && i <= 15, Compiler::Error::ParamOutOfRange);
+    uint8_t i = handleConst();
+    expect(i <= 15, Compiler::Error::ParamOutOfRange);
     return uint8_t(i);
 }
 
@@ -545,7 +577,20 @@ uint8_t
 CompileEngine::handleConst()
 {
     int32_t i;
-    expect(integerValue(i), Compiler::Error::ExpectedInt);
+    std::string id;
+    
+    if (identifier(id)) {
+        // See if this is a def
+        auto it = find_if(_defs.begin(), _defs.end(),
+                    [id](const Def& d) { return d._name == id; });
+        expect(it != _defs.end(), Compiler::Error::ExpectedDef);
+        
+        i = it->_value;
+    } else {
+        expect(integerValue(i), Compiler::Error::ExpectedInt);
+    }
+
+    expect(i >= 0 && i < 256, Compiler::Error::ParamOutOfRange);
     return uint8_t(i);
 }
 
@@ -1008,6 +1053,7 @@ CompileEngine::isReserved(Token token, const std::string str, Reserved& r)
         { "c2",         Reserved::C2 },
         { "c3",         Reserved::C3 },
         { "function",   Reserved::Function },
+        { "def",        Reserved::Def },
     };
 
     if (token != Token::Identifier) {
