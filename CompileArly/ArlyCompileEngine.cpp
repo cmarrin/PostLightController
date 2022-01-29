@@ -22,8 +22,8 @@ std::vector<OpData> CompileEngine::_opcodes = {
 
     { "MoveColor",      Op::MoveColor       , OpParams::Cd_Cs },
     { "Move",           Op::Move            , OpParams::Rd_Rs },
-    { "LoadVal",        Op::LoadVal         , OpParams::Rd_Cs },
-    { "StoreVal",       Op::StoreVal        , OpParams::Cd_Rs },
+    { "LoadColorComp",  Op::LoadColorComp   , OpParams::Rd_Cs_I },
+    { "StoreColorComp", Op::StoreColorComp  , OpParams::Cd_I_Rs },
     { "MinInt",         Op::MinInt          , OpParams::None },
     { "MinFloat",       Op::MinFloat        , OpParams::None },
     { "MaxInt",         Op::MaxInt          , OpParams::None },
@@ -677,8 +677,14 @@ CompileEngine::opStatement()
         case OpParams::Rd_Rs_I:
             handleOpParamsRdRsI(op, handleR(), handleR(), handleI());
             break;
+        case OpParams::Rd_Cs_I:
+            handleOpParamsRdRsI(op, handleR(), handleC(), handleI());
+            break;
         case OpParams::Rd_I_Rs:
             handleOpParamsRdIRs(op, handleR(), handleI(), handleR());
+            break;
+        case OpParams::Cd_I_Rs:
+            handleOpParamsRdIRs(op, handleC(), handleI(), handleR());
             break;
         case OpParams::Id:
             _rom8.push_back(uint8_t(op));

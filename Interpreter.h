@@ -54,6 +54,7 @@ public:
         StackOverrun,
         StackUnderrun,
         AddressOutOfRange,
+        InvalidColorComp,
     };
     
     Interpreter() { }

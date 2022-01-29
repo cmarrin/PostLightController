@@ -274,14 +274,36 @@ Interpreter::execute(uint16_t addr)
                 getRdRs(rd, rs);
                 _v[rd] = _v[rs];
                 break;
-            case Op::LoadVal       :
-                getRdRs(rd, rs);
-                _v[rd] = floatToInt(_c[rs].val());
+            case Op::LoadColorComp : {
+                getRdRsI(rd, rs, i);
+                float f = 0;
+                switch(i) {
+                    case 0: f = _c[rs].hue(); break;
+                    case 1: f = _c[rs].sat(); break;
+                    case 2: f = _c[rs].val(); break;
+                    default:
+                        _error = Error::InvalidColorComp;
+                        _errorAddr = _pc - 2;
+                        return -1;
+                }
+                        
+                _v[rd] = floatToInt(f);
                 break;
-            case Op::StoreVal      :
-                getRdRs(rd, rs);
-                _c[rd].setVal(intToFloat(_v[rs]));
+            }
+            case Op::StoreColorComp : {
+                getRdRsI(rd, rs, i);
+                float f = intToFloat(_v[rs]);
+                switch(i) {
+                    case 0: _c[rd].setHue(f); break;
+                    case 1: _c[rd].setSat(f); break;
+                    case 2: _c[rd].setVal(f); break;
+                    default:
+                        _error = Error::InvalidColorComp;
+                        _errorAddr = _pc - 2;
+                        return -1;
+                }
                 break;
+            }
             case Op::LoadBlack     :
                 _c[r] = Color();
                 break;

@@ -161,8 +161,9 @@ Opcodes:
     MoveColor rd, rs        - c[rd] = c[rs]
     Move rd, rs             - v[rd] = v[rs]
     
-    LoadVal rd rs           - v[rd] = c[rs].val
-    StoreVal rd, rs         - c[rd].val = v[rs]
+    LoadColorComp rd rs i   - v[rd] = c[rs][i] (0=hue, 1=sat, 2=val)
+    StoreColorComp rd i rs  - c[rd][i] = v[rs] (0=hue, 1=sat, 2=val)
+    
     MinInt                  - v[0] = min(v[0], v[1]) (values are int32_t)
     MinFloat                - v[0] = min(v[0], v[1]) (values are float)
     MaxInt                  - v[0] = max(v[0], v[1]) (values are int32_t)
@@ -257,8 +258,8 @@ enum class Op: uint8_t {
     MoveColor       = 0x10,
     Move            = 0x11,
 
-    LoadVal         = 0x12,
-    StoreVal        = 0x13,
+    LoadColorComp   = 0x12,
+    StoreColorComp  = 0x13,
     MinInt          = 0x14,
     MinFloat        = 0x15,
     MaxInt          = 0x16,
@@ -370,6 +371,8 @@ enum class OpParams : uint8_t {
     Id_Rd_I_Rs, // b+1 = <id>, b+2[7:6] = 'r0'-'r3', b+2[3:0] = <int>, b+2[5:4] = 'r0'-'r3'
     Rd_Rs_I,    // b+2[7:6] = 'r0'-'r3', b+2[3:0] = <int>, b+2[5:4] = 'r0'-'r3'
     Rd_I_Rs,    // b+2[7:6] = 'r0'-'r3', b+2[3:0] = <int>, b+2[5:4] = 'r0'-'r3'
+    Rd_Cs_I,    // b+1[7:6] = 'r0'-'r3', b+1[5:4] = 'c0'-'c3', b+2[3:0] = <int>
+    Cd_I_Rs,    // b+1[7:6] = 'c0'-'c3', b+2[3:0] = <int>, b+1[5:4] = 'r0'-'r3'
     Rd_Rs,      // b+1[7:6] = 'r0'-'r3', b+1[5:4] = 'r0'-'r3'
     Cd_Rs,      // b+1[7:6] = 'c0'-'c3', b+1[5:4] = 'r0'-'r3'
     Rd_Cs,      // b+1[7:6] = 'r0'-'r3', b+1[5:4] = 'c0'-'c3'

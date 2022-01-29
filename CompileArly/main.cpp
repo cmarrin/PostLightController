@@ -264,6 +264,7 @@ int main(int argc, char * const argv[])
                     case arly::Interpreter::Error::StackOverrun: err = "can't call, stack full"; break;
                     case arly::Interpreter::Error::StackUnderrun: err = "can't return, stack empty"; break;
                     case arly::Interpreter::Error::AddressOutOfRange: err = "address out of range"; break;
+                    case arly::Interpreter::Error::InvalidColorComp: err = "invalid color component"; break;
                 }
                 std::cout << "Interpreter failed: " << err;
                 

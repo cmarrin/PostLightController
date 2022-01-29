@@ -196,9 +196,9 @@ effect f 4
 
             // val = max(_color.val() * brightness, BrightnessMin)
             MoveColor c1 c0
-            LoadVal r1 c1
+            LoadColorComp r1 c1 2
             MulFloat
-            StoreVal c1 r0
+            StoreColorComp c1 2 r0
             
             SetLight r2 c1
         end
@@ -230,7 +230,7 @@ effect p 5
     
     init
         LoadColorParam c0 0
-        LoadVal r0 c0
+        LoadColorComp r0 c0 2
         
         // Keep index in r3
         LoadZero r1
@@ -248,13 +248,13 @@ effect p 5
         ToFloat r1
         DivFloat
         Move r2 r0
-        LoadVal r0 c0
+        LoadColorComp r0 c0 2
         Load r1 BrightnessMin
         SubFloat
         Move r1 r2
         MulFloat
         Move r1 r0
-        LoadVal r0 c0
+        LoadColorComp r0 c0 2
         SubFloat
         StoreIX r3 2 r0
 
@@ -286,7 +286,7 @@ effect p 5
         LoadX r0 state r0 0
         Call animate
         LoadIX r0 r3 0
-        StoreVal c0 r0
+        StoreColorComp c0 2 r0
         SetAllLights c0
         Load r0 PulseDelay
         Exit r0
