@@ -28,25 +28,6 @@ struct OpData
     OpParams _par = OpParams::None;
 };
 
-enum class Reserved {
-    None,
-    Const,
-    Table,
-    Effect,
-    End,
-    Init,
-    Loop,
-    ForEach,
-    If,
-    Else,
-    Float,
-    Int,
-    R0, R1, R2, R3,
-    C0, C1, C2, C3,
-    Function,
-    Def,
-};
-
 class Compiler
 {
 public:
