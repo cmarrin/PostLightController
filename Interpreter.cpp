@@ -127,25 +127,25 @@ Interpreter::execute(uint16_t addr)
             case Op::RandomFloat   :
                 _v[0] = floatToInt(random(intToFloat(_v[0]), intToFloat(_v[1])));
                 break;
-            case Op::Bor           :
+            case Op::Or            :
                 _v[0] |= _v[1];
                 break;
-            case Op::Bxor          :
+            case Op::Xor           :
                 _v[0] ^= _v[1];
                 break;
-            case Op::Band          :
+            case Op::And           :
                 _v[0] &= _v[1];
                 break;
-            case Op::Bnot          :
+            case Op::Not           :
                 _v[0] = ~_v[0];
                 break;
-            case Op::Or            :
+            case Op::LOr           :
                 _v[0] = _v[0] || _v[1];
                 break;
-            case Op::And           :
+            case Op::LAnd          :
                 _v[0] = _v[0] && _v[1];
                 break;
-            case Op::Not           :
+            case Op::LNot          :
                 _v[0] = !_v[0];
                 break;
             case Op::LTInt         :

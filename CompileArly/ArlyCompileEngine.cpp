@@ -1,5 +1,5 @@
 //
-//  CompileEngine.cpp
+//  ArlyCompileEngine.cpp
 //  CompileArly
 //
 //  Created by Chris Marrin on 1/9/22.
@@ -32,13 +32,13 @@ std::vector<OpData> CompileEngine::_opcodes = {
     { "Init",           Op::Init            , OpParams::Id },
     { "RandomInt",      Op::RandomInt       , OpParams::None },
     { "RandomFloat",    Op::RandomFloat     , OpParams::None },
-    { "Bor",            Op::Bor             , OpParams::None },
-    { "Bxor",           Op::Bxor            , OpParams::None },
-    { "Band",           Op::Band            , OpParams::None },
-    { "Bnot",           Op::Bnot            , OpParams::None },
     { "Or",             Op::Or              , OpParams::None },
+    { "Xor",            Op::Xor             , OpParams::None },
     { "And",            Op::And             , OpParams::None },
     { "Not",            Op::Not             , OpParams::None },
+    { "LOr",            Op::LOr             , OpParams::None },
+    { "LAnd",           Op::LAnd            , OpParams::None },
+    { "LNot",           Op::LNot            , OpParams::None },
     { "LTInt",          Op::LTInt           , OpParams::None },
     { "LTFloat",        Op::LTFloat         , OpParams::None },
     { "LEInt",          Op::LEInt           , OpParams::None },

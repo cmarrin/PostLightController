@@ -252,14 +252,14 @@ enum class Op: uint8_t {
 
 // 15 unused opcodes
 
-    Bor             = 0x30,
-    Bxor            = 0x31,
-    Band            = 0x32,
-    Bnot            = 0x33,
+    Or              = 0x30,
+    Xor             = 0x31,
+    And             = 0x32,
+    Not             = 0x33,
 
-    Or              = 0x34,
-    And             = 0x35,
-    Not             = 0x36,
+    LOr             = 0x34,
+    LAnd            = 0x35,
+    LNot            = 0x36,
 
     LTInt           = 0x37,
     LTFloat         = 0x38,
