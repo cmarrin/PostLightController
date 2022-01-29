@@ -24,7 +24,7 @@ struct OpData
     OpData() { }
     OpData(std::string str, Op op, OpParams par) : _str(str), _op(op), _par(par) { }
     std::string _str;
-    Op _op = Op::LoadColorI;
+    Op _op = Op::Return;
     OpParams _par = OpParams::None;
 };
 

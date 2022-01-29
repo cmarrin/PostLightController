@@ -15,15 +15,10 @@ using namespace arly;
 std::vector<OpData> CompileEngine::_opcodes = {
     { "LoadI",          Op::LoadI           , OpParams::Rd_Id_Rs_I },
     { "StoreI",         Op::StoreI          , OpParams::Id_Rd_I_Rs },
-    { "LoadColorI",     Op::LoadColorI      , OpParams::Cd_Id_Rs_I },
-    { "StoreColorI",    Op::StoreColorI     , OpParams::Id_Rd_I_Cs },
 
     { "LoadX",          Op::LoadX           , OpParams::Rd_Id_Rs_I },
-    { "LoadColorX",     Op::LoadColorX      , OpParams::Rd_Id_Rs_I },
     { "LoadIX",         Op::LoadIX          , OpParams::Rd_Rs_I },
     { "StoreIX",        Op::StoreIX         , OpParams::Rd_I_Rs },
-    { "LoadColorIX",    Op::LoadColorIX     , OpParams::Rd_Rs_I },
-    { "StoreColorIX",   Op::StoreColorIX    , OpParams::Rd_I_Rs },
 
     { "MoveColor",      Op::MoveColor       , OpParams::Cd_Cs },
     { "Move",           Op::Move            , OpParams::Rd_Rs },
@@ -69,9 +64,7 @@ std::vector<OpData> CompileEngine::_opcodes = {
     { "LoadColorParam", Op::LoadColorParam  , OpParams::C_I },
     { "LoadIntParam",   Op::LoadIntParam    , OpParams::R_I },
     { "LoadFloatParam", Op::LoadFloatParam  , OpParams::R_I },
-    { "LoadColor",      Op::LoadColor       , OpParams::C_Id },
     { "Load",           Op::Load            , OpParams::R_Id },
-    { "StoreColor",     Op::StoreColor      , OpParams::Id_C },
     { "Store",          Op::Store           , OpParams::Id_R },
     { "LoadBlack",      Op::LoadBlack       , OpParams::C },
     { "LoadZero",       Op::LoadZero        , OpParams::R },

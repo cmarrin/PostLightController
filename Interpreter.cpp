@@ -226,17 +226,9 @@ Interpreter::execute(uint16_t addr)
                 getI(i);
                 _v[r] = floatToInt(float(_params[i]));
                 break;
-            case Op::LoadColor     :
-                id = getId();
-                _c[r] = Color(getFloat(id, 0), getFloat(id, 0 + 1), getFloat(id, 0 + 2));
-                break;
             case Op::Load          :
                 id = getId();
                 _v[r] = getInt(id, 0);
-                break;
-            case Op::StoreColor    :
-                id = getId();
-                storeColor(id, 0, r);
                 break;
             case Op::Store         :
                 id = getId();
@@ -255,28 +247,11 @@ Interpreter::execute(uint16_t addr)
                 index = _v[rd] + i;
                 storeInt(id, index, _v[rs]);
                 break;
-            case Op::LoadColorI    :
-                id = getId();
-                getRdRs(rd, rs);
-                index = _v[rs] * 3;
-                _c[rd] = Color(getFloat(id, index), getFloat(id, index + 1), getFloat(id, index + 2));
-                break;
-            case Op::StoreColorI   :
-                id = getId();
-                getRdRs(rd, rs);
-                storeColor(id, _v[rd] * 3, rs);
-                break;
                 
             case Op::LoadX         :
                 id = getId();
                 getRdRsI(rd, rs, i);
                 index = _v[rs] + i;
-                _v[rd] = id + index;
-                break;
-            case Op::LoadColorX    :
-                id = getId();
-                getRdRsI(rd, rs, i);
-                index = _v[rs] * 3 + i;
                 _v[rd] = id + index;
                 break;
 
@@ -290,16 +265,6 @@ Interpreter::execute(uint16_t addr)
                 index = _v[rd] + i;
                 storeInt(index, _v[rs]);
                 break;
-            case Op::LoadColorIX    :
-                getRdRsI(rd, rs, i);
-                index = _v[rs] * 3 + i;
-                _c[rd] = Color(getFloat(index), getFloat(index + 1), getFloat(index + 2));
-                break;
-            case Op::StoreColorIX   :
-                getRdRsI(rd, rs, i);
-                storeColor(_v[rd] * 3, rs);
-                break;
-                
                 
             case Op::MoveColor     :
                 getRdRs(rd, rs);

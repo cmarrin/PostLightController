@@ -187,22 +187,6 @@ private:
         }
     }
 
-    void storeColor(uint8_t index, uint8_t creg) { storeColor(index, 0, creg); }
-    
-    void storeColor(uint8_t id, uint8_t index, uint8_t creg)
-    {
-        if (id < 0x80) {
-            return;
-        }
-        
-        index = + (id - 0x80);
-        
-        const Color& c = _c[creg];
-        _ram[index] = floatToInt(c.hue());
-        _ram[index + 1] = floatToInt(c.sat());
-        _ram[index + 2] = floatToInt(c.val());
-    }
-
     float intToFloat(uint32_t i)
     {
         float f;

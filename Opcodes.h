@@ -131,9 +131,7 @@ Opcodes:
     LoadIntParam r i        - v[r] = p[i] (1 byte converted to int32)
     LoadFloatParam r i      - v[r] = p[i] (1 byte converted to float)
     
-    LoadColor r id          - c[r] = mem[id] (12 bytes, 3 floats)
     Load r id               - v[r] = mem[id] (4 byte int or float)
-    StoreColor id r         - mem[id] = c[r] (12 bytes, 3 floats)
     Store id r              - mem[id] = v[r] (4 byte int or float)
 
     LoadBlack r             - c[r] = Color()
@@ -154,17 +152,11 @@ Opcodes:
     
     LoadI rd id rs i         - v[rd] = mem[id + v[rs] + i]
     StoreI id rd i rs        - mem[id + v[rd] + i] = v[rs]
-    LoadColorI rd id rs i    - c[rd] = mem[id + (v[rs] * 3) + i]
-    StoreColorI id rd i rs   - mem[id + (v[rd] * 3) + i] = c[rs]
     
     LoadX rd id rs i        - v[rd] = id + v[rs] + i
-    LoadColorX rd id rs i   - v[rd] = id + (v[rs] * 3) + i
     
     LoadIX rd rs i          - v[rd] = mem[v[rs] + i]
     StoreIX rd i rs         - mem[v[rd] + i] = v[rs]
-    LoadColorIX rd rs i     - c[rd] = mem[v[rs] + i]
-    StoreColorIX rd i rs    - mem[v[rd] + i] = c[rs]
-
 
     MoveColor rd, rs        - c[rd] = c[rs]
     Move rd, rs             - v[rd] = v[rs]
@@ -322,48 +314,43 @@ enum class Op: uint8_t {
     
     Return          = 0x4d,
     
+// 2 unused opcodes
+    
     LoadI           = 0x50,
     StoreI          = 0x51,
-    LoadColorI      = 0x52,
-    StoreColorI     = 0x53,
     
-    LoadX           = 0x54,
-    LoadColorX      = 0x55,
-    LoadIX          = 0x56,
-    StoreIX         = 0x57,
-    LoadColorIX     = 0x58,
-    StoreColorIX    = 0x59,
+    LoadX           = 0x52,
+    LoadIX          = 0x53,
+    StoreIX         = 0x54,
 
-// 52 unused opcodes
+// 44 unused opcodes
 
     LoadColorParam  = 0x80,
     LoadIntParam    = 0x84,
     LoadFloatParam  = 0x88,
 
-    LoadColor       = 0x8c,
-    Load            = 0x90,
-    StoreColor      = 0x94,
-    Store           = 0x98,
+    Load            = 0x8c,
+    Store           = 0x90,
 
-    LoadBlack       = 0x9c,
-    LoadZero        = 0xa0,
-    LoadIntConst    = 0xa4,
+    LoadBlack       = 0x94,
+    LoadZero        = 0x98,
+    LoadIntConst    = 0x9c,
 
-    Exit            = 0xb0,
-    ToFloat         = 0xb4,
-    ToInt           = 0xb8,
-    SetAllLights    = 0xbc,
+    Exit            = 0xa0,
+    ToFloat         = 0xa4,
+    ToInt           = 0xa8,
+    SetAllLights    = 0xac,
 
-    ForEach         = 0xc0,
-    Call            = 0xc4,
+    ForEach         = 0xb0,
+    Call            = 0xb4,
     
-// 7 unused opcodes
+// 10 unused opcode sets (of 4 each)
 
     Log             = 0xe0, // Print r as int32_t with addr - For debugging
     LogFloat        = 0xe4, // Print r as float with addr - For debugging
     LogColor        = 0xe8, // Print c with addr - For debugging
     
-// 5 unused opcodes
+// 6 unused opcodes
 
 };
 
