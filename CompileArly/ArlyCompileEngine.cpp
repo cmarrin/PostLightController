@@ -17,8 +17,8 @@ std::vector<OpData> CompileEngine::_opcodes = {
     { "StoreI",         Op::StoreI          , OpParams::Id_Rd_I_Rs },
 
     { "LoadX",          Op::LoadX           , OpParams::Rd_Id_Rs_I },
-    { "LoadIX",         Op::LoadIX          , OpParams::Rd_Rs_I },
-    { "StoreIX",        Op::StoreIX         , OpParams::Rd_I_Rs },
+    { "LoadDeref",      Op::LoadDeref       , OpParams::Rd_Rs_I },
+    { "StoreDeref",     Op::StoreDeref      , OpParams::Rd_I_Rs },
 
     { "MoveColor",      Op::MoveColor       , OpParams::Cd_Cs },
     { "Move",           Op::Move            , OpParams::Rd_Rs },

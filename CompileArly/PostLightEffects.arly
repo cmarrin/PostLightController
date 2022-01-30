@@ -49,10 +49,10 @@ function animate
     // r2 has cur
     
     // cur += inc
-    LoadIX r0 r3 LEDCur
-    LoadIX r1 r3 LEDInc
+    LoadDeref r0 r3 LEDCur
+    LoadDeref r1 r3 LEDInc
     AddFloat
-    StoreIX r3 LEDCur r0
+    StoreDeref r3 LEDCur r0
     Move r2 r0
     
     // if (0 < inc)
@@ -61,26 +61,26 @@ function animate
     if
         // if cur > max
         Move r0 r2
-        LoadIX r1 r3 LEDMax
+        LoadDeref r1 r3 LEDMax
         GTFloat
         if
             // Reverse direction
-            StoreIX r3 LEDCur r1
-            LoadIX r0 r3 LEDInc
+            StoreDeref r3 LEDCur r1
+            LoadDeref r0 r3 LEDInc
             NegFloat
-            StoreIX r3 LEDInc r0
+            StoreDeref r3 LEDInc r0
         end
     else
         // if (cur <= min)
         Move r0 r2
-        LoadIX r1 r3 LEDMin
+        LoadDeref r1 r3 LEDMin
         LEFloat
         if
             // Reverse direction
-            StoreIX r3 LEDCur r1
-            LoadIX r0 r3 LEDInc
+            StoreDeref r3 LEDCur r1
+            LoadDeref r0 r3 LEDInc
             NegFloat
-            StoreIX r3 LEDInc r0
+            StoreDeref r3 LEDInc r0
             LoadIntConst r0 1
             Return
         end
@@ -145,30 +145,30 @@ function flickerLoop
             
             // led.cur = BrightnessMin
             Load r0 BrightnessMin
-            StoreIX r3 LEDCur r0
+            StoreDeref r3 LEDCur r0
                 
             // led.inc = Random(IncMin, IncMax)
             Load r0 IncMin
             Load r1 IncMax
             RandomFloat
-            StoreIX r3 LEDInc r0
+            StoreDeref r3 LEDInc r0
         
             // Random number of steps to throb up and down
             // led.min = BrightnessMin
             Load r0 BrightnessMin
-            StoreIX r3 LEDMin r0
+            StoreDeref r3 LEDMin r0
 
             // led.max = led.inc + Random(flickerStepsMin, flickerStepsMax);
             Load r0 flickerStepsMin
             Load r1 flickerStepsMax
             RandomFloat
-            LoadIX r1 r3 LEDInc
+            LoadDeref r1 r3 LEDInc
             AddFloat
-            StoreIX r3 LEDMax r0
+            StoreDeref r3 LEDMax r0
         end
 
         // c0.val = led.cur
-        LoadIX r0 r3 LEDCur
+        LoadDeref r0 r3 LEDCur
         StoreColorComp c0 ColorVal r0
         SetLight r2 c0
     end
@@ -187,7 +187,7 @@ function pulseInit
     LoadX r3 pulseState r1 LEDCur
 
     // max = c.val
-    StoreIX r3 LEDMax r0
+    StoreDeref r3 LEDMax r0
     
     // min = c.val - (float(depth + 1) / 8 * (c.val - BrightnessMin))
     LoadIntParam r0 4
@@ -206,11 +206,11 @@ function pulseInit
     Move r1 r0
     LoadColorComp r0 c0 ColorVal
     SubFloat
-    StoreIX r3 LEDMin r0
+    StoreDeref r3 LEDMin r0
 
     // inc = (max - min) / float((NumLevels - speed) * PulseSpeedMult)
-    LoadIX r0 r3 LEDMax
-    LoadIX r1 r3 LEDMin
+    LoadDeref r0 r3 LEDMax
+    LoadDeref r1 r3 LEDMin
     SubFloat
     Move r2 r0
     Load r0 NumLevels
@@ -222,20 +222,20 @@ function pulseInit
     Move r1 r0
     Move r0 r2
     DivFloat
-    StoreIX r3 LEDInc r0
+    StoreDeref r3 LEDInc r0
 
     // Start with a random value for cur
-    LoadIX r0 r3 LEDMin
-    LoadIX r1 r3 LEDMax
+    LoadDeref r0 r3 LEDMin
+    LoadDeref r1 r3 LEDMax
     RandomFloat
-    StoreIX r3 LEDCur r0
+    StoreDeref r3 LEDCur r0
 end
 
 function pulseLoop
     LoadZero r0
     LoadX r0 pulseState r0 0
     Call animate
-    LoadIX r0 r3 LEDCur
+    LoadDeref r0 r3 LEDCur
     StoreColorComp c0 ColorVal r0
     SetAllLights c0
     Load r0 PulseDelay

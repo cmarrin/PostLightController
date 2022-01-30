@@ -123,13 +123,14 @@ Opcodes:
     // register. The 'IX' variants use the memory location loaded in the 'X' variant
     // to access the data there.
     
-    LoadI rd id rs i         - v[rd] = mem[id + v[rs] + i]
-    StoreI id rd i rs        - mem[id + v[rd] + i] = v[rs]
+    LoadRef rd id rs i      - v[rd] = mem[id + v[rs] * i]
+    LoadDeref rd rs i       - v[rd] = mem[v[rs] + i]
+    StoreDeref rd i rs      - mem[v[rd] + i] = v[rs]
+    
+    LoadI rd id rs i        - v[rd] = mem[id + v[rs] + i]
+    StoreI id rd i rs       - mem[id + v[rd] + i] = v[rs]
     
     LoadX rd id rs i        - v[rd] = id + v[rs] + i
-    
-    LoadIX rd rs i          - v[rd] = mem[v[rs] + i]
-    StoreIX rd i rs         - mem[v[rd] + i] = v[rs]
 
     MoveColor rd, rs        - c[rd] = c[rs]
     Move rd, rs             - v[rd] = v[rs]
@@ -294,8 +295,8 @@ enum class Op: uint8_t {
     StoreI          = 0x51,
     
     LoadX           = 0x52,
-    LoadIX          = 0x53,
-    StoreIX         = 0x54,
+    LoadDeref       = 0x53,
+    StoreDeref      = 0x54,
 
 // 44 unused opcodes
 

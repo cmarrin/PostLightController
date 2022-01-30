@@ -255,12 +255,12 @@ Interpreter::execute(uint16_t addr)
                 _v[rd] = id + index;
                 break;
 
-            case Op::LoadIX         :
+            case Op::LoadDeref      :
                 getRdRsI(rd, rs, i);
                 index = _v[rs] + i;
                 _v[rd] = getInt(index);
                 break;
-            case Op::StoreIX        :
+            case Op::StoreDeref    :
                 getRdRsI(rd, rs, i);
                 index = _v[rd] + i;
                 storeInt(index, _v[rs]);
