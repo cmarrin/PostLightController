@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		491DED262793225B00D007C2 /* Interpreter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 491DED242793225B00D007C2 /* Interpreter.cpp */; };
 		491DED29279385B700D007C2 /* Color.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 491DED27279385B700D007C2 /* Color.cpp */; };
+		4963436827A5AD6D00ABF09F /* CloverCompileEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4963436527A4BCC000ABF09F /* CloverCompileEngine.cpp */; };
 		49DAA647278B212E00F67EEB /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49DAA646278B212E00F67EEB /* main.cpp */; };
 		49DAA651278B3AFE00F67EEB /* Compiler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49DAA64F278B3AFE00F67EEB /* Compiler.cpp */; };
 		49DAA657278CD00500F67EEB /* Scanner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49DAA656278CD00500F67EEB /* Scanner.cpp */; };
@@ -34,6 +35,9 @@
 		491DED27279385B700D007C2 /* Color.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Color.cpp; path = ../Color.cpp; sourceTree = "<group>"; };
 		491DED28279385B700D007C2 /* Color.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Color.h; path = ../Color.h; sourceTree = "<group>"; };
 		491DED2A279462FE00D007C2 /* Opcodes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Opcodes.h; path = ../Opcodes.h; sourceTree = "<group>"; };
+		4963436427A4BCC000ABF09F /* CloverCompileEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CloverCompileEngine.h; sourceTree = "<group>"; };
+		4963436527A4BCC000ABF09F /* CloverCompileEngine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CloverCompileEngine.cpp; sourceTree = "<group>"; };
+		4963436927A5DC6E00ABF09F /* PostLightEffects.clvr */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = PostLightEffects.clvr; sourceTree = "<group>"; };
 		49DAA643278B212E00F67EEB /* CompileArly */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = CompileArly; sourceTree = BUILT_PRODUCTS_DIR; };
 		49DAA646278B212E00F67EEB /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		49DAA64E278B2E5500F67EEB /* PostLightEffects.arly */ = {isa = PBXFileReference; lastKnownFileType = text; path = PostLightEffects.arly; sourceTree = "<group>"; };
@@ -79,6 +83,7 @@
 		49DAA64D278B2DF200F67EEB /* Scripts */ = {
 			isa = PBXGroup;
 			children = (
+				4963436927A5DC6E00ABF09F /* PostLightEffects.clvr */,
 				49DAA65A2790B05000F67EEB /* PostLightEffects.arlx */,
 				49DAA64E278B2E5500F67EEB /* PostLightEffects.arly */,
 			);
@@ -88,6 +93,8 @@
 		49DAA652278B3B5B00F67EEB /* src */ = {
 			isa = PBXGroup;
 			children = (
+				4963436527A4BCC000ABF09F /* CloverCompileEngine.cpp */,
+				4963436427A4BCC000ABF09F /* CloverCompileEngine.h */,
 				491DED27279385B700D007C2 /* Color.cpp */,
 				491DED28279385B700D007C2 /* Color.h */,
 				49DAA64F278B3AFE00F67EEB /* Compiler.cpp */,
@@ -165,6 +172,7 @@
 			files = (
 				491DED29279385B700D007C2 /* Color.cpp in Sources */,
 				49DAA6602791C0A500F67EEB /* Decompiler.cpp in Sources */,
+				4963436827A5AD6D00ABF09F /* CloverCompileEngine.cpp in Sources */,
 				49DAA657278CD00500F67EEB /* Scanner.cpp in Sources */,
 				491DED262793225B00D007C2 /* Interpreter.cpp in Sources */,
 				49DAA65D2791B78A00F67EEB /* ArlyCompileEngine.cpp in Sources */,
