@@ -52,7 +52,6 @@ public:
 		InvalidOp,
         OnlyMemAddressesAllowed,
         StackOverrun,
-        StackUnderrun,
         AddressOutOfRange,
         InvalidColorComp,
     };
