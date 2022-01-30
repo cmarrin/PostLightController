@@ -8,6 +8,21 @@ def LEDMin      2
 def LEDMax      3
 def SpeedTableEntrySize 3
 
+struct FlickerSpeedEntry
+{
+    float min;
+    float max;
+    int delay;
+}
+
+struct LedEntry
+{
+    float cur;
+    float inc;
+    float min;
+    float max;
+}
+
 const float IncMin          0.004
 const float IncMax          0.04
 const float BrightnessMin   0.3
@@ -17,7 +32,7 @@ const int NumLevels         8
 const int PulseDelay        25
 const int PulseSpeedMult    35
 
-table float FlickerSpeedTable
+table FlickerSpeedEntry FlickerSpeedTable
     0.98 1    40
     0.98 1    30
     0.71 0.94 20
@@ -28,219 +43,94 @@ table float FlickerSpeedTable
     0.01 0.02 10
 end
 
-float flickerLeds 32       // cur, inc, min, max
-float flickerStepsMin 1
-float flickerStepsMax 1
-int flickerSpeedDelay 1
+var LedEntry leds 8
 
-int led 1
-int i 1
+LedEntry* led
+int i
 
-float pulseState 4 // cur, inc, min, max
-
-// r0 contains index of structure: cur, inc, min, max
 // Animate cur between min and max but adding inc
-// Return:  r0 = integer 1 if we just reversed into the positive
-//          direction, 0 otherwise
-function animate
-    Move r3 r0
-    
-    // r3 has base index
-    // r2 has cur
-    
-    // cur += inc
-    LoadDeref r0 r3 LEDCur
-    LoadDeref r1 r3 LEDInc
-    AddFloat
-    StoreDeref r3 LEDCur r0
-    Move r2 r0
-    
-    // if (0 < inc)
-    LoadZero r0
-    LTFloat
-    if
-        // if cur > max
-        Move r0 r2
-        LoadDeref r1 r3 LEDMax
-        GTFloat
-        if
-            // Reverse direction
-            StoreDeref r3 LEDCur r1
-            LoadDeref r0 r3 LEDInc
-            NegFloat
-            StoreDeref r3 LEDInc r0
-        end
-    else
-        // if (cur <= min)
-        Move r0 r2
-        LoadDeref r1 r3 LEDMin
-        LEFloat
-        if
-            // Reverse direction
-            StoreDeref r3 LEDCur r1
-            LoadDeref r0 r3 LEDInc
-            NegFloat
-            StoreDeref r3 LEDInc r0
-            LoadIntConst r0 1
-            Return
-        end
-    end
-    LoadZero r0
-    Return
-end
+// Return: 1 if we just reversed into the positive
+//         direction, 0 otherwise
+function animate(led)
+{
+    led.cur += led.inc;
+    if (led.inc > 0) {
+        if (led.cur >= led.max) {
+            led.cur = led.max;
+            led.inc = -led.inc;
+        }
+    } else {
+        if (led.cur <= led.min) {
+            led.cur = led.min;
+            led.inc = -led.inc;
+            return 1;
+        }
+    }
+    return 0;
+}
 
-function constantInit
-    LoadColorParam c0 0
-end
+function constantInit()
+{
+    c0 = Params[0];
+}
 
-function constantLoop
-    SetAllLights c0
-    LoadZero r0
-    Exit r0
-end
+function constantLoop()
+{
+    SetAllLights(c0);
+    exit 0;
+}
 
-function flickerInit
-    // Get color param
-    LoadColorParam c0 0
-    
-    // Init leds
-    LoadZero r0
-    Load r1 LedSize
-    Init flickerLeds
-    
-    // Init min, max and delay from SpeedTable
-    LoadIntParam r0 3
-    LoadIntConst r1 SpeedTableEntrySize
-    MulInt
-    LoadI r1 FlickerSpeedTable r0 0
-    Store flickerStepsMin r1
-    LoadI r1 FlickerSpeedTable r0 1
-    Store flickerStepsMax r1
-    LoadI r1 FlickerSpeedTable r0 2
-    ToInt r1
-    Store flickerSpeedDelay r1
-end
+function flickerInit()
+{
+    c0 = Params[0];
+    Init(leds, 0, LedSize * 4);
+}
 
-function flickerLoop
-    LoadZero r2
-    Load r0 NumPixels
-    
-    // for (i = 0; i < NumPixels; ++i)
-    foreach r2
-        // Set r0 to point at the current LED
-        Move r0 r2
-        LoadIntConst r1 4
-        MulInt
-        LoadX r0 flickerLeds r0 0
-        Store led r0
-        Store i r2
-        Call animate
-        Load r2 i
-
-        // On return r0 is 1 if we have completed the throb
-        if
+function flickerLoop()
+{
+    i = 0;
+    foreach (i : NumPixels) {
+        led = &leds[i];
+        if (animate(led)) {
             // We are done with the throb, select a new inc and lim
             // Increment inc value for each step a random amount
-            Load r3 led            
-            
-            // led.cur = BrightnessMin
-            Load r0 BrightnessMin
-            StoreDeref r3 LEDCur r0
-                
-            // led.inc = Random(IncMin, IncMax)
-            Load r0 IncMin
-            Load r1 IncMax
-            RandomFloat
-            StoreDeref r3 LEDInc r0
+            led.cur = BrightnessMin;
+            led.inc = Random(IncMin, IncMax);
         
             // Random number of steps to throb up and down
-            // led.min = BrightnessMin
-            Load r0 BrightnessMin
-            StoreDeref r3 LEDMin r0
+            led.min = BrightnessMin;
+            led.max = led.inc + Random(FlickerSpeedTable[i].min, FlickerSpeedTable[i].max);
+        }
 
-            // led.max = led.inc + Random(flickerStepsMin, flickerStepsMax);
-            Load r0 flickerStepsMin
-            Load r1 flickerStepsMax
-            RandomFloat
-            LoadDeref r1 r3 LEDInc
-            AddFloat
-            StoreDeref r3 LEDMax r0
-        end
-
-        // c0.val = led.cur
-        LoadDeref r0 r3 LEDCur
-        StoreColorComp c0 ColorVal r0
-        SetLight r2 c0
-    end
+        c0.val = led.cur;
+        SetLight(i, c0);
+    }
     
-    // return flickerSpeedDelay
-    Load r0 flickerSpeedDelay
-    Exit r0
-end
+    return FlickerSpeedTable[i].delay;
+}
 
-function pulseInit
-    LoadColorParam c0 0
-    LoadColorComp r0 c0 ColorVal
+function pulseInit()
+{
+    c0 = Params[0];
+    led = &leds[0];
     
-    // Keep index in r3
-    LoadZero r1
-    LoadX r3 pulseState r1 LEDCur
-
-    // max = c.val
-    StoreDeref r3 LEDMax r0
-    
-    // min = c.val - (float(depth + 1) / 8 * (c.val - BrightnessMin))
-    LoadIntParam r0 4
-    LoadIntConst r1 1
-    AddInt
-    ToFloat r0
-    Load r1 NumLevels
-    ToFloat r1
-    DivFloat
-    Move r2 r0
-    LoadColorComp r0 c0 ColorVal
-    Load r1 BrightnessMin
-    SubFloat
-    Move r1 r2
-    MulFloat
-    Move r1 r0
-    LoadColorComp r0 c0 ColorVal
-    SubFloat
-    StoreDeref r3 LEDMin r0
-
-    // inc = (max - min) / float((NumLevels - speed) * PulseSpeedMult)
-    LoadDeref r0 r3 LEDMax
-    LoadDeref r1 r3 LEDMin
-    SubFloat
-    Move r2 r0
-    Load r0 NumLevels
-    LoadIntParam r1 3
-    SubInt
-    Load r1 PulseSpeedMult
-    MulInt
-    ToFloat r0
-    Move r1 r0
-    Move r0 r2
-    DivFloat
-    StoreDeref r3 LEDInc r0
+    led.max = c0.val;
+    led.min = c0.val - (float(Params[4] + 1) / 8 * (c0.val - BrightnessMin))
+    led.inc = (led.max - led.min) / float((NumLevels - Params[3]) * PulseSpeedMult)
 
     // Start with a random value for cur
-    LoadDeref r0 r3 LEDMin
-    LoadDeref r1 r3 LEDMax
-    RandomFloat
-    StoreDeref r3 LEDCur r0
-end
+    led.cur = Random(led.min, led.max);
+}
 
-function pulseLoop
-    LoadZero r0
-    LoadX r0 pulseState r0 0
-    Call animate
-    LoadDeref r0 r3 LEDCur
-    StoreColorComp c0 ColorVal r0
-    SetAllLights c0
-    Load r0 PulseDelay
-    Exit r0
-end
+function pulseLoop()
+{
+    animate(&leds[0]);
+
+    led = &leds[0];
+    c0.val = led.cur;
+    SetAllLights(c0);
+    exit PulseDelay;
+}
 
 effect c 3 constantInit constantLoop
 effect f 4 flickerInit flickerLoop
