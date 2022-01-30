@@ -702,27 +702,15 @@ CompileEngine::opStatement()
         case OpParams::R_I: handleOpParams(handleR(op), handleI()); break;
         case OpParams::C_I: handleOpParams(handleC(op), handleI()); break;
         case OpParams::R_Id: handleOpParams(handleR(op), handleId()); break;
-        case OpParams::C_Id: handleOpParams(handleC(op), handleId()); break;
         
         case OpParams::Id_R: handleOpParamsReverse(handleId(), handleR(op)); break;
-        case OpParams::Id_C: handleOpParamsReverse(handleId(), handleC(op)); break;
 
         case OpParams::Rd_Rs: handleOpParamsRdRs(op, handleR(), handleR()); break;
-        case OpParams::Cd_Rs: handleOpParamsRdRs(op, handleC(), handleR()); break;
         case OpParams::Rd_Cs: handleOpParamsRdRs(op, handleR(), handleC()); break;
         case OpParams::Cd_Cs: handleOpParamsRdRs(op, handleC(), handleC()); break;
 
-        case OpParams::Cd_Id_Rs_I:
-            handleOpParamsRdRsSplit(op, handleC(), handleId(), handleR(), handleI());
-            break;
         case OpParams::Rd_Id_Rs_I:
             handleOpParamsRdRsSplit(op, handleR(), handleId(), handleR(), handleI());
-            break;
-        case OpParams::Id_Rd_I_Cs:
-            handleOpParamsRdRs(op, handleId(), handleR(), handleI(), handleC());
-            break;
-        case OpParams::Id_Rd_I_Rs:
-            handleOpParamsRdRs(op, handleId(), handleR(), handleI(), handleR());
             break;
         case OpParams::Rd_Rs_I:
             handleOpParamsRdRsI(op, handleR(), handleR(), handleI());
