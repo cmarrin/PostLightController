@@ -315,7 +315,6 @@ Interpreter::execute(uint16_t addr)
                 break;
             case Op::Exit          :
                 return _v[r];
-                break;
             case Op::Call          :
                 if (_callStackCur >= CallStackSize) {
                     _error = Error::StackOverrun;
@@ -329,9 +328,8 @@ Interpreter::execute(uint16_t addr)
                 break;
             case Op::Return        :
                 if (_callStackCur == 0) {
-                    _error = Error::StackUnderrun;
-                    _errorAddr = _pc - 1;
-                    return -1;
+                    // Returning from top level is like Exit
+                    return 0;
                 }
                 _pc = _callStack[--_callStackCur];
                 break;
