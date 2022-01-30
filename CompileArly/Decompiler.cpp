@@ -84,20 +84,16 @@ Decompiler::effects()
     // Save start of code address for Call
     _codeOffset = _it - _in->begin();
     
-    if (!entries.empty() && entries[0]._init > 0) {
-        // Any code before the first init block is functions
-        _out->append("functions\n");
-        incIndent();
+    // Output the function code
+    _out->append("functions\n");
+    incIndent();
 
-        auto initStartIt = _it + entries[0]._init;
-
-        while(initStartIt != _it) {
-            if (statement() == Op::End) {
-                break;
-            }
+    while(_it != _in->end()) {
+        if (statement() == Op::End) {
+            break;
         }
-        _out->append("\n");
     }
+    _out->append("\n");
 
     for (auto& entry : entries) {
         doIndent();
@@ -108,10 +104,11 @@ Decompiler::effects()
         _out->append(c);
         _out->append("' ");
         _out->append(std::to_string(entry._params));
+        _out->append(" ");
+        _out->append(std::to_string(entry._init + _codeOffset));
+        _out->append(" ");
+        _out->append(std::to_string(entry._loop + _codeOffset));
         _out->append("\n");
-        
-        init();
-        loop();
         decIndent();
     }
 }

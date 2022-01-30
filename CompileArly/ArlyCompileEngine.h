@@ -10,7 +10,7 @@
 
 Arly Source Format
 
-program         ::= defs constants tables functions effects
+program         ::= defs constants tables vars functions effects
 defs            ::= { def <n> }
 def             ::= 'def' <id> <integer>
 constants       ::= { constant <n> }
@@ -19,9 +19,9 @@ tables          ::= { table <n> }
 table           ::= 'table' type <id> <n> tableEntries 'end'
 tableEntries    ::= { values <n> }
 functions       ::= {function <n>
-function        ::= 'function' <id> <n> vars statements 'end'
+function        ::= 'function' <id> <n> statements 'end'
 effects         ::= { effect <n> }
-effect          ::= 'effect' <id> <integer> <n> vars init loop 'end'
+effect          ::= 'effect' <id> <integer> <n> init loop 'end'
 vars            ::= { var <n> }
 var             ::= type <id> <integer>
 init            ::= 'init' <n> statements 'end' <n>
@@ -210,9 +210,11 @@ private:
     
     struct Effect
     {
-        Effect(char cmd, uint8_t count)
+        Effect(char cmd, uint8_t count, uint16_t initAddr, uint16_t loopAddr)
             : _cmd(cmd)
             , _count(count)
+            , _initAddr(initAddr)
+            , _loopAddr(loopAddr)
         { }
         
         char _cmd;

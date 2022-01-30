@@ -90,6 +90,7 @@ CompileEngine::program()
         defs();
         constants();
         tables();
+        vars();
         functions();
         effects();
     }
@@ -283,7 +284,6 @@ CompileEngine::function()
     
     ignoreNewLines();
     
-    vars();
     statements();
     
     expect(Token::Identifier, "end");
@@ -317,16 +317,7 @@ CompileEngine::effect()
         throw true;
     }
     
-    _effects.emplace_back(id[0], paramCount);
-
-    expect(Token::NewLine);
-    
-    vars();
-    init();
-    loop();
-
-    ignoreNewLines();
-    expect(match(Reserved::End), Compiler::Error::ExpectedEnd);
+    _effects.emplace_back(id[0], paramCount, handleCallTarget(), handleCallTarget());
     return true;
 }
 
