@@ -235,23 +235,14 @@ Interpreter::execute(uint16_t addr)
                 storeInt(id, 0, _v[r]);
                 break;
                 
-            case Op::LoadI         :
-                id = getId();
-                getRdRsI(rd, rs, i);
-                index = _v[rs] + i;
-                _v[rd] = getInt(id, index);
+            case Op::LoadRef       :
+                _v[r] = getId();
                 break;
-            case Op::StoreI        :
+
+            case Op::LoadRefX      :
                 id = getId();
                 getRdRsI(rd, rs, i);
-                index = _v[rd] + i;
-                storeInt(id, index, _v[rs]);
-                break;
-                
-            case Op::LoadX         :
-                id = getId();
-                getRdRsI(rd, rs, i);
-                index = _v[rs] + i;
+                index = _v[rs] * i;
                 _v[rd] = id + index;
                 break;
 

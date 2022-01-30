@@ -110,15 +110,14 @@ function flickerInit
     
     // Init min, max and delay from SpeedTable
     LoadIntParam r0 3
-    LoadIntConst r1 SpeedTableEntrySize
-    MulInt
-    LoadI r1 FlickerSpeedTable r0 0
-    Store flickerStepsMin r1
-    LoadI r1 FlickerSpeedTable r0 1
-    Store flickerStepsMax r1
-    LoadI r1 FlickerSpeedTable r0 2
-    ToInt r1
-    Store flickerSpeedDelay r1
+    LoadRefX r1 FlickerSpeedTable r0 SpeedTableEntrySize
+    LoadDeref r0 r1 0
+    Store flickerStepsMin r0
+    LoadDeref r0 r1 1
+    Store flickerStepsMax r0
+    LoadDeref r0 r1 2
+    ToInt r0
+    Store flickerSpeedDelay r0
 end
 
 function flickerLoop
@@ -128,10 +127,7 @@ function flickerLoop
     // for (i = 0; i < NumPixels; ++i)
     foreach r2
         // Set r0 to point at the current LED
-        Move r0 r2
-        LoadIntConst r1 4
-        MulInt
-        LoadX r0 flickerLeds r0 0
+        LoadRefX r0 flickerLeds r2 4
         Store led r0
         Store i r2
         Call animate
@@ -180,13 +176,12 @@ end
 
 function pulseInit
     LoadColorParam c0 0
-    LoadColorComp r0 c0 ColorVal
     
     // Keep index in r3
-    LoadZero r1
-    LoadX r3 pulseState r1 LEDCur
+    LoadRef r3 pulseState
 
     // max = c.val
+    LoadColorComp r0 c0 ColorVal
     StoreDeref r3 LEDMax r0
     
     // min = c.val - (float(depth + 1) / 8 * (c.val - BrightnessMin))
@@ -232,9 +227,9 @@ function pulseInit
 end
 
 function pulseLoop
-    LoadZero r0
-    LoadX r0 pulseState r0 0
+    LoadRef r0 pulseState
     Call animate
+    LoadRef r3 pulseState
     LoadDeref r0 r3 LEDCur
     StoreColorComp c0 ColorVal r0
     SetAllLights c0

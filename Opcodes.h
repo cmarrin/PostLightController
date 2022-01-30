@@ -113,25 +113,26 @@ Opcodes:
     LoadFloatOne r          - v[r] = 1.0f
     LoadIntByteMax r        - v[r] = 255
 
-    // These opcodes work with indirect addresses. The general form is [id][r][off].
-    // [id] is a memory array to read or write. [r] holds an index into that
-    // array. In the case of colors, this index is multiplied by 3. [off] is an 
-    // offset into that array index, to access individual elements of a structured
-    // array entry, for instance. 3 forms are available. The 'I' variants directly
-    // access the value at the final memory location and load or store data. The
-    // 'X' variants simply load the final memory location into the given  destination
-    // register. The 'IX' variants use the memory location loaded in the 'X' variant
-    // to access the data there.
+    // The opcodes deal with variable references. LoadRef simply places
+    // the address of the passed id in the passed register. It can later
+    // be used by LoadDeref and StoreDeref. LoadRefX is passed a source
+    // register and numeric value. The value is the number of words per
+    // entry in the array. The register value is multiplied by the passed
+    // value and the result is added to the address of the passed id which
+    // is stored in the destination register.
+    //
+    // LoadDeref is passed the register with the address previous set above
+    // along with a numeric value to access the given element of the entry.
+    // The source register address is added to the passed value, then the
+    // memory at that address is loaded into the destination register.
+    // StoreDeref does the same but the value in the source register is
+    // stored at the address.
     
-    LoadRef rd id rs i      - v[rd] = mem[id + v[rs] * i]
+    LoadRef rd id           - v[rd] = id
+    LoadRefX rd id rs i     - v[rd] = id + v[rs] * i
     LoadDeref rd rs i       - v[rd] = mem[v[rs] + i]
     StoreDeref rd i rs      - mem[v[rd] + i] = v[rs]
     
-    LoadI rd id rs i        - v[rd] = mem[id + v[rs] + i]
-    StoreI id rd i rs       - mem[id + v[rd] + i] = v[rs]
-    
-    LoadX rd id rs i        - v[rd] = id + v[rs] + i
-
     MoveColor rd, rs        - c[rd] = c[rs]
     Move rd, rs             - v[rd] = v[rs]
     
@@ -291,14 +292,11 @@ enum class Op: uint8_t {
     
 // 2 unused opcodes
     
-    LoadI           = 0x50,
-    StoreI          = 0x51,
-    
-    LoadX           = 0x52,
-    LoadDeref       = 0x53,
-    StoreDeref      = 0x54,
+    LoadRefX        = 0x50,
+    LoadDeref       = 0x51,
+    StoreDeref      = 0x52,
 
-// 44 unused opcodes
+// 45 unused opcodes
 
     LoadColorParam  = 0x80,
     LoadIntParam    = 0x84,
@@ -319,7 +317,9 @@ enum class Op: uint8_t {
     ForEach         = 0xb0,
     Call            = 0xb4,
     
-// 10 unused opcode sets (of 4 each)
+    LoadRef         = 0xb8,
+
+// 9 unused opcode sets (of 4 each)
 
     Log             = 0xe0, // Print r as int32_t with addr - For debugging
     LogFloat        = 0xe4, // Print r as float with addr - For debugging

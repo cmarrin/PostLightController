@@ -13,10 +13,8 @@
 using namespace arly;
 
 std::vector<OpData> CompileEngine::_opcodes = {
-    { "LoadI",          Op::LoadI           , OpParams::Rd_Id_Rs_I },
-    { "StoreI",         Op::StoreI          , OpParams::Id_Rd_I_Rs },
-
-    { "LoadX",          Op::LoadX           , OpParams::Rd_Id_Rs_I },
+    { "LoadRef",        Op::LoadRef         , OpParams::R_Id },
+    { "LoadRefX",       Op::LoadRefX        , OpParams::Rd_Id_Rs_I },
     { "LoadDeref",      Op::LoadDeref       , OpParams::Rd_Rs_I },
     { "StoreDeref",     Op::StoreDeref      , OpParams::Rd_I_Rs },
 
