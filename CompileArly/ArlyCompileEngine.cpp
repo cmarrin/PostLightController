@@ -7,12 +7,11 @@
 
 #include "ArlyCompileEngine.h"
 
-#include <cmath>
 #include <map>
 
 using namespace arly;
 
-std::vector<OpData> CompileEngine::_opcodes = {
+static std::vector<OpData> _opcodes = {
     { "LoadRef",        Op::LoadRef         , OpParams::R_Id },
     { "LoadRefX",       Op::LoadRefX        , OpParams::Rd_Id_Rs_I },
     { "LoadDeref",      Op::LoadDeref       , OpParams::Rd_Rs_I },
@@ -83,7 +82,7 @@ std::vector<OpData> CompileEngine::_opcodes = {
 };
 
 bool
-CompileEngine::program()
+ArlyCompileEngine::program()
 {
     try {
         defs();
@@ -100,48 +99,7 @@ CompileEngine::program()
 }
 
 void
-CompileEngine::emit(std::vector<uint8_t>& executable)
-{
-    executable.push_back('a');
-    executable.push_back('r');
-    executable.push_back('l');
-    executable.push_back('y');
-    executable.push_back(_rom32.size());
-    executable.push_back(0);
-    executable.push_back(0);
-    executable.push_back(0);
-    
-    char* buf = reinterpret_cast<char*>(&(_rom32[0]));
-    executable.insert(executable.end(), buf, buf + _rom32.size() * 4);
-
-    for (int i = 0; i < _effects.size(); ++i) {
-        executable.push_back(_effects[i]._cmd);
-        executable.push_back(_effects[i]._count);
-        executable.push_back(uint8_t(_effects[i]._initAddr));
-        executable.push_back(uint8_t(_effects[i]._initAddr >> 8));
-        executable.push_back(uint8_t(_effects[i]._loopAddr));
-        executable.push_back(uint8_t(_effects[i]._loopAddr >> 8));
-    }
-    executable.push_back(0);
-    
-    buf = reinterpret_cast<char*>(&(_rom8[0]));
-    executable.insert(executable.end(), buf, buf + _rom8.size());
-}
-
-bool
-CompileEngine::opcode(Op op, std::string& str, OpParams& par)
-{
-    OpData data;
-    if (!opDataFromOp(op, data)) {
-        return false;
-    }
-    str = data._str;
-    par = data._par;
-    return true;
-}
-
-void
-CompileEngine::defs()
+ArlyCompileEngine::defs()
 {
     while(1) {
         ignoreNewLines();
@@ -153,7 +111,7 @@ CompileEngine::defs()
 }
 
 void
-CompileEngine::constants()
+ArlyCompileEngine::constants()
 {
     while(1) {
         ignoreNewLines();
@@ -165,7 +123,7 @@ CompileEngine::constants()
 }
 
 void
-CompileEngine::tables()
+ArlyCompileEngine::tables()
 {
     while(1) {
         ignoreNewLines();
@@ -177,7 +135,7 @@ CompileEngine::tables()
 }
 
 void
-CompileEngine::functions()
+ArlyCompileEngine::functions()
 {
     while(1) {
         ignoreNewLines();
@@ -189,7 +147,7 @@ CompileEngine::functions()
 }
 
 void
-CompileEngine::effects()
+ArlyCompileEngine::effects()
 {
     while(1) {
         ignoreNewLines();
@@ -200,53 +158,32 @@ CompileEngine::effects()
     }
 }
 
-bool
-CompileEngine::def()
+void
+ArlyCompileEngine::vars()
 {
-    if (!match(Reserved::Def)) {
-        return false;
+    while(1) {
+        ignoreNewLines();
+        if (!var()) {
+            return;
+        }
+        expect(Token::NewLine);
     }
-    
-    std::string id;
-    int32_t val;
-    
-    expect(identifier(id), Compiler::Error::ExpectedIdentifier);
-    expect(integerValue(val), Compiler::Error::ExpectedValue);
-    
-    // A def is always a positive integer less than 256
-    expect(val >= 0 && val < 256, Compiler::Error::DefOutOfRange);
-    
-    _defs.emplace_back(id, val);
-    return true;
+}
+
+void
+ArlyCompileEngine::statements()
+{
+    while(1) {
+        ignoreNewLines();
+        if (!statement()) {
+            return;
+        }
+        expect(Token::NewLine);
+    }
 }
 
 bool
-CompileEngine::constant()
-{
-    if (!match(Reserved::Const)) {
-        return false;
-    }
-    
-    Type t;
-    std::string id;
-    int32_t val;
-    
-    expect(type(t), Compiler::Error::ExpectedType);
-    expect(identifier(id), Compiler::Error::ExpectedIdentifier);
-    expect(value(val, t), Compiler::Error::ExpectedValue);
-    
-    // There is only enough room for 128 constant values
-    expect(_rom32.size() < 128, Compiler::Error::TooManyConstants);
-
-    // Save constant
-    _symbols.emplace_back(id, _rom32.size(), true);
-    _rom32.push_back(val);
-    
-    return true;
-}
-
-bool
-CompileEngine::table()
+ArlyCompileEngine::table()
 {
     if (!match(Reserved::Table)) {
         return false;
@@ -267,8 +204,48 @@ CompileEngine::table()
     return true;
 }
 
+void
+ArlyCompileEngine::tableEntries(Type t)
+{
+    while (1) {
+        ignoreNewLines();
+        if (!values(t)) {
+            break;
+        }
+        expect(Token::NewLine);
+    }
+}
+
 bool
-CompileEngine::function()
+ArlyCompileEngine::values(Type t)
+{
+    bool haveValues = false;
+    while(1) {
+        int32_t val;
+        if (!value(val, t)) {
+            break;
+        }
+        haveValues = true;
+        
+        _rom32.push_back(val);
+    }
+    return haveValues;
+}
+
+bool
+ArlyCompileEngine::opcode(Op op, std::string& str, OpParams& par)
+{
+    OpData data;
+    if (!opDataFromOp(op, data)) {
+        return false;
+    }
+    str = data._str;
+    par = data._par;
+    return true;
+}
+
+bool
+ArlyCompileEngine::function()
 {
     if (!match(Reserved::Function)) {
         return false;
@@ -293,210 +270,7 @@ CompileEngine::function()
 }
 
 bool
-CompileEngine::effect()
-{
-    if (!match(Reserved::Effect)) {
-        return false;
-    }
-
-    std::string id;
-
-    expect(identifier(id), Compiler::Error::ExpectedIdentifier);
-    
-    // Effect Identifier must be a single char from 'a' to 'p'
-    if (id.size() != 1 || id[0] < 'a' || id[0] > 'p') {
-        _error = Compiler::Error::ExpectedCommandId;
-        throw true;
-    }
-
-    expect(Token::Integer);
-    
-    int32_t paramCount = _scanner.getTokenValue().integer;
-    
-    // paramCount must be 0 - 15
-    if (paramCount < 0 || paramCount > 15) {
-        _error = Compiler::Error::InvalidParamCount;
-        throw true;
-    }
-    
-    _effects.emplace_back(id[0], paramCount, handleCallTarget(), handleCallTarget());
-    return true;
-}
-
-bool
-CompileEngine::type(Type& t)
-{
-    if (match(Reserved::Float)) {
-        t = Type::Float;
-        return true;
-    }
-    if (match(Reserved::Int)) {
-        t = Type::Int;
-        return true;
-    }
-    return false;
-}
-
-void
-CompileEngine::tableEntries(Type t)
-{
-    while (1) {
-        ignoreNewLines();
-        if (!values(t)) {
-            break;
-        }
-        expect(Token::NewLine);
-    }
-}
-
-bool
-CompileEngine::values(Type t)
-{
-    bool haveValues = false;
-    while(1) {
-        int32_t val;
-        if (!value(val, t)) {
-            break;
-        }
-        haveValues = true;
-        
-        _rom32.push_back(val);
-    }
-    return haveValues;
-}
-
-bool
-CompileEngine::value(int32_t& i, Type t)
-{
-    bool neg = false;
-    if (match(Token::Minus)) {
-        neg = true;
-    }
-    
-    float f;
-    if (floatValue(f)) {
-        if (neg) {
-            f = -f;
-        }
-
-        // If we're expecting an Integer, convert it
-        if (t == Type::Int) {
-            i = roundf(f);
-        } else {
-            i = *(reinterpret_cast<int32_t*>(&f));
-        }
-        return true;
-    }
-    
-    if (integerValue(i)) {
-        if (neg) {
-            i = -i;
-        }
-        
-        // If we're expecting a float, convert it
-        if (t == Type::Float) {
-            f = float(i);
-            i = *(reinterpret_cast<int32_t*>(&f));
-        }
-        return true;
-    }
-    return false;
-}
-
-void
-CompileEngine::vars()
-{
-    while(1) {
-        ignoreNewLines();
-        if (!var()) {
-            return;
-        }
-        expect(Token::NewLine);
-    }
-}
-
-bool
-CompileEngine::var()
-{
-    Type t;
-    std::string id;
-    
-    if (!type(t)) {
-        return false;
-    }
-    
-    expect(identifier(id), Compiler::Error::ExpectedIdentifier);
-    
-    int32_t size;
-    expect(integerValue(size), Compiler::Error::ExpectedInt);
-
-    _symbols.emplace_back(id, _nextMem, false);
-    _nextMem += size;
-
-    // There is only enough room for 128 var values
-    expect(_nextMem <= 128, Compiler::Error::TooManyVars);
-
-    return true;
-}
-
-bool
-CompileEngine::init()
-{
-    ignoreNewLines();
-
-    if (!match(Reserved::Init)) {
-        return false;
-    }
-    expect(Token::NewLine);
-    
-    _effects.back()._initAddr = uint16_t(_rom8.size());
-    
-    statements();
-
-    ignoreNewLines();
-    expect(match(Reserved::End), Compiler::Error::ExpectedEnd);
-    expect(Token::NewLine);
-
-    _rom8.push_back(uint8_t(Op::End));
-    return true;
-}
-
-bool
-CompileEngine::loop()
-{
-    ignoreNewLines();
-
-    if (!match(Reserved::Loop)) {
-        return false;
-    }
-    expect(Token::NewLine);
-
-    _effects.back()._loopAddr = uint16_t(_rom8.size());
-
-    statements();
-
-    ignoreNewLines();
-    expect(match(Reserved::End), Compiler::Error::ExpectedEnd);
-    expect(Token::NewLine);
-
-    _rom8.push_back(uint8_t(Op::End));
-    return true;
-}
-
-void
-CompileEngine::statements()
-{
-    while(1) {
-        ignoreNewLines();
-        if (!statement()) {
-            return;
-        }
-        expect(Token::NewLine);
-    }
-}
-
-bool
-CompileEngine::statement()
+ArlyCompileEngine::statement()
 {
     if (forStatement()) {
         return true;
@@ -511,7 +285,7 @@ CompileEngine::statement()
 }
 
 uint8_t
-CompileEngine::handleR()
+ArlyCompileEngine::handleR()
 {
     uint8_t i = 0;
     if (match(Reserved::R0)) {
@@ -529,13 +303,13 @@ CompileEngine::handleR()
 }
 
 uint8_t
-CompileEngine::handleR(Op op)
+ArlyCompileEngine::handleR(Op op)
 {
     return uint8_t(op) | handleR();
 }
 
 uint8_t
-CompileEngine::handleC()
+ArlyCompileEngine::handleC()
 {
     uint8_t i = 0;
     if (match(Reserved::C0)) {
@@ -553,13 +327,13 @@ CompileEngine::handleC()
 }
 
 uint8_t
-CompileEngine::handleC(Op op)
+ArlyCompileEngine::handleC(Op op)
 {
     return uint8_t(op) | handleC();
 }
 
 uint8_t
-CompileEngine::handleI()
+ArlyCompileEngine::handleI()
 {
     uint8_t i = handleConst();
     expect(i <= 15, Compiler::Error::ParamOutOfRange);
@@ -567,7 +341,7 @@ CompileEngine::handleI()
 }
 
 uint8_t
-CompileEngine::handleConst()
+ArlyCompileEngine::handleConst()
 {
     int32_t i;
     std::string id;
@@ -588,7 +362,7 @@ CompileEngine::handleConst()
 }
 
 uint8_t
-CompileEngine::handleId()
+ArlyCompileEngine::handleId()
 {
     std::string id;
     expect(identifier(id), Compiler::Error::ExpectedIdentifier);
@@ -601,28 +375,15 @@ CompileEngine::handleId()
     return it->_rom ? it->_addr : (it->_addr + 0x80);
 }
 
-uint16_t
-CompileEngine::handleCallTarget()
-{
-    std::string targ;
-    expect(identifier(targ), Compiler::Error::ExpectedIdentifier);
-    
-    auto it = find_if(_functions.begin(), _functions.end(),
-                    [targ](const Function& fun) { return fun._name == targ; });
-    expect(it != _functions.end(), Compiler::Error::UndefinedIdentifier);
-
-    return it->_addr;
-}
-
 void
-CompileEngine::handleOpParams(uint8_t a)
+ArlyCompileEngine::handleOpParams(uint8_t a)
 {
     _rom8.push_back(a);
     expectWithoutRetire(Token::NewLine);
 }
 
 void
-CompileEngine::handleOpParams(uint8_t a, uint8_t b)
+ArlyCompileEngine::handleOpParams(uint8_t a, uint8_t b)
 {
     _rom8.push_back(a);
     _rom8.push_back(b);
@@ -630,7 +391,7 @@ CompileEngine::handleOpParams(uint8_t a, uint8_t b)
 }
 
 void
-CompileEngine::handleOpParamsReverse(uint8_t a, uint8_t b)
+ArlyCompileEngine::handleOpParamsReverse(uint8_t a, uint8_t b)
 {
     _rom8.push_back(b);
     _rom8.push_back(a);
@@ -638,7 +399,7 @@ CompileEngine::handleOpParamsReverse(uint8_t a, uint8_t b)
 }
 
 void
-CompileEngine::handleOpParamsRdRs(Op op, uint8_t rd, uint8_t rs)
+ArlyCompileEngine::handleOpParamsRdRs(Op op, uint8_t rd, uint8_t rs)
 {
     _rom8.push_back(uint8_t(op));
     _rom8.push_back((rd << 6) | (rs << 4));
@@ -646,7 +407,7 @@ CompileEngine::handleOpParamsRdRs(Op op, uint8_t rd, uint8_t rs)
 }
 
 void
-CompileEngine::handleOpParamsRdRsI(Op op, uint8_t rd, uint8_t rs, uint8_t i)
+ArlyCompileEngine::handleOpParamsRdRsI(Op op, uint8_t rd, uint8_t rs, uint8_t i)
 {
     _rom8.push_back(uint8_t(op));
     _rom8.push_back((rd << 6) | (rs << 4) | (i & 0x0f));
@@ -654,7 +415,7 @@ CompileEngine::handleOpParamsRdRsI(Op op, uint8_t rd, uint8_t rs, uint8_t i)
 }
 
 void
-CompileEngine::handleOpParamsRdIRs(Op op, uint8_t rd, uint8_t i, uint8_t rs)
+ArlyCompileEngine::handleOpParamsRdIRs(Op op, uint8_t rd, uint8_t i, uint8_t rs)
 {
     _rom8.push_back(uint8_t(op));
     _rom8.push_back((rd << 6) | (rs << 4) | (i & 0x0f));
@@ -662,7 +423,7 @@ CompileEngine::handleOpParamsRdIRs(Op op, uint8_t rd, uint8_t i, uint8_t rs)
 }
 
 void
-CompileEngine::handleOpParamsRdRs(Op op, uint8_t id, uint8_t rd, uint8_t i, uint8_t rs)
+ArlyCompileEngine::handleOpParamsRdRs(Op op, uint8_t id, uint8_t rd, uint8_t i, uint8_t rs)
 {
     _rom8.push_back(uint8_t(op));
     _rom8.push_back(id);
@@ -671,7 +432,7 @@ CompileEngine::handleOpParamsRdRs(Op op, uint8_t id, uint8_t rd, uint8_t i, uint
 }
 
 void
-CompileEngine::handleOpParamsRdRsSplit(Op op, uint8_t rd, uint8_t id, uint8_t rs, uint8_t i)
+ArlyCompileEngine::handleOpParamsRdRsSplit(Op op, uint8_t rd, uint8_t id, uint8_t rs, uint8_t i)
 {
     _rom8.push_back(uint8_t(op));
     _rom8.push_back(id);
@@ -680,7 +441,7 @@ CompileEngine::handleOpParamsRdRsSplit(Op op, uint8_t rd, uint8_t id, uint8_t rs
 }
 
 bool
-CompileEngine::opStatement()
+ArlyCompileEngine::opStatement()
 {
     Op op;
     OpParams par;
@@ -731,7 +492,7 @@ CompileEngine::opStatement()
             expectWithoutRetire(Token::NewLine);
             break;
         case OpParams::Target: {
-            uint16_t targ = handleCallTarget();
+            uint16_t targ = handleFunctionName();
             _rom8.push_back(uint8_t(op) | uint8_t(targ & 0x03));
             _rom8.push_back(uint8_t(targ >> 2));
             break;
@@ -748,7 +509,7 @@ CompileEngine::opStatement()
 }
 
 bool
-CompileEngine::forStatement()
+ArlyCompileEngine::forStatement()
 {
     if (!match(Reserved::ForEach)) {
         return false;
@@ -795,7 +556,7 @@ CompileEngine::forStatement()
 }
 
 bool
-CompileEngine::ifStatement()
+ArlyCompileEngine::ifStatement()
 {
     if (!match(Reserved::If)) {
         return false;
@@ -850,74 +611,7 @@ CompileEngine::ifStatement()
 }
 
 void
-CompileEngine::expect(Token token, const char* str)
-{
-    bool err = false;
-    if (_scanner.getToken() != token) {
-        _error = Compiler::Error::ExpectedToken;
-        err = true;
-    }
-    
-    if (str && _scanner.getTokenString() != str) {
-        _error = Compiler::Error::ExpectedToken;
-        err = true;
-    }
-    
-    if (err) {
-        _expectedToken = token;
-        _expectedString = str ? : "";
-        throw true;
-    }
-
-    _scanner.retireToken();
-}
-
-void
-CompileEngine::expect(bool passed, Compiler::Error error)
-{
-    if (!passed) {
-        _error = error;
-        throw true;
-    }
-}
-
-void
-CompileEngine::expectWithoutRetire(Token token)
-{
-    if (_scanner.getToken() != token) {
-        _expectedToken = token;
-        _expectedString = "";
-        _error = Compiler::Error::ExpectedToken;
-        throw true;
-    }
-}
-
-bool
-CompileEngine::match(Reserved r)
-{
-    Reserved rr;
-    if (!isReserved(_scanner.getToken(), _scanner.getTokenString(), rr)) {
-        return false;
-    }
-    if (r != rr) {
-        return false;
-    }
-    _scanner.retireToken();
-    return true;
-}
-
-bool
-CompileEngine::match(Token t)
-{
-    if (_scanner.getToken() != t) {
-        return false;
-    }
-    _scanner.retireToken();
-    return true;
-}
-
-void
-CompileEngine::ignoreNewLines()
+ArlyCompileEngine::ignoreNewLines()
 {
     while (1) {
         if (_scanner.getToken() != Token::NewLine) {
@@ -928,66 +622,13 @@ CompileEngine::ignoreNewLines()
 }
 
 bool
-CompileEngine::identifier(std::string& id)
-{
-    if (_scanner.getToken() != Token::Identifier) {
-        return false;
-    }
-    
-    if (opcode() || reserved()) {
-        return false;
-    }
-    
-    id = _scanner.getTokenString();
-    _scanner.retireToken();
-    return true;
-}
-
-bool
-CompileEngine::integerValue(int32_t& i)
-{
-    if (_scanner.getToken() != Token::Integer) {
-        return false;
-    }
-    
-    i = _scanner.getTokenValue().integer;
-    _scanner.retireToken();
-    return true;
-}
-
-bool
-CompileEngine::floatValue(float& f)
-{
-    if (_scanner.getToken() != Token::Float) {
-        return false;
-    }
-    
-    f = _scanner.getTokenValue().number;
-    _scanner.retireToken();
-    return true;
-}
-
-bool
-CompileEngine::opcode()
+ArlyCompileEngine::opcode()
 {
     return opcode(_scanner.getToken(), _scanner.getTokenString());
 }
 
 bool
-CompileEngine::reserved()
-{
-    Reserved r;
-    return isReserved(_scanner.getToken(), _scanner.getTokenString(), r);
-}
-
-bool
-CompileEngine::reserved(Reserved &r)
-{
-    return isReserved(_scanner.getToken(), _scanner.getTokenString(), r);
-}
-
-bool
-CompileEngine::opcode(Token token, const std::string str)
+ArlyCompileEngine::opcode(Token token, const std::string str)
 {
     Op op;
     OpParams par;
@@ -995,7 +636,7 @@ CompileEngine::opcode(Token token, const std::string str)
 }
 
 bool
-CompileEngine::opcode(Token token, const std::string str, Op& op, OpParams& par)
+ArlyCompileEngine::opcode(Token token, const std::string str, Op& op, OpParams& par)
 {
     if (token != Token::Identifier) {
         return false;
@@ -1011,20 +652,10 @@ CompileEngine::opcode(Token token, const std::string str, Op& op, OpParams& par)
 }
 
 bool
-CompileEngine::isReserved(Token token, const std::string str, Reserved& r)
+ArlyCompileEngine::isReserved(Token token, const std::string str, Reserved& r)
 {
     static std::map<std::string, Reserved> reserved = {
-        { "const",      Reserved::Const },
-        { "table",      Reserved::Table },
-        { "effect",     Reserved::Effect },
         { "end",        Reserved::End },
-        { "init",       Reserved::Init },
-        { "loop",       Reserved::Loop },
-        { "foreach",    Reserved::ForEach },
-        { "if",         Reserved::If },
-        { "else",       Reserved::Else },
-        { "float",      Reserved::Float },
-        { "int",        Reserved::Int },
         { "r0",         Reserved::R0 },
         { "r1",         Reserved::R1 },
         { "r2",         Reserved::R2 },
@@ -1033,41 +664,24 @@ CompileEngine::isReserved(Token token, const std::string str, Reserved& r)
         { "c1",         Reserved::C1 },
         { "c2",         Reserved::C2 },
         { "c3",         Reserved::C3 },
-        { "function",   Reserved::Function },
-        { "def",        Reserved::Def },
     };
+    
+    if (CompileEngine::isReserved(token, str, r)) {
+        return true;
+    }
 
     if (token != Token::Identifier) {
         return false;
     }
     
+    // For Arly we want to also check opcodes
+    if (opcode()) {
+        return true;
+    }
+    
     auto it = reserved.find(str);
     if (it != reserved.end()) {
         r = it->second;
-        return true;
-    }
-    return false;
-}
-
-bool
-CompileEngine::opDataFromString(const std::string str, OpData& data)
-{
-    auto it = find_if(_opcodes.begin(), _opcodes.end(),
-                    [str](const OpData& opData) { return opData._str == str; });
-    if (it != _opcodes.end()) {
-        data = *it;
-        return true;
-    }
-    return false;
-}
-
-bool
-CompileEngine::opDataFromOp(const Op op, OpData& data)
-{
-    auto it = find_if(_opcodes.begin(), _opcodes.end(),
-                    [op](const OpData& opData) { return opData._op == op; });
-    if (it != _opcodes.end()) {
-        data = *it;
         return true;
     }
     return false;

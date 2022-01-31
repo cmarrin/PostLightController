@@ -16,7 +16,7 @@ using namespace arly;
 
 bool Compiler::compile(std::istream* istream, std::vector<uint8_t>& executable)
 {
-    CompileEngine eng(istream);
+    ArlyCompileEngine eng(istream);
     
     eng.program();
     _error = eng.error();
