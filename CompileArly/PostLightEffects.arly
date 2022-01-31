@@ -130,7 +130,7 @@ function flickerLoop
         LoadRefX r0 flickerLeds r2 4
         Store led r0
         Store i r2
-        Call animate
+        Animate
         Load r2 i
 
         // On return r0 is 1 if we have completed the throb
@@ -164,6 +164,7 @@ function flickerLoop
         end
 
         // c0.val = led.cur
+        Load r3 led            
         LoadDeref r0 r3 LEDCur
         StoreColorComp c0 ColorVal r0
         SetLight r2 c0
@@ -228,7 +229,7 @@ end
 
 function pulseLoop
     LoadRef r0 pulseState
-    Call animate
+    Animate
     LoadRef r3 pulseState
     LoadDeref r0 r3 LEDCur
     StoreColorComp c0 ColorVal r0

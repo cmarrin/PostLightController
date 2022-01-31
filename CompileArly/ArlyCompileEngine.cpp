@@ -30,6 +30,7 @@ std::vector<OpData> CompileEngine::_opcodes = {
     { "Init",           Op::Init            , OpParams::Id },
     { "RandomInt",      Op::RandomInt       , OpParams::None },
     { "RandomFloat",    Op::RandomFloat     , OpParams::None },
+    { "Animate",        Op::Animate         , OpParams::None },
     { "Or",             Op::Or              , OpParams::None },
     { "Xor",            Op::Xor             , OpParams::None },
     { "And",            Op::And             , OpParams::None },

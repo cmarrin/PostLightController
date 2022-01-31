@@ -150,6 +150,24 @@ private:
         return f;
     }
     
+    void storeFloat(uint8_t id, float v) { storeFloat(id, 0, v); }
+    
+    void storeFloat(uint8_t id, uint8_t index, float v)
+    {
+        // Only RAM
+        if (id < 0x80) {
+            return;
+        }
+
+        uint32_t addr = uint32_t(id) - 0x80 + uint32_t(index);
+        if (addr >= 64) {
+            _error = Error::AddressOutOfRange;
+            _errorAddr = _pc - 1;
+        } else {
+            _ram[addr] = floatToInt(v);
+        }
+    }
+    
     uint32_t getInt(uint8_t id, uint8_t index = 0)
     {
         if (id >= 0x80) {
@@ -200,6 +218,8 @@ private:
         memcpy(&i, &f, sizeof(float));
         return i;
     }
+    
+    int32_t animate(uint32_t index);
     
     Error _error = Error::None;
     int16_t _errorAddr = -1;

@@ -127,6 +127,9 @@ Interpreter::execute(uint16_t addr)
             case Op::RandomFloat   :
                 _v[0] = floatToInt(random(intToFloat(_v[0]), intToFloat(_v[1])));
                 break;
+            case Op::Animate   :
+                _v[0] = animate(_v[0]);
+                break;
             case Op::Or            :
                 _v[0] |= _v[1];
                 break;
@@ -411,4 +414,34 @@ Interpreter::execute(uint16_t addr)
                 break;
         }
     }
+}
+
+int32_t
+Interpreter::animate(uint32_t index)
+{
+    float cur = getFloat(index, 0);
+    float inc = getFloat(index, 1);
+    float min = getFloat(index, 2);
+    float max = getFloat(index, 3);
+
+    cur += inc;
+    storeFloat(index, 0, cur);
+
+    if (0 < inc) {
+        if (cur >= max) {
+            cur = max;
+            inc = -inc;
+            storeFloat(index, 0, cur);
+            storeFloat(index, 1, inc);
+        }
+    } else {
+        if (cur <= min) {
+            cur = min;
+            inc = -inc;
+            storeFloat(index, 0, cur);
+            storeFloat(index, 1, inc);
+            return 1;
+        }
+    }
+    return 0;
 }

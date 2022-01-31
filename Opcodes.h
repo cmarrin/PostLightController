@@ -154,6 +154,9 @@ Opcodes:
     Init id                 - Init mem at id with value in r[0] for r[1] values
     RandomInt               - random(v[0], v[1]), integer params, integer return
     RandomFloat             - random(v[0], v[1]), float params, float return
+    Animate                 - r0 contains address of 4 entry structure (cur, inc, min, max)
+                              Increment cur by inc and reverse direction when hit min or max.
+                              When going down and hit min return 1, otherwise return 0.
 
     If sz                   - If v[0] is non-zero execute statements in first clause. 
                               If zero skip the statements. Number of bytes to skip is 
@@ -245,14 +248,17 @@ enum class Op: uint8_t {
     Init            = 0x19,
     RandomInt       = 0x1a,
     RandomFloat     = 0x1b,
+    Animate         = 0x1c,
 
-    If              = 0x1c,
-    Else            = 0x1d,
-    EndIf           = 0x1e, // At the end of if
-    EndForEach      = 0x1f, // At the end of foreach
-    End             = 0x20, // Indicates the end of init or loop
+// 3 unused opcodes
 
-// 15 unused opcodes
+    If              = 0x20,
+    Else            = 0x21,
+    EndIf           = 0x22, // At the end of if
+    EndForEach      = 0x23, // At the end of foreach
+    End             = 0x24, // Indicates the end of init or loop
+
+// 11 unused opcodes
 
     Or              = 0x30,
     Xor             = 0x31,
