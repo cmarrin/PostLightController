@@ -75,16 +75,14 @@ private:
     void effects();
 
     void tableEntries(Type);
-    
-    bool values(Type);
-    
+        
     uint8_t handleR();
     uint8_t handleR(Op op);
     uint8_t handleC();
     uint8_t handleC(Op op);
     uint8_t handleI();
     uint8_t handleId();
-    uint8_t handleConst();  
+    uint8_t handleConst();
     void handleOpParams(uint8_t a);
     void handleOpParams(uint8_t a, uint8_t b);
     void handleOpParamsReverse(uint8_t a, uint8_t b);

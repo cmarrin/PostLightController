@@ -11,76 +11,6 @@
 
 using namespace arly;
 
-static std::vector<OpData> _opcodes = {
-    { "LoadRef",        Op::LoadRef         , OpParams::R_Id },
-    { "LoadRefX",       Op::LoadRefX        , OpParams::Rd_Id_Rs_I },
-    { "LoadDeref",      Op::LoadDeref       , OpParams::Rd_Rs_I },
-    { "StoreDeref",     Op::StoreDeref      , OpParams::Rd_I_Rs },
-
-    { "MoveColor",      Op::MoveColor       , OpParams::Cd_Cs },
-    { "Move",           Op::Move            , OpParams::Rd_Rs },
-    { "LoadColorComp",  Op::LoadColorComp   , OpParams::Rd_Cs_I },
-    { "StoreColorComp", Op::StoreColorComp  , OpParams::Cd_I_Rs },
-    { "MinInt",         Op::MinInt          , OpParams::None },
-    { "MinFloat",       Op::MinFloat        , OpParams::None },
-    { "MaxInt",         Op::MaxInt          , OpParams::None },
-    { "MaxFloat",       Op::MaxFloat        , OpParams::None },
-    { "SetLight",       Op::SetLight        , OpParams::Rd_Cs },
-    { "Init",           Op::Init            , OpParams::Id },
-    { "RandomInt",      Op::RandomInt       , OpParams::None },
-    { "RandomFloat",    Op::RandomFloat     , OpParams::None },
-    { "Animate",        Op::Animate         , OpParams::None },
-    { "Or",             Op::Or              , OpParams::None },
-    { "Xor",            Op::Xor             , OpParams::None },
-    { "And",            Op::And             , OpParams::None },
-    { "Not",            Op::Not             , OpParams::None },
-    { "LOr",            Op::LOr             , OpParams::None },
-    { "LAnd",           Op::LAnd            , OpParams::None },
-    { "LNot",           Op::LNot            , OpParams::None },
-    { "LTInt",          Op::LTInt           , OpParams::None },
-    { "LTFloat",        Op::LTFloat         , OpParams::None },
-    { "LEInt",          Op::LEInt           , OpParams::None },
-    { "LEFloat",        Op::LEFloat         , OpParams::None },
-    { "EQInt",          Op::EQInt           , OpParams::None },
-    { "EQFloat",        Op::EQFloat         , OpParams::None },
-    { "NEInt",          Op::NEInt           , OpParams::None },
-    { "NEFloat",        Op::NEFloat         , OpParams::None },
-    { "GEInt",          Op::GEInt           , OpParams::None },
-    { "GEFloat",        Op::GEFloat         , OpParams::None },
-    { "GTInt",          Op::GTInt           , OpParams::None },
-    { "GTFloat",        Op::GTFloat         , OpParams::None },
-    { "AddInt",         Op::AddInt          , OpParams::None },
-    { "AddFloat",       Op::AddFloat        , OpParams::None },
-    { "SubInt",         Op::SubInt          , OpParams::None },
-    { "SubFloat",       Op::SubFloat        , OpParams::None },
-    { "MulInt",         Op::MulInt          , OpParams::None },
-    { "MulFloat",       Op::MulFloat        , OpParams::None },
-    { "DivInt",         Op::DivInt          , OpParams::None },
-    { "DivFloat",       Op::DivFloat        , OpParams::None },
-    { "NegInt",         Op::NegInt          , OpParams::None },
-    { "NegFloat",       Op::NegFloat        , OpParams::None },
-    { "LoadColorParam", Op::LoadColorParam  , OpParams::C_I },
-    { "LoadIntParam",   Op::LoadIntParam    , OpParams::R_I },
-    { "LoadFloatParam", Op::LoadFloatParam  , OpParams::R_I },
-    { "Load",           Op::Load            , OpParams::R_Id },
-    { "Store",          Op::Store           , OpParams::Id_R },
-    { "LoadBlack",      Op::LoadBlack       , OpParams::C },
-    { "LoadZero",       Op::LoadZero        , OpParams::R },
-    { "LoadIntConst",   Op::LoadIntConst    , OpParams::R_Const },
-    { "Exit",           Op::Exit            , OpParams::R },
-    { "Call",           Op::Call            , OpParams::Target },
-    { "Return",         Op::Return          , OpParams::None },
-    { "ToFloat",        Op::ToFloat         , OpParams::R },
-    { "ToInt",          Op::ToInt           , OpParams::R },
-    { "SetAllLights",   Op::SetAllLights    , OpParams::C },
-    { "foreach",        Op::ForEach         , OpParams::R_Sz },
-    { "if",             Op::If              , OpParams::Sz },
-    { "else",           Op::Else            , OpParams::Sz },
-    { "Log",            Op::Log             , OpParams::R },
-    { "LogFloat",       Op::LogFloat        , OpParams::R },
-    { "LogColor",       Op::LogColor        , OpParams::C },
-};
-
 bool
 ArlyCompileEngine::program()
 {
@@ -214,22 +144,6 @@ ArlyCompileEngine::tableEntries(Type t)
         }
         expect(Token::NewLine);
     }
-}
-
-bool
-ArlyCompileEngine::values(Type t)
-{
-    bool haveValues = false;
-    while(1) {
-        int32_t val;
-        if (!value(val, t)) {
-            break;
-        }
-        haveValues = true;
-        
-        _rom32.push_back(val);
-    }
-    return haveValues;
 }
 
 bool

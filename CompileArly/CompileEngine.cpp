@@ -205,6 +205,23 @@ CompileEngine::type(Type& t)
 }
 
 bool
+CompileEngine::values(Type t)
+{
+    bool haveValues = false;
+    while(1) {
+        int32_t val;
+        if (!value(val, t)) {
+            break;
+        }
+        haveValues = true;
+        
+        _rom32.push_back(val);
+    }
+    return haveValues;
+}
+
+
+bool
 CompileEngine::value(int32_t& i, Type t)
 {
     bool neg = false;
