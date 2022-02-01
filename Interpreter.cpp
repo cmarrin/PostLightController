@@ -17,14 +17,38 @@ Interpreter::init(uint8_t cmd, const uint8_t* buf, uint8_t size)
     memcpy(_params, buf, size);
     _paramsSize = size;
 	_error = Error::None;
+ 
+    if (_ram) {
+        delete [ ]_ram;
+        _ram = nullptr;
+        _ramSize = 0;
+    }
+    
+    if (_temp) {
+        delete [ ] _temp;
+        _temp = nullptr;
+        _tempSize = 0;
+    }
     
     _constOffset = 8;
     
-    // Find command
     uint32_t constSize = uint32_t(getUInt8ROM(4)) * 4;
     bool found = false;
     _codeOffset = _constOffset + constSize;
     
+    // Alloc RAM and Temp
+    _ramSize = getUInt8ROM(5);
+    _tempSize = getUInt8ROM(6);
+    
+    if (_ramSize) {
+        _ram = new uint32_t[_ramSize];
+    }
+    
+    if (_tempSize) {
+        _temp = new uint32_t[_tempSize];
+    }
+    
+    // Find command
     while (1) {
         uint8_t c = rom(_codeOffset);
         if (c == 0) {

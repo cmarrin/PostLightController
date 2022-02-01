@@ -41,6 +41,13 @@
 
 namespace arly {
 
+static constexpr uint8_t CallStackSize = 16;    // This can be any size but costs RAM
+static constexpr uint8_t MaxRamSize = 128;      // Could be 255 but let's avoid excessive 
+                                                // memory usage
+static constexpr uint8_t MaxTempSize = 32;      // Allocator uses a uint32_t map. That would 
+                                                // need to be changed to increase this.
+static constexpr uint8_t ParamsSize = 16;       // Constrained by the 4 bit field with the index
+
 class Interpreter
 {
 public:
@@ -224,17 +231,19 @@ private:
     Error _error = Error::None;
     int16_t _errorAddr = -1;
     
-    uint8_t _params[16];
+    uint8_t _params[ParamsSize];
     uint8_t _paramsSize = 0;
 
-    static constexpr uint8_t CallStackSize = 16;
     uint16_t _callStack[CallStackSize];
     uint8_t _callStackCur = 0;
 
-    uint32_t _ram[64];
     uint32_t _v[4];
-    uint32_t _temp[16];
     Color _c[4];
+
+    uint32_t* _ram = nullptr;
+    uint16_t _ramSize = 0;
+    uint32_t* _temp = nullptr;
+    uint16_t _tempSize = 0;
     
     uint16_t _pc = 0;
     uint16_t _constOffset = 0; // In bytes

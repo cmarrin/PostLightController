@@ -93,8 +93,8 @@ CompileEngine::emit(std::vector<uint8_t>& executable)
     executable.push_back('l');
     executable.push_back('y');
     executable.push_back(_rom32.size());
-    executable.push_back(0);
-    executable.push_back(0);
+    executable.push_back(_nextMem);
+    executable.push_back(0); // Not using Temp yet
     executable.push_back(0);
     
     char* buf = reinterpret_cast<char*>(&(_rom32[0]));
