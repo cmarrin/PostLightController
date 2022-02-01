@@ -60,7 +60,7 @@ static std::vector<OpData> _opcodes = {
     { "DivFloat",       Op::DivFloat        , OpParams::None },
     { "NegInt",         Op::NegInt          , OpParams::None },
     { "NegFloat",       Op::NegFloat        , OpParams::None },
-    { "LoadColorParam", Op::LoadColorParam  , OpParams::C_I },
+    { "LoadColorParam", Op::LoadColorParam  , OpParams::Cd_I },
     { "LoadIntParam",   Op::LoadIntParam    , OpParams::Rd_I },
     { "LoadFloatParam", Op::LoadFloatParam  , OpParams::Rd_I },
     { "Load",           Op::Load            , OpParams::R_Id },

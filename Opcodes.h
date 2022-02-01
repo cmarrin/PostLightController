@@ -294,19 +294,23 @@ enum class Op: uint8_t {
     NegInt          = 0x4b,
     NegFloat        = 0x4c,
     
-    Return          = 0x4d,
     
-// 2 unused opcodes
+    Return          = 0x51,
     
-    LoadRefX        = 0x50,
-    LoadDeref       = 0x51,
-    StoreDeref      = 0x52,
+// 14 unused opcodes
+    
+    LoadColorParam  = 0x60,
+    LoadIntParam    = 0x61,
+    LoadFloatParam  = 0x62,
 
-// 45 unused opcodes
+    LoadRefX        = 0x63,
+    LoadDeref       = 0x64,
+    StoreDeref      = 0x65,
+    
+    LoadTemp        = 0x66,
+    StoreTemp       = 0x67,
 
-    LoadColorParam  = 0x80,
-    LoadIntParam    = 0x84,
-    LoadFloatParam  = 0x88,
+// 27 unused opcodes
 
     Load            = 0x8c,
     Store           = 0x90,
@@ -339,20 +343,21 @@ enum class OpParams : uint8_t {
     None,       // No params
     R,          // b[1:0] = 'r0'-'r3'
     C,          // b[1:0] = 'c0'-'c3'
-    R_I,        // b[1:0] = 'r0'-'r3', b+1 = <int>
-    C_I,        // b[1:0] = 'c0'-'c3', b+1 = <int>
+    Rd_I,       // b+1[7:6] = 'r0'-'r3', b+1[3:0] = <int>
+    I_Rs,       // b+1[3:0] = <int>, b+2[5:4] = 'r0'-'r3'
+    Cd_I,       // b+1[7:6] = 'c0'-'c3', b+1 = <int>
     R_Id,       // b[1:0] = 'r0'-'r3', b+1 = <id>
     Id_R,       // b+1 = <id>, b[1:0] = 'r0'-'r3'
     Rd_Id_Rs_I, // b+2[7:6] = 'r0'-'r3' b+1 = <id>, b+2[5:4] = 'r0'-'r3', b+2[3:0] = <int>
-    Rd_Rs_I,    // b+2[7:6] = 'r0'-'r3', b+2[3:0] = <int>, b+2[5:4] = 'r0'-'r3'
-    Rd_I_Rs,    // b+2[7:6] = 'r0'-'r3', b+2[3:0] = <int>, b+2[5:4] = 'r0'-'r3'
+    Rd_Rs_I,    // b+1[7:6] = 'r0'-'r3', b+1[3:0] = <int>, b+1[5:4] = 'r0'-'r3'
+    Rd_I_Rs,    // b+1[7:6] = 'r0'-'r3', b+1[3:0] = <int>, b+1[5:4] = 'r0'-'r3'
     Rd_Cs_I,    // b+1[7:6] = 'r0'-'r3', b+1[5:4] = 'c0'-'c3', b+2[3:0] = <int>
     Cd_I_Rs,    // b+1[7:6] = 'c0'-'c3', b+2[3:0] = <int>, b+1[5:4] = 'r0'-'r3'
     Rd_Rs,      // b+1[7:6] = 'r0'-'r3', b+1[5:4] = 'r0'-'r3'
     Rd_Cs,      // b+1[7:6] = 'r0'-'r3', b+1[5:4] = 'c0'-'c3'
     Cd_Cs,      // b+1[7:6] = 'c0'-'c3', b+1[5:4] = 'c0'-'c3'
     Id,         // b+1 = <id>
-    R_Const,    // b+1 = 0-255
+    R_Const,    // b[1:0] = 'r0'-'r3', b+1 = 0-255
     Target,     // b+1 = call target bits 7:2, b[2:0] = call target bits 1:0
     R_Sz,       // foreach case
     Sz,         // If, Else case

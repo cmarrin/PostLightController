@@ -243,10 +243,11 @@ Decompiler::statement()
             _out->append(" ");
             _out->append(regString((rdrsi >> 4) & 0x03));
             break;
-        case OpParams::C_I:
-            _out->append(colorString(r));
+        case OpParams::Cd_I:
+            rdrsi = getUInt8();
+            _out->append(colorString(rdrsi >> 6));
             _out->append(" ");
-            _out->append(std::to_string(getUInt8()));
+            _out->append(std::to_string(rdrsi & 0x0f));
             break;
         case OpParams::R_Id:
             _out->append(regString(r));
