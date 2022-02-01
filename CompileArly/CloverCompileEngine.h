@@ -12,6 +12,8 @@
 
 #pragma once
 
+#include "Compiler.h"
+#include "CompileEngine.h"
 #include "Opcodes.h"
 #include "Scanner.h"
 #include <cstdint>
@@ -30,8 +32,11 @@ namespace arly {
 BNF:
 
 program:
-    { def } { constant } { table } { var } { function } { effect } ;
+    { element } ;
 
+element:
+    def | constant | table | struct | var | function | effect ;
+    
 def:
     'def' <id> <integer> ';'
 
@@ -39,20 +44,27 @@ constant:
     'const' type <id> value ';' ;
     
 table:
-    'table' type <id> <integer> '{' { value } '}' ;
+    'table' type <id> '{' values '}' ;
+
+struct:
+    'struct' <id> '{' { structEntry } '}';
     
+// First integer is num elements, second is size of each element
+var:
+    'var' type <id> [ '*' ] [ <integer> ]
+
 function:
     'function' <id> '( formalParameterList ')' '{' { statement } '}' ;
 
 effect:
     'effect' <id> <integer> <id> <id> ;
 
-// First integer is num elements, second is size of each element
-var:
-    type <id> [ <integer> ] [ <integer> ]
+structEntry:
+    type <id> ';' ;
 
+// <id> is a struct name
 type:
-    'float' | 'int' | 'ptr'
+    'float' | 'int' | <id>
 
 value:
     ['-'] <float> | ['-'] <integer>
@@ -68,10 +80,10 @@ compoundStatement:
     '{' { statement } '}' ;
 
 ifStatement:
-    'if' '(' arithmeticExpression ')' statement 'else' statement ;
+    'if' '(' arithmeticExpression ')' statement ['else' statement ] ;
 
 forStatement:
-    'foreach' '(' identifier ':' expression ')' statement ;
+    'foreach' '(' identifier ':' arithmeticExpression ')' statement ;
     
 expressionStatement:
     arithmeticExpression ';' ;
@@ -87,6 +99,7 @@ unaryExpression:
     | '-' unaryExpression
     | '~' unaryExpression
     | '!' unaryExpression
+    | '&' unaryExpression
     ;
 
 postfixExpression:
@@ -143,27 +156,18 @@ operator: (* operator   precedence   association *)
     
 */
 
-class CloverCompileEngine  {
+class CloverCompileEngine : public CompileEngine {
 public:
-  	CloverCompileEngine(std::istream* stream) : _scanner(stream) { }
+  	CloverCompileEngine(std::istream* stream) : CompileEngine(stream) { }
   	
-    void program();
+    virtual bool program() override;
+
+protected:
+    virtual bool statement() override;
+    virtual bool function() override;
+    virtual bool table() override;
   
 private:
-    enum class Reserved {
-        None,
-        Def,
-        Const,
-        Table,
-        Function,
-        Effect,
-        End,
-        ForEach,
-        If,
-        Else,
-        Float,
-        Int,
-    };
     class OperatorInfo {
     public:
         enum class Assoc { Left = 0, Right = 1 };
@@ -207,35 +211,11 @@ private:
     // OperatorInfo is in Flash, so we need to access it as a single 4 byte read
     static_assert(sizeof(OperatorInfo) == 4, "OperatorInfo must fit in 4 bytes");
 
-    enum class Expect {
-        Expr,
-        PropertyAssignment,
-        Statement,
-        DuplicateDefault,
-        MissingVarDecl,
-        OneVarDeclAllowed,
-        ConstantValueRequired,
-        While,
-    };
+    bool element();
+    bool strucT();
+    
+    bool structEntry();
 
-    bool expect(Token token);
-    bool expect(Expect expect, bool expected = false, const char* = nullptr);
-    
-    void expectedError(Token token, const char* = nullptr);
-    void expectedError(Expect expect, const char* = nullptr);
-    
-    bool def();
-    bool constant();
-    bool table();
-    bool function();
-    bool effect();
-    
-    bool var();
-    bool type();
-    bool value();
-    
-    bool statement();
-    
     bool compoundStatement();
     bool ifStatement();
     bool forStatement();
@@ -246,14 +226,44 @@ private:
     bool postfixExpression();
     bool primaryExpression();
 
-    void formalParameterList();
-    uint32_t argumentList();
+    bool formalParameterList();
+    bool argumentList();
     
     bool operatorInfo(Token token, OperatorInfo&) const;
 
-    bool isReserved(Token token, const std::string str, Reserved&);
+    virtual bool isReserved(Token token, const std::string str, Reserved&) override;
 
-    Scanner _scanner;
+    struct ParamEntry
+    {
+        ParamEntry(const std::string& name, Type type)
+            : _name(name)
+            , _type(type)
+        { }
+        std::string _name;
+        Type _type;
+    };
+    
+    struct Struct
+    {
+        Struct(const std::string& name)
+            : _name(name)
+        { }
+        std::string _name;
+        std::vector<ParamEntry> _entries;
+    };
+    
+
+    struct FunctionParams
+    {
+        FunctionParams(const std::string& name)
+            : _name(name)
+        { }
+        std::string _name;
+        std::vector<ParamEntry> _entries;
+    };
+    
+    std::vector<Struct> _structs;
+    std::vector<FunctionParams> _functionParams;
 };
 
 }

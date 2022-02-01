@@ -42,6 +42,8 @@ public:
         ExpectedIdentifier,
         ExpectedCommandId,
         ExpectedRegister,
+        ExpectedExpr,
+        ExpectedArgList,
         InvalidParamCount,
         UndefinedIdentifier,
         ParamOutOfRange,

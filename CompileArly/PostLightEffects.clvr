@@ -48,27 +48,6 @@ var LedEntry leds 8
 LedEntry* led
 int i
 
-// Animate cur between min and max but adding inc
-// Return: 1 if we just reversed into the positive
-//         direction, 0 otherwise
-function animate(led)
-{
-    led.cur += led.inc;
-    if (led.inc > 0) {
-        if (led.cur >= led.max) {
-            led.cur = led.max;
-            led.inc = -led.inc;
-        }
-    } else {
-        if (led.cur <= led.min) {
-            led.cur = led.min;
-            led.inc = -led.inc;
-            return 1;
-        }
-    }
-    return 0;
-}
-
 function constantInit()
 {
     c0 = Params[0];
@@ -91,7 +70,7 @@ function flickerLoop()
     i = 0;
     foreach (i : NumPixels) {
         led = &leds[i];
-        if (animate(led)) {
+        if (Animate(led)) {
             // We are done with the throb, select a new inc and lim
             // Increment inc value for each step a random amount
             led.cur = BrightnessMin;
@@ -124,7 +103,7 @@ function pulseInit()
 
 function pulseLoop()
 {
-    animate(&leds[0]);
+    Animate(&leds[0]);
 
     led = &leds[0];
     c0.val = led.cur;

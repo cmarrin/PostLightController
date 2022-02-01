@@ -145,6 +145,8 @@ int main(int argc, char * const argv[])
             case arly::Compiler::Error::ExpectedIdentifier: err = "expected identifier"; break;
             case arly::Compiler::Error::ExpectedRegister: err = "expected register"; break;
             case arly::Compiler::Error::ExpectedCommandId: err = "expected command"; break;
+            case arly::Compiler::Error::ExpectedExpr: err = "expected expression"; break;
+            case arly::Compiler::Error::ExpectedArgList: err = "expected arg list"; break;
             case arly::Compiler::Error::InvalidParamCount: err = "invalid param count"; break;
             case arly::Compiler::Error::UndefinedIdentifier: err = "undefined identifier"; break;
             case arly::Compiler::Error::ParamOutOfRange: err = "param must be 0..15"; break;

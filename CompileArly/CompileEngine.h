@@ -37,8 +37,11 @@ public:
 protected:
     enum class Reserved {
         None,
+        Def,
+        Struct,
         Const,
         Table,
+        Function,
         Effect,
         End,
         Init,
@@ -50,8 +53,6 @@ protected:
         Int,
         R0, R1, R2, R3,
         C0, C1, C2, C3,
-        Function,
-        Def,
     };
     
     virtual bool statement() = 0;
@@ -66,6 +67,8 @@ protected:
     
     bool type(Type& t);
     
+    bool values(Type);
+
     // Value is returned as an int32_t, but it might be a float
     bool value(int32_t& i, Type);
     

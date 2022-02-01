@@ -469,16 +469,16 @@ bool
 CompileEngine::isReserved(Token token, const std::string str, Reserved& r)
 {
     static std::map<std::string, Reserved> reserved = {
+        { "def",        Reserved::Def },
         { "const",      Reserved::Const },
         { "table",      Reserved::Table },
+        { "function",   Reserved::Function },
         { "effect",     Reserved::Effect },
         { "foreach",    Reserved::ForEach },
         { "if",         Reserved::If },
         { "else",       Reserved::Else },
         { "float",      Reserved::Float },
         { "int",        Reserved::Int },
-        { "function",   Reserved::Function },
-        { "def",        Reserved::Def },
     };
 
     if (token != Token::Identifier) {
