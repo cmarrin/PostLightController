@@ -7,6 +7,7 @@
 
 #include "CompileEngine.h"
 
+#include "Interpreter.h"
 #include <cmath>
 #include <map>
 
@@ -94,7 +95,7 @@ CompileEngine::emit(std::vector<uint8_t>& executable)
     executable.push_back('y');
     executable.push_back(_rom32.size());
     executable.push_back(_nextMem);
-    executable.push_back(0); // Not using Temp yet
+    executable.push_back(MaxTempSize); // FIXME: For now emit the full max size for Temps
     executable.push_back(0);
     
     char* buf = reinterpret_cast<char*>(&(_rom32[0]));
@@ -287,7 +288,7 @@ uint8_t
 CompileEngine::allocTemp()
 {
     // Find first free bit
-    for (uint8_t i = 0; i < 4; ++i) {
+    for (uint8_t i = 0; i < MaxTempSize; ++i) {
         if ((_tempAllocationMap & (1 << i)) == 0) {
             _tempAllocationMap |= (1 << i);
             return i;

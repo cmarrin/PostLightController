@@ -178,7 +178,7 @@ protected:
     std::vector<uint8_t> _rom8;
     uint32_t _nextMem = 0; // next available location in mem
     
-    uint8_t _tempAllocationMap = 0;
+    uint32_t _tempAllocationMap = 0;
 };
 
 }
