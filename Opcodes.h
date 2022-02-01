@@ -112,9 +112,7 @@ Opcodes:
 
     LoadBlack r             - c[r] = Color()
     LoadZero r              - v[r] = 0
-    LoadIntOne r            - v[r] = 1
-    LoadFloatOne r          - v[r] = 1.0f
-    LoadIntByteMax r        - v[r] = 255
+    LoadIntConst r const    - v[r] = const (constant value 0-255)
 
     // The opcodes deal with variable references. LoadRef simply places
     // the address of the passed id in the passed register. It can later
