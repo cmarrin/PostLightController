@@ -215,7 +215,9 @@ Opcodes:
     
     Format Id           - 4 bytes: 'arly'
     Constants size      - 1 byte: size in 4 byte units of Constants area
-    Unused              - 3 bytes: for alignment
+    Ram size            - 1 byte: size in 4 byte units of Vars area
+    Temp size           - 1 byte: size in 4 byte units of Temp area
+    Unused              - 1 bytes: for alignment
     Constants area      - n 4 byte entries: ends after size 4 byte units
     Effects entries     - Each entry has:
                             1 byte command ('a' to 'p')
