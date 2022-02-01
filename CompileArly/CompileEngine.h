@@ -91,6 +91,15 @@ protected:
     bool reserved();
     bool reserved(Reserved &r);
     
+    void addOpRdRs(Op op, uint8_t rd, uint8_t rs) { addOpRdRsI(op, rd, rs, 0); }
+    void addOpRsI(Op op, uint8_t rs, uint8_t i) { addOpRdRsI(op, 0, rs, i); }
+    void addOpRdI(Op op, uint8_t rd, uint8_t i) { addOpRdRsI(op, rd, 0, i); }
+    
+    void addOpRdRsI(Op op, uint8_t rd, uint8_t rs, uint8_t i)
+    {
+        _rom8.push_back(uint8_t(op) | (rd << 6) | ((rs & 0x03) << 4) | (i & 0x0f));
+    }
+    
     virtual bool isReserved(Token token, const std::string str, Reserved& r);
 
     uint16_t handleFunctionName();

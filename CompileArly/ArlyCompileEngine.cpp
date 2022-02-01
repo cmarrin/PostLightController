@@ -461,7 +461,8 @@ ArlyCompileEngine::opStatement()
         case OpParams::None: handleOpParams(uint8_t(op)); break;
         case OpParams::R: handleOpParams(handleR(op)); break;
         case OpParams::C: handleOpParams(handleC(op)); break;
-        case OpParams::R_I: handleOpParams(handleR(op), handleI()); break;
+        case OpParams::Rd_I: handleOpParamsRdRsI(op, handleR(), 0, handleI()); break;
+        case OpParams::I_Rs: handleOpParamsRdIRs(op, 0, handleI(), handleR()); break;
         case OpParams::C_I: handleOpParams(handleC(op), handleI()); break;
         case OpParams::R_Id: handleOpParams(handleR(op), handleId()); break;
         

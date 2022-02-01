@@ -222,12 +222,12 @@ Interpreter::execute(uint16_t addr)
                 _c[r] = Color(_params[i], _params[i + 1], _params[i + 2]);
                 break;
             case Op::LoadIntParam  :
-                getI(i);
-                _v[r] = _params[i];
+                getRdRsI(rd, rs, i);
+                _v[rd] = _params[i];
                 break;
             case Op::LoadFloatParam:
-                getI(i);
-                _v[r] = floatToInt(float(_params[i]));
+                getRdRsI(rd, rs, i);
+                _v[rd] = floatToInt(float(_params[i]));
                 break;
             case Op::Load          :
                 id = getId();
