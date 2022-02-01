@@ -17,6 +17,9 @@ static std::vector<OpData> _opcodes = {
     { "LoadRefX",       Op::LoadRefX        , OpParams::Rd_Id_Rs_I },
     { "LoadDeref",      Op::LoadDeref       , OpParams::Rd_Rs_I },
     { "StoreDeref",     Op::StoreDeref      , OpParams::Rd_I_Rs },
+    
+    { "LoadTemp",       Op::LoadTemp        , OpParams::Rd_I },
+    { "StoreTemp",      Op::StoreTemp       , OpParams::I_Rs },
 
     { "MoveColor",      Op::MoveColor       , OpParams::Cd_Cs },
     { "Move",           Op::Move            , OpParams::Rd_Rs },
@@ -261,6 +264,31 @@ CompileEngine::var()
     expect(_nextMem <= 128, Compiler::Error::TooManyVars);
 
     return true;
+}
+
+uint8_t
+CompileEngine::allocTemp()
+{
+    // Find first free bit
+    for (uint8_t i = 0; i < 4; ++i) {
+        if ((_tempAllocationMap & (1 << i)) == 0) {
+            _tempAllocationMap |= (1 << i);
+            return i;
+        }
+    }
+    _error = Compiler::Error::NoMoreTemps;
+    throw true;
+}
+
+void
+CompileEngine::freeTemp(uint8_t i)
+{
+    if ((_tempAllocationMap & (1 << i)) == 0) {
+        _tempAllocationMap &= ~(1 << i);
+        return;
+    }
+    _error = Compiler::Error::TempNotAllocated;
+    throw true;
 }
 
 void

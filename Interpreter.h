@@ -233,6 +233,7 @@ private:
 
     uint32_t _ram[64];
     uint32_t _v[4];
+    uint32_t _temp[16];
     Color _c[4];
     
     uint16_t _pc = 0;

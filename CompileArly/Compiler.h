@@ -52,6 +52,8 @@ public:
         TooManyVars,
         DefOutOfRange,
         ExpectedDef,
+        NoMoreTemps,
+        TempNotAllocated,
     };
     
     Compiler() { }

@@ -71,6 +71,14 @@ protected:
     
     bool var();
     
+    // There are 4 temp values for use by statements. They
+    // are allocated, used, then freed when done. There are
+    // special LoadTemp, StoreTemp opcodes to access them.
+    // Alloc throws if it runs out of temps. free throws if
+    // you try to free a temp that hasn't been allocated.
+    uint8_t allocTemp();
+    void freeTemp(uint8_t i);
+    
     // The expect methods validate the passed param and if
     // there is no match, the passed error is saved and
     // throw is called. The first version also retires the
@@ -166,6 +174,8 @@ protected:
     std::vector<uint32_t> _rom32;
     std::vector<uint8_t> _rom8;
     uint32_t _nextMem = 0; // next available location in mem
+    
+    uint8_t _tempAllocationMap = 0;
 };
 
 }

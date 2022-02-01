@@ -155,6 +155,8 @@ int main(int argc, char * const argv[])
             case arly::Compiler::Error::TooManyVars: err = "too many vars"; break;
             case arly::Compiler::Error::DefOutOfRange: err = "def out of range"; break;
             case arly::Compiler::Error::ExpectedDef: err = "expected def"; break;
+            case arly::Compiler::Error::NoMoreTemps: err = "no more temp variables available"; break;
+            case arly::Compiler::Error::TempNotAllocated: err = "temp not allocated"; break;
         }
         
         std::cout << "Compile failed: " << err << " on line " << compiler.lineno() << "\n";

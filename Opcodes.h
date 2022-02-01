@@ -106,6 +106,9 @@ Opcodes:
     
     Load r id               - v[r] = mem[id] (4 byte int or float)
     Store id r              - mem[id] = v[r] (4 byte int or float)
+    
+    LoadTemp rd i           - v[rd] = temp[i]
+    StoreTemp i rs          - temp[i] = v[rs]
 
     LoadBlack r             - c[r] = Color()
     LoadZero r              - v[r] = 0
@@ -231,7 +234,9 @@ Opcodes:
 // Ops of 0x80 and above have an r param in the lower 2 bits.
 enum class Op: uint8_t {
 
-// 16 unused opcodes
+    None            = 0x0f,
+
+// 15 unused opcodes
 
     MoveColor       = 0x10,
     Move            = 0x11,
