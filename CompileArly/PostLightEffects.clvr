@@ -44,10 +44,12 @@ table FlickerSpeedEntry FlickerSpeedTable
 end
 
 var LedEntry leds 8
+var LedEntry* led
+var int i
 
-LedEntry* led
-int i
-
+//
+// Constant effect
+//
 function constantInit()
 {
     c0 = Params[0];
@@ -59,6 +61,11 @@ function constantLoop()
     exit 0;
 }
 
+effect c 3 constantInit constantLoop
+
+//
+// Flicker effect
+//
 function flickerInit()
 {
     c0 = Params[0];
@@ -88,6 +95,11 @@ function flickerLoop()
     return FlickerSpeedTable[i].delay;
 }
 
+effect f 4 flickerInit flickerLoop
+
+//
+// Pulse effect
+//
 function pulseInit()
 {
     c0 = Params[0];
@@ -111,6 +123,4 @@ function pulseLoop()
     exit PulseDelay;
 }
 
-effect c 3 constantInit constantLoop
-effect f 4 flickerInit flickerLoop
 effect p 5 pulseInit pulseLoop
