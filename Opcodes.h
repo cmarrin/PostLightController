@@ -107,8 +107,8 @@ Opcodes:
     Load r id               - v[r] = mem[id] (4 byte int or float)
     Store id r              - mem[id] = v[r] (4 byte int or float)
     
-    LoadTemp rd i           - v[rd] = temp[i]
-    StoreTemp i rs          - temp[i] = v[rs]
+    LoadTemp r i            - v[r] = temp[i]
+    StoreTemp i r           - temp[i] = v[rs]
 
     LoadBlack r             - c[r] = Color()
     LoadZero r              - v[r] = 0

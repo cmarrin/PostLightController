@@ -263,12 +263,12 @@ Interpreter::execute(uint16_t addr)
                 break;
                 
             case Op::LoadTemp      :
-                getRdRsI(rd, rs, i);
-                _v[rd] = _temp[i];
+                id = getId();
+                _v[r] = _temp[id];
                 break;
             case Op::StoreTemp     :
-                getRdRsI(rd, rs, i);
-                _temp[i] = _v[rs];
+                id = getId();
+                _temp[id] = _v[r];
                 break;
 
             case Op::LoadRef       :

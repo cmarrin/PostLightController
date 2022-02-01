@@ -18,8 +18,8 @@ static std::vector<OpData> _opcodes = {
     { "LoadDeref",      Op::LoadDeref       , OpParams::Rd_Rs_I },
     { "StoreDeref",     Op::StoreDeref      , OpParams::Rd_I_Rs },
     
-    { "LoadTemp",       Op::LoadTemp        , OpParams::Rd_I },
-    { "StoreTemp",      Op::StoreTemp       , OpParams::I_Rs },
+    { "LoadTemp",       Op::LoadTemp        , OpParams::R_Id },
+    { "StoreTemp",      Op::StoreTemp       , OpParams::Id_R },
 
     { "MoveColor",      Op::MoveColor       , OpParams::Cd_Cs },
     { "Move",           Op::Move            , OpParams::Rd_Rs },
