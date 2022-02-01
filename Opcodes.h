@@ -299,6 +299,10 @@ enum class Op: uint8_t {
     NegInt          = 0x4b,
     NegFloat        = 0x4c,
     
+    IncInt          = 0x4d,
+    IncFloat        = 0x4e,
+    DecInt          = 0x4f,
+    DecFloat        = 0x50,
     
     Return          = 0x51,
     
