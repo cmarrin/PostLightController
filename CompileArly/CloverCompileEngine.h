@@ -47,17 +47,17 @@ table:
     'table' type <id> '{' values '}' ;
 
 struct:
-    'struct' <id> '{' { structEntry } '}';
+    'struct' <id> '{' { structEntry } '}' ;
     
 // First integer is num elements, second is size of each element
 var:
-    'var' type <id> [ '*' ] [ <integer> ]
+    'var' type <id> [ '*' ] [ <integer> ] ';' ;
 
 function:
     'function' <id> '( formalParameterList ')' '{' { statement } '}' ;
 
 effect:
-    'effect' <id> <integer> <id> <id> ;
+    'effect' <id> <integer> <id> <id> ';' ;
 
 structEntry:
     type <id> ';' ;
@@ -167,6 +167,8 @@ protected:
     virtual bool function() override;
     virtual bool table() override;
   
+    bool var();
+
 private:
     class OperatorInfo {
     public:
@@ -174,14 +176,12 @@ private:
         
         OperatorInfo() { }
         OperatorInfo(Token token, uint8_t prec, Assoc assoc, bool sto, Op op)
+            : _token(token)
+            , _op(op)
+            , _prec(prec)
+            , _assoc(assoc)
+            , _sto(sto)
         {
-            OperatorInfo info;
-            info._token = static_cast<uint32_t>(token);
-            info._prec = prec;
-            info._op = static_cast<uint32_t>(op);
-            info._assoc = static_cast<uint32_t>(assoc);
-            info._sto = sto;
-            _u = info._u;
         }
         
         bool operator==(const Token& t)
@@ -189,28 +189,20 @@ private:
             return static_cast<Token>(_token) == t;
         }
         
-        Token token() const { return static_cast<Token>(_token); }
+        Token token() const { return _token; }
         uint8_t prec() const { return _prec; }
-        Op op() const { return static_cast<Op>(_op); }
-        bool sto() const { return _sto != 0; }
-        Assoc assoc() const { return static_cast<Assoc>(_assoc); }
+        Op op() const { return _op; }
+        bool sto() const { return _sto; }
+        Assoc assoc() const { return _assoc; }
 
     private:
-        union {
-            struct {
-                uint32_t _token : 16;
-                uint32_t _op : 8;
-                uint32_t _prec : 5;
-                uint32_t _assoc : 1;
-                uint32_t _sto : 1;
-            };
-            uint32_t _u;
-        };
+        Token _token;
+        Op _op;
+        uint8_t _prec;
+        Assoc _assoc;
+        bool _sto;
     };
     
-    // OperatorInfo is in Flash, so we need to access it as a single 4 byte read
-    static_assert(sizeof(OperatorInfo) == 4, "OperatorInfo must fit in 4 bytes");
-
     bool element();
     bool strucT();
     

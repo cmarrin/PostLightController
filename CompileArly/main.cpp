@@ -85,6 +85,41 @@ static std::vector<Test> Tests = {
     { 'f', { 20, 224, 200, 0 } },
 };
 
+static void showError(arly::Compiler::Error error, uint32_t lineno)
+{
+    const char* err = "unknown";
+    switch(error) {
+        case arly::Compiler::Error::None: err = "internal error"; break;
+        case arly::Compiler::Error::UnrecognizedLanguage: err = "unrecognized language"; break;
+        case arly::Compiler::Error::ExpectedToken: err = "expected token"; break;
+        case arly::Compiler::Error::ExpectedType: err = "expected type"; break;
+        case arly::Compiler::Error::ExpectedValue: err = "expected value"; break;
+        case arly::Compiler::Error::ExpectedInt: err = "expected int"; break;
+        case arly::Compiler::Error::ExpectedOpcode: err = "expected opcode"; break;
+        case arly::Compiler::Error::ExpectedEnd: err = "expected 'end'"; break;
+        case arly::Compiler::Error::ExpectedIdentifier: err = "expected identifier"; break;
+        case arly::Compiler::Error::ExpectedRegister: err = "expected register"; break;
+        case arly::Compiler::Error::ExpectedCommandId: err = "expected command"; break;
+        case arly::Compiler::Error::ExpectedExpr: err = "expected expression"; break;
+        case arly::Compiler::Error::ExpectedArgList: err = "expected arg list"; break;
+        case arly::Compiler::Error::ExpectedFormalParams: err = "expected formal params"; break;
+        case arly::Compiler::Error::InvalidParamCount: err = "invalid param count"; break;
+        case arly::Compiler::Error::UndefinedIdentifier: err = "undefined identifier"; break;
+        case arly::Compiler::Error::ParamOutOfRange: err = "param must be 0..15"; break;
+        case arly::Compiler::Error::ForEachTooBig: err = "too many instructions in foreach"; break;
+        case arly::Compiler::Error::IfTooBig: err = "too many instructions in if"; break;
+        case arly::Compiler::Error::ElseTooBig: err = "too many instructions in else"; break;
+        case arly::Compiler::Error::TooManyConstants: err = "too many constants"; break;
+        case arly::Compiler::Error::TooManyVars: err = "too many vars"; break;
+        case arly::Compiler::Error::DefOutOfRange: err = "def out of range"; break;
+        case arly::Compiler::Error::ExpectedDef: err = "expected def"; break;
+        case arly::Compiler::Error::NoMoreTemps: err = "no more temp variables available"; break;
+        case arly::Compiler::Error::TempNotAllocated: err = "temp not allocated"; break;
+    }
+    
+    std::cout << "Compile failed: " << err << " on line " << lineno << "\n";
+}
+
 static constexpr int NumLoops = 10;
 
 int main(int argc, char * const argv[])
@@ -129,41 +164,22 @@ int main(int argc, char * const argv[])
     
     std::vector<uint8_t> executable;
     
-    compiler.compile(&stream, executable);
-    if (compiler.error() == arly::Compiler::Error::None) {
-        std::cout << "Compile succeeded!\n";
-    } else {
-        const char* err = "unknown";
-        switch(compiler.error()) {
-            case arly::Compiler::Error::None: err = "internal error"; break;
-            case arly::Compiler::Error::ExpectedToken: err = "expected token"; break;
-            case arly::Compiler::Error::ExpectedType: err = "expected type"; break;
-            case arly::Compiler::Error::ExpectedValue: err = "expected value"; break;
-            case arly::Compiler::Error::ExpectedInt: err = "expected int"; break;
-            case arly::Compiler::Error::ExpectedOpcode: err = "expected opcode"; break;
-            case arly::Compiler::Error::ExpectedEnd: err = "expected 'end'"; break;
-            case arly::Compiler::Error::ExpectedIdentifier: err = "expected identifier"; break;
-            case arly::Compiler::Error::ExpectedRegister: err = "expected register"; break;
-            case arly::Compiler::Error::ExpectedCommandId: err = "expected command"; break;
-            case arly::Compiler::Error::ExpectedExpr: err = "expected expression"; break;
-            case arly::Compiler::Error::ExpectedArgList: err = "expected arg list"; break;
-            case arly::Compiler::Error::InvalidParamCount: err = "invalid param count"; break;
-            case arly::Compiler::Error::UndefinedIdentifier: err = "undefined identifier"; break;
-            case arly::Compiler::Error::ParamOutOfRange: err = "param must be 0..15"; break;
-            case arly::Compiler::Error::ForEachTooBig: err = "too many instructions in foreach"; break;
-            case arly::Compiler::Error::IfTooBig: err = "too many instructions in if"; break;
-            case arly::Compiler::Error::ElseTooBig: err = "too many instructions in else"; break;
-            case arly::Compiler::Error::TooManyConstants: err = "too many constants"; break;
-            case arly::Compiler::Error::TooManyVars: err = "too many vars"; break;
-            case arly::Compiler::Error::DefOutOfRange: err = "def out of range"; break;
-            case arly::Compiler::Error::ExpectedDef: err = "expected def"; break;
-            case arly::Compiler::Error::NoMoreTemps: err = "no more temp variables available"; break;
-            case arly::Compiler::Error::TempNotAllocated: err = "temp not allocated"; break;
-        }
+    compiler.compile(&stream, arly::Compiler::Language::Arly, executable);
+    if (compiler.error() != arly::Compiler::Error::None) {
+        showError(compiler.error(), compiler.lineno());
         
-        std::cout << "Compile failed: " << err << " on line " << compiler.lineno() << "\n";
-        return 0;
+        std::cout << "\n\nTrying Clover...\n";
+        
+        stream.seekg(0);
+        compiler.compile(&stream, arly::Compiler::Language::Clover, executable);
+
+        if (compiler.error() != arly::Compiler::Error::None) {
+            showError(compiler.error(), compiler.lineno());
+            return -1;
+        }
     }
+
+    std::cout << "Compile succeeded!\n";
     
     // Write executable if needed
     if (outputFile.size()) {

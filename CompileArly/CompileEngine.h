@@ -41,6 +41,7 @@ protected:
         Struct,
         Const,
         Table,
+        Var,
         Function,
         Effect,
         End,
@@ -71,9 +72,7 @@ protected:
 
     // Value is returned as an int32_t, but it might be a float
     bool value(int32_t& i, Type);
-    
-    bool var();
-    
+        
     // There are 4 temp values for use by statements. They
     // are allocated, used, then freed when done. There are
     // special LoadTemp, StoreTemp opcodes to access them.

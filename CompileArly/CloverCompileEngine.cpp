@@ -9,6 +9,8 @@
 
 #include "CloverCompileEngine.h"
 
+#include "Interpreter.h"
+
 #include <map>
 #include <vector>
 
@@ -55,6 +57,8 @@ CloverCompileEngine::operatorInfo(Token token, OperatorInfo& op) const
 bool
 CloverCompileEngine::program()
 {
+    _scanner.setIgnoreNewlines(true);
+    
     try {
         while(element()) { }
     }
@@ -68,11 +72,23 @@ CloverCompileEngine::program()
 bool
 CloverCompileEngine::element()
 {
-    if (def()) return true;
-    if (constant()) return true;
+    if (def()) {
+        expect(Token::Semicolon);
+        return true;
+    }
+    
+    if (constant()) {
+        expect(Token::Semicolon);
+        return true;
+    }
+    
+    if (var()) {
+        expect(Token::Semicolon);
+        return true;
+    }
+    
     if (table()) return true;
     if (strucT()) return true;
-    if (var()) return true;
     if (function()) return true;
     if (effect()) return true;
     return false;
@@ -121,6 +137,36 @@ CloverCompileEngine::strucT()
 }
 
 bool
+CloverCompileEngine::var()
+{
+    if (!match(Reserved::Var)) {
+        return false;
+    }
+
+    Type t;
+    std::string id;
+    
+    if (!type(t)) {
+        return false;
+    }
+    
+    expect(identifier(id), Compiler::Error::ExpectedIdentifier);
+    
+    int32_t size;
+    if (!integerValue(size)) {
+        size = 1;
+    }
+
+    _symbols.emplace_back(id, _nextMem, false);
+    _nextMem += size;
+
+    // There is only enough room for 128 var values
+    expect(_nextMem <= MaxRamSize, Compiler::Error::TooManyVars);
+
+    return true;
+}
+
+bool
 CloverCompileEngine::function()
 {
     if (!match(Reserved::Function)) {
@@ -136,7 +182,7 @@ CloverCompileEngine::function()
     
     expect(Token::OpenParen);
     
-    formalParameterList();
+    expect(formalParameterList(), Compiler::Error::ExpectedFormalParams);
     
     expect(Token::CloseParen);
     expect(Token::OpenBrace);
@@ -178,7 +224,9 @@ CloverCompileEngine::statement()
 bool
 CloverCompileEngine::compoundStatement()
 {
-    expect(Token::OpenBrace);
+    if (!match(Token::OpenBrace)) {
+        return false;
+    }
 
     while(statement()) { }
 
@@ -392,8 +440,6 @@ CloverCompileEngine::postfixExpression()
         
         // FIXME: The primaryExpression is an address. The identifier is
         // a struct member. Use its offset in a deref op (load or store?)
-    } else {
-        return false;
     }
     return true;
 }
@@ -434,9 +480,11 @@ bool
 CloverCompileEngine::formalParameterList()
 {
     Type t;
-    if (!type(t)) {
+    if (match(Token::CloseParen)) {
         return true;
     }
+    
+    expect(type(t), Compiler::Error::ExpectedType);
     
     std::string id;
     expect(identifier(id), Compiler::Error::ExpectedIdentifier);

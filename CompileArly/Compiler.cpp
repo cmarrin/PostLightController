@@ -8,25 +8,42 @@
 #include "Compiler.h"
 
 #include "ArlyCompileEngine.h"
+#include "CloverCompileEngine.h"
 
 #include <map>
 #include <vector>
 
 using namespace arly;
 
-bool Compiler::compile(std::istream* istream, std::vector<uint8_t>& executable)
+bool Compiler::compile(std::istream* istream, Language lang, std::vector<uint8_t>& executable)
 {
-    ArlyCompileEngine eng(istream);
+    CompileEngine* engine = nullptr;
     
-    eng.program();
-    _error = eng.error();
-    _expectedToken = eng.expectedToken();
-    _expectedString = eng.expectedString();
-    _lineno = eng.lineno();
+    switch(lang) {
+        case Language::Arly:
+            engine = new ArlyCompileEngine(istream);
+            break;
+        case Language::Clover:
+            engine = new CloverCompileEngine(istream);
+            break;
+    }
+    
+    if (!engine) {
+        _error = Error::UnrecognizedLanguage;
+        return false;
+    }
+    
+    engine->program();
+    _error = engine->error();
+    _expectedToken = engine->expectedToken();
+    _expectedString = engine->expectedString();
+    _lineno = engine->lineno();
     
     if (_error == Error::None) {
-        eng.emit(executable);
+        engine->emit(executable);
     }
+    
+    delete engine;
     
     return _error == Error::None;
 }

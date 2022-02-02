@@ -177,9 +177,8 @@ CompileEngine::effect()
         throw true;
     }
 
-    expect(Token::Integer);
-    
-    int32_t paramCount = _scanner.getTokenValue().integer;
+    int32_t paramCount;
+    expect(integerValue(paramCount), Compiler::Error::ExpectedValue);
     
     // paramCount must be 0 - 15
     if (paramCount < 0 || paramCount > 15) {
@@ -258,30 +257,6 @@ CompileEngine::value(int32_t& i, Type t)
         return true;
     }
     return false;
-}
-
-bool
-CompileEngine::var()
-{
-    Type t;
-    std::string id;
-    
-    if (!type(t)) {
-        return false;
-    }
-    
-    expect(identifier(id), Compiler::Error::ExpectedIdentifier);
-    
-    int32_t size;
-    expect(integerValue(size), Compiler::Error::ExpectedInt);
-
-    _symbols.emplace_back(id, _nextMem, false);
-    _nextMem += size;
-
-    // There is only enough room for 128 var values
-    expect(_nextMem <= 128, Compiler::Error::TooManyVars);
-
-    return true;
 }
 
 uint8_t
@@ -473,6 +448,7 @@ CompileEngine::isReserved(Token token, const std::string str, Reserved& r)
         { "def",        Reserved::Def },
         { "const",      Reserved::Const },
         { "table",      Reserved::Table },
+        { "var",        Reserved::Var },
         { "function",   Reserved::Function },
         { "effect",     Reserved::Effect },
         { "foreach",    Reserved::ForEach },

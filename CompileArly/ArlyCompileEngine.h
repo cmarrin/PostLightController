@@ -75,6 +75,8 @@ private:
     void effects();
 
     void tableEntries(Type);
+
+    bool var();
         
     uint8_t handleR();
     uint8_t handleR(Op op);

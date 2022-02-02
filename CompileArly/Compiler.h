@@ -33,6 +33,7 @@ class Compiler
 public:
     enum class Error {
         None,
+        UnrecognizedLanguage,
         ExpectedToken,
         ExpectedType,
         ExpectedValue,
@@ -44,6 +45,7 @@ public:
         ExpectedRegister,
         ExpectedExpr,
         ExpectedArgList,
+        ExpectedFormalParams,
         InvalidParamCount,
         UndefinedIdentifier,
         ParamOutOfRange,
@@ -60,7 +62,9 @@ public:
     
     Compiler() { }
     
-    bool compile(std::istream*, std::vector<uint8_t>& executable);
+    enum class Language { Arly, Clover };
+    
+    bool compile(std::istream*, Language, std::vector<uint8_t>& executable);
 
     Error error() const { return _error; }
     Token expectedToken() const { return _expectedToken; }

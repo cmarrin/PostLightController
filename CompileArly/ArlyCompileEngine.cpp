@@ -147,6 +147,31 @@ ArlyCompileEngine::tableEntries(Type t)
 }
 
 bool
+ArlyCompileEngine::var()
+{
+    Type t;
+    std::string id;
+    
+    if (!type(t)) {
+        return false;
+    }
+    
+    expect(identifier(id), Compiler::Error::ExpectedIdentifier);
+    
+    int32_t size;
+    expect(integerValue(size), Compiler::Error::ExpectedInt);
+
+    _symbols.emplace_back(id, _nextMem, false);
+    _nextMem += size;
+
+    // There is only enough room for 128 var values
+    expect(_nextMem <= 128, Compiler::Error::TooManyVars);
+
+    return true;
+}
+
+
+bool
 ArlyCompileEngine::opcode(Op op, std::string& str, OpParams& par)
 {
     OpData data;

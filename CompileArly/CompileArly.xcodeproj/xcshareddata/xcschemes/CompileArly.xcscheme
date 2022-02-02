@@ -66,6 +66,10 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "PostLightEffects.arly"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "PostLightEffects.clvr"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>

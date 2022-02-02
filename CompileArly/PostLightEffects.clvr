@@ -1,6 +1,26 @@
 // Arly script for different Post Light Controller effects
 //
 
+
+
+
+// Do a simple test
+
+def Num 3;
+
+const float Brightness 0.5;
+
+var int myVar;
+
+function go(int b)
+{
+	myVar = b;
+}
+
+effect c 3 go go
+
+/*
+
 def ColorVal    2
 def LEDCur      0
 def LEDInc      1
@@ -124,3 +144,5 @@ function pulseLoop()
 }
 
 effect p 5 pulseInit pulseLoop
+
+*/
