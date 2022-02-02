@@ -270,6 +270,10 @@ Token Scanner::getToken(TokenType& tokenValue)
         
 		switch(c) {
             case '\n':
+                if (_ignoreNewlines) {
+                    token = Token::EndOfFile;
+					break;
+                }
                 token = Token::NewLine;
 				break;
 			case '/':

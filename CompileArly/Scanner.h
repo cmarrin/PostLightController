@@ -123,6 +123,8 @@ public:
     
     void setStream(std::istream* stream) { _stream = stream; }
   
+    void setIgnoreNewlines(bool ignore) { _ignoreNewlines = ignore; }
+    
     uint32_t lineno() const { return _lineno; }
   	
     Token getToken()
@@ -174,6 +176,8 @@ private:
 
     Token _currentToken = Token::None;
     Scanner::TokenType _currentTokenValue;
+    
+    bool _ignoreNewlines = false;
 };
 
 }
