@@ -21,13 +21,6 @@ effect c 3 go go
 
 /*
 
-def ColorVal    2
-def LEDCur      0
-def LEDInc      1
-def LEDMin      2
-def LEDMax      3
-def SpeedTableEntrySize 3
-
 struct FlickerSpeedEntry
 {
     float min;
@@ -43,16 +36,17 @@ struct LedEntry
     float max;
 }
 
-const float IncMin          0.004
-const float IncMax          0.04
-const float BrightnessMin   0.3
-const int LedSize           24
-const int NumPixels         8
-const int NumLevels         8
-const int PulseDelay        25
-const int PulseSpeedMult    35
+const float IncMin          0.004;
+const float IncMax          0.04;
+const float BrightnessMin   0.3;
+const int LedSize           24;
+const int NumPixels         8;
+const int NumLevels         8;
+const int PulseDelay        25;
+const int PulseSpeedMult    35;
 
 table FlickerSpeedEntry FlickerSpeedTable
+{
     0.98 1    40
     0.98 1    30
     0.71 0.94 20
@@ -61,11 +55,10 @@ table FlickerSpeedEntry FlickerSpeedTable
     0.08 0.31 20
     0.03 0.16 10
     0.01 0.02 10
-end
+}
 
 var LedEntry leds 8
 var LedEntry* led
-var int i
 
 //
 // Constant effect
@@ -94,6 +87,8 @@ function flickerInit()
 
 function flickerLoop()
 {
+    var int i;
+
     i = 0;
     foreach (i : NumPixels) {
         led = &leds[i];

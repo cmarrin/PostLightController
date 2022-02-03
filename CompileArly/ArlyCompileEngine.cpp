@@ -126,7 +126,7 @@ ArlyCompileEngine::table()
     expect(Token::NewLine);
     
     // Set the start address of the table. tableEntries() will fill them in
-    _symbols.emplace_back(id, _rom32.size(), true);
+    _symbols.emplace_back(id, _rom32.size(), Symbol::Type::Const);
     
     ignoreNewLines();
     tableEntries(t);
@@ -149,6 +149,10 @@ ArlyCompileEngine::tableEntries(Type t)
 bool
 ArlyCompileEngine::var()
 {
+    if (!match(Reserved::Var)) {
+        return false;
+    }
+
     Type t;
     std::string id;
     
@@ -161,7 +165,8 @@ ArlyCompileEngine::var()
     int32_t size;
     expect(integerValue(size), Compiler::Error::ExpectedInt);
 
-    _symbols.emplace_back(id, _nextMem, false);
+    // FIXME: deal with locals
+    _symbols.emplace_back(id, _nextMem, Symbol::Type::Global);
     _nextMem += size;
 
     // There is only enough room for 128 var values
@@ -310,8 +315,12 @@ ArlyCompileEngine::handleId()
                     [id](const Symbol& sym) { return sym._name == id; });
     expect(it != _symbols.end(), Compiler::Error::UndefinedIdentifier);
 
-    // var memory (RAM) starts at 0x80.
-    return it->_rom ? it->_addr : (it->_addr + 0x80);
+    // Offset id as needed
+    switch(it->_type) {
+        case Symbol::Type::Const: return it->_addr + ConstStart;
+        case Symbol::Type::Global: return it->_addr + GlobalStart;
+        case Symbol::Type::Local: return it->_addr + LocalStart;
+    }
 }
 
 void

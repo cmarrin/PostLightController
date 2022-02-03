@@ -12,6 +12,7 @@
 #pragma once
 
 #include "Color.h"
+#include "Opcodes.h"
 
 #include <string.h>
 
@@ -41,9 +42,10 @@
 
 namespace arly {
 
-static constexpr uint8_t CallStackSize = 16;    // This can be any size but costs RAM
-static constexpr uint8_t MaxRamSize = 128;      // Could be 255 but let's avoid excessive 
+static constexpr uint8_t MaxStackSize = 128;    // Could be 255 but let's avoid excessive 
                                                 // memory usage
+static constexpr uint8_t StackOverhead = 64;    // Amount added to var mem high water mark
+                                                // for stack growth.
 static constexpr uint8_t MaxTempSize = 32;      // Allocator uses a uint32_t map. That would 
                                                 // need to be changed to increase this.
 static constexpr uint8_t ParamsSize = 16;       // Constrained by the 4 bit field with the index
@@ -136,79 +138,65 @@ private:
         i = b & 0x0f;
     }
     
-    float getFloat(uint8_t id, uint8_t index = 0)
+    float loadFloat(uint8_t id, uint8_t index = 0)
     {
-        if (id >= 0x80) {
-            // RAM address
-            return intToFloat(_ram[id - 0x80 + index]);
-        }
-        
-        // ROM address
-        uint16_t addr = ((id + index) * 4) + _constOffset;
-
-        // Little endian
-        uint32_t u = uint32_t(getUInt8ROM(addr)) | 
-                    (uint32_t(getUInt8ROM(addr + 1)) << 8) | 
-                    (uint32_t(getUInt8ROM(addr + 1)) << 16) | 
-                    (uint32_t(getUInt8ROM(addr + 1)) << 24);
-
+        uint32_t i = loadInt(id, index);
         float f;
-        memcpy(&f, &u, sizeof(float));
+        memcpy(&f, &i, sizeof(float));
         return f;
     }
     
     void storeFloat(uint8_t id, float v) { storeFloat(id, 0, v); }
     
-    void storeFloat(uint8_t id, uint8_t index, float v)
-    {
-        // Only RAM
-        if (id < 0x80) {
-            return;
-        }
-
-        uint32_t addr = uint32_t(id) - 0x80 + uint32_t(index);
-        if (addr >= 64) {
-            _error = Error::AddressOutOfRange;
-            _errorAddr = _pc - 1;
-        } else {
-            _ram[addr] = floatToInt(v);
-        }
-    }
+    void storeFloat(uint8_t id, uint8_t index, float v) { storeInt(id, index, floatToInt(v)); }
     
-    uint32_t getInt(uint8_t id, uint8_t index = 0)
+    uint32_t loadInt(uint8_t id, uint8_t index = 0)
     {
-        if (id >= 0x80) {
-            // RAM address
-            return _ram[id - 0x80 + index];
+        if (id < GlobalStart) {
+            // ROM address
+            uint16_t addr = ((id + index) * 4) + _constOffset;
+
+            // Little endian
+            uint32_t u = uint32_t(getUInt8ROM(addr)) | 
+                        (uint32_t(getUInt8ROM(addr + 1)) << 8) | 
+                        (uint32_t(getUInt8ROM(addr + 2)) << 16) | 
+                        (uint32_t(getUInt8ROM(addr + 3)) << 24);
+
+            return u;
         }
         
-        // ROM address
-        uint16_t addr = ((id + index) * 4) + _constOffset;
+        if (id < LocalStart) {
+            // Global address
+            return _global[id - GlobalStart + index];
+        }
 
-        // Little endian
-        uint32_t u = uint32_t(getUInt8ROM(addr)) | 
-                    (uint32_t(getUInt8ROM(addr + 1)) << 8) | 
-                    (uint32_t(getUInt8ROM(addr + 2)) << 16) | 
-                    (uint32_t(getUInt8ROM(addr + 3)) << 24);
-
-        return u;
+        // Local address. Relative to current bp.
+        return _stack[id - LocalStart + index + _bp];        
     }
     
     void storeInt(uint8_t id, uint32_t v) { storeInt(id, 0, v); }
     
     void storeInt(uint8_t id, uint8_t index, uint32_t v)
     {
-        // Only RAM
-        if (id < 0x80) {
+        // Only Global or Local
+        if (id < GlobalStart) {
             return;
         }
 
-        uint32_t addr = uint32_t(id) - 0x80 + uint32_t(index);
-        if (addr >= 64) {
+        if (id < LocalStart) {
+            // Global address
+            uint32_t addr = uint32_t(id) - GlobalStart + uint32_t(index);
+            _global[addr] = v;
+            return;
+        }
+            
+        // Local address. Relative to current bp.
+        uint32_t addr = uint32_t(id) - LocalStart + uint32_t(index) + _bp;
+        if (addr >= MaxStackSize) {
             _error = Error::AddressOutOfRange;
             _errorAddr = _pc - 1;
         } else {
-            _ram[addr] = v;
+            _stack[addr] = v;
         }
     }
 
@@ -234,18 +222,18 @@ private:
     uint8_t _params[ParamsSize];
     uint8_t _paramsSize = 0;
 
-    uint16_t _callStack[CallStackSize];
-    uint8_t _callStackCur = 0;
-
     uint32_t _v[4];
     Color _c[4];
 
-    uint32_t* _ram = nullptr;
-    uint16_t _ramSize = 0;
-    uint32_t* _temp = nullptr;
-    uint16_t _tempSize = 0;
+    uint32_t* _global = nullptr;
+    uint16_t _globalSize = 0;
+    uint32_t* _stack = nullptr;
+    uint16_t _stackSize = 0;
     
     uint16_t _pc = 0;
+    uint16_t _sp = 0;
+    uint16_t _bp = 0;
+    
     uint16_t _constOffset = 0; // In bytes
     uint8_t _numParams = 0;
     uint16_t _initStart = 0;

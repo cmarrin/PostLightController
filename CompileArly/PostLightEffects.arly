@@ -28,15 +28,15 @@ table float FlickerSpeedTable
     0.01 0.02 10
 end
 
-float flickerLeds 32       // cur, inc, min, max
-float flickerStepsMin 1
-float flickerStepsMax 1
-int flickerSpeedDelay 1
+var float flickerLeds 32       // cur, inc, min, max
+var float flickerStepsMin 1
+var float flickerStepsMax 1
+var int flickerSpeedDelay 1
 
-int led 1
-int i 1
+var int led 1
+var int i 1
 
-float pulseState 4 // cur, inc, min, max
+var float pulseState 4 // cur, inc, min, max
 
 // r0 contains index of structure: cur, inc, min, max
 // Animate cur between min and max but adding inc

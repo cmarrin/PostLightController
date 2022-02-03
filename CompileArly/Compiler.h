@@ -58,6 +58,8 @@ public:
         ExpectedDef,
         NoMoreTemps,
         TempNotAllocated,
+        TempSizeMismatch,
+        StackTooBig,
     };
     
     Compiler() { }

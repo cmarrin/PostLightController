@@ -49,7 +49,31 @@ consecutive float (hsv). These values are defined by the 'defs' statements.
 Like the constants, only enough ram space as is needed by the defs is
 allocated. The size of a def is in 4 byte units. So if it is to hold a
 color for instance, it would need 3 locations. In the opcodes the id for a 
-def is 0x80 to 0xff to distinguish them from constants.
+var is 0x80 to 0xff to distinguish them from constants.
+
+Values
+
+There are four types of values:
+
+    Defs            These are compile time definitions which can be used in
+                    LoadIntConst ops with a value from 0 to 255 and anywhere an 'i'
+                    value is used with a value of 0-15.
+                    
+    Constants       From the standpoint of the runtime, constants introduced with
+                    'const' and 'table' are the same thing. They appear first
+                    in ROM and are accessed with an <id> from 0 to 127.
+                    
+    Global vars     These are introduced with the 'var' keyword and are stored in
+                    RAM. The executable has the size needed for this memory and it
+                    is allocated at runtime. They are globally available to all
+                    functions. They are accessed with an <id> of 0x80 to 0xbf.
+
+    Local vars      These are also introduced by the 'var' keyword, but at the
+                    top of functions. They are kept on the stack, so they are only 
+                    available while the function is active. The system can also 
+                    allocate temp variables, which are also placed on the stack 
+                    above the declared vars. They are accessed with an <id> of
+                    0xc0 to 0xff.
 
 Effects
 
@@ -104,12 +128,9 @@ Opcodes:
     LoadIntParam r i        - v[r] = p[i] (1 byte converted to int32)
     LoadFloatParam r i      - v[r] = p[i] (1 byte converted to float)
     
-    Load r id               - v[r] = mem[id] (4 byte int or float)
-    Store id r              - mem[id] = v[r] (4 byte int or float)
+    Load r id               - v[r] = global[id - 0x80] or const[id] or stack[bp + id = 0xc0]
+    Store id r              - global[id - 0x80] or stack[bp + id = 0xc0] = v[r]
     
-    LoadTemp r i            - v[r] = temp[i]
-    StoreTemp i r           - temp[i] = v[rs]
-
     LoadBlack r             - c[r] = Color()
     LoadZero r              - v[r] = 0
     LoadIntConst r const    - v[r] = const (constant value 0-255)
@@ -215,8 +236,8 @@ Opcodes:
     
     Format Id           - 4 bytes: 'arly'
     Constants size      - 1 byte: size in 4 byte units of Constants area
-    Ram size            - 1 byte: size in 4 byte units of Vars area
-    Temp size           - 1 byte: size in 4 byte units of Temp area
+    Global size         - 1 byte: size in 4 byte units needed for global vars
+    Stack size          - 1 byte: size in 4 byte units needed for the stack
     Unused              - 1 bytes: for alignment
     Constants area      - n 4 byte entries: ends after size 4 byte units
     Effects entries     - Each entry has:
@@ -232,6 +253,14 @@ Opcodes:
 */
 
 // Ops of 0x80 and above have an r param in the lower 2 bits.
+
+static constexpr uint8_t ConstStart = 0x00;
+static constexpr uint8_t GlobalStart = 0x80;
+static constexpr uint8_t LocalStart = 0xc0;
+static constexpr uint8_t ConstSize = GlobalStart - ConstStart;
+static constexpr uint8_t GlobalSize = LocalStart - GlobalStart;
+static constexpr uint8_t LocalSize = 0xff - LocalStart + 1;
+
 enum class Op: uint8_t {
 
     None            = 0x0f,
@@ -255,7 +284,7 @@ enum class Op: uint8_t {
     RandomFloat     = 0x1b,
     Animate         = 0x1c,
 
-// 3 unused opcodes
+//  3 unused opcodes
 
     If              = 0x20,
     Else            = 0x21,
@@ -316,29 +345,25 @@ enum class Op: uint8_t {
     LoadDeref       = 0x64,
     StoreDeref      = 0x65,
     
-    LoadTemp        = 0x66,
-    StoreTemp       = 0x67,
-
 // 27 unused opcodes
 
-    Load            = 0x8c,
-    Store           = 0x90,
+    LoadRef         = 0x80,
+    Load            = 0x84,
+    Store           = 0x88,
 
-    LoadBlack       = 0x94,
-    LoadZero        = 0x98,
-    LoadIntConst    = 0x9c,
+    LoadBlack       = 0x8c,
+    LoadZero        = 0x90,
+    LoadIntConst    = 0x94,
 
-    Exit            = 0xa0,
-    ToFloat         = 0xa4,
-    ToInt           = 0xa8,
-    SetAllLights    = 0xac,
+    Exit            = 0x98,
+    ToFloat         = 0x9c,
+    ToInt           = 0xa0,
+    SetAllLights    = 0xa4,
 
-    ForEach         = 0xb0,
-    Call            = 0xb4,
-    
-    LoadRef         = 0xb8,
+    ForEach         = 0xa8,
+    Call            = 0xac,
 
-// 9 unused opcode sets (of 4 each)
+// 16 unused opcode sets (of 4 each)
 
     Log             = 0xe0, // Print r as int32_t with addr - For debugging
     LogFloat        = 0xe4, // Print r as float with addr - For debugging

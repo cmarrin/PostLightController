@@ -18,16 +18,16 @@ Interpreter::init(uint8_t cmd, const uint8_t* buf, uint8_t size)
     _paramsSize = size;
 	_error = Error::None;
  
-    if (_ram) {
-        delete [ ]_ram;
-        _ram = nullptr;
-        _ramSize = 0;
+    if (_stack) {
+        delete [ ]_stack;
+        _stack = nullptr;
+        _stackSize = 0;
     }
     
-    if (_temp) {
-        delete [ ] _temp;
-        _temp = nullptr;
-        _tempSize = 0;
+    if (_global) {
+        delete [ ]_global;
+        _global = nullptr;
+        _globalSize = 0;
     }
     
     _constOffset = 8;
@@ -36,16 +36,18 @@ Interpreter::init(uint8_t cmd, const uint8_t* buf, uint8_t size)
     bool found = false;
     _codeOffset = _constOffset + constSize;
     
-    // Alloc RAM and Temp
-    _ramSize = getUInt8ROM(5);
-    _tempSize = getUInt8ROM(6);
+    // Alloc globals
+    _globalSize = getUInt8ROM(5);
     
-    if (_ramSize) {
-        _ram = new uint32_t[_ramSize];
+    if (_globalSize) {
+        _global = new uint32_t[_globalSize];
     }
     
-    if (_tempSize) {
-        _temp = new uint32_t[_tempSize];
+    // Alloc stack
+    _stackSize = getUInt8ROM(6);
+    
+    if (_stackSize) {
+        _stack = new uint32_t[_stackSize];
     }
     
     // Find command
@@ -112,6 +114,7 @@ Interpreter::execute(uint16_t addr)
         uint8_t rd, rs, i;
         uint8_t index;
         uint16_t targ;
+        uint16_t addr;
         
         switch(Op(cmd)) {
 			default:
@@ -137,13 +140,20 @@ Interpreter::execute(uint16_t addr)
             case Op::Init          :
                 id = getId();
                 
-                // Only RAM
-                if (id < 0x80) {
+                // Only global or local
+                if (id < GlobalStart) {
                     _error = Error::OnlyMemAddressesAllowed;
                     _errorAddr = _pc - 1;
                     return -1;
                 }
-                memset(_ram + id - 0x80, _v[0], _v[1] * sizeof(uint32_t));
+                
+                if (id < LocalStart) {
+                    addr = id - GlobalStart;
+                    memset(_global + addr, _v[0], _v[1] * sizeof(uint32_t));
+                } else {
+                    addr = id - LocalStart + _bp;
+                    memset(_stack + addr, _v[0], _v[1] * sizeof(uint32_t));
+                }
                 break;
             case Op::RandomInt     :
                 _v[0] = random(int32_t(_v[0]), int32_t(_v[1]));
@@ -255,22 +265,13 @@ Interpreter::execute(uint16_t addr)
                 break;
             case Op::Load          :
                 id = getId();
-                _v[r] = getInt(id, 0);
+                _v[r] = loadInt(id, 0);
                 break;
             case Op::Store         :
                 id = getId();
                 storeInt(id, 0, _v[r]);
                 break;
                 
-            case Op::LoadTemp      :
-                id = getId();
-                _v[r] = _temp[id];
-                break;
-            case Op::StoreTemp     :
-                id = getId();
-                _temp[id] = _v[r];
-                break;
-
             case Op::LoadRef       :
                 _v[r] = getId();
                 break;
@@ -285,7 +286,7 @@ Interpreter::execute(uint16_t addr)
             case Op::LoadDeref      :
                 getRdRsI(rd, rs, i);
                 index = _v[rs] + i;
-                _v[rd] = getInt(index);
+                _v[rd] = loadInt(index);
                 break;
             case Op::StoreDeref    :
                 getRdRsI(rd, rs, i);
@@ -343,22 +344,24 @@ Interpreter::execute(uint16_t addr)
             case Op::Exit          :
                 return _v[r];
             case Op::Call          :
-                if (_callStackCur >= CallStackSize) {
+                if (_sp >= _stackSize) {
                     _error = Error::StackOverrun;
                     _errorAddr = _pc - 1;
                     return -1;
                 }
                 
                 targ = (uint16_t(getId()) << 2) | r;
-                _callStack[_callStackCur++] = _pc;
+                _stack[_sp++] = _pc;
+                _bp = _sp;
                 _pc = targ + _codeOffset;
                 break;
             case Op::Return        :
-                if (_callStackCur == 0) {
+                _sp = _bp;
+                if (_sp == 0) {
                     // Returning from top level is like Exit
                     return 0;
                 }
-                _pc = _callStack[--_callStackCur];
+                _pc = _stack[--_sp];
                 break;
             case Op::ToFloat       :
                 _v[r] = floatToInt(float(_v[r]));
@@ -452,10 +455,10 @@ Interpreter::execute(uint16_t addr)
 int32_t
 Interpreter::animate(uint32_t index)
 {
-    float cur = getFloat(index, 0);
-    float inc = getFloat(index, 1);
-    float min = getFloat(index, 2);
-    float max = getFloat(index, 3);
+    float cur = loadFloat(index, 0);
+    float inc = loadFloat(index, 1);
+    float min = loadFloat(index, 2);
+    float max = loadFloat(index, 3);
 
     cur += inc;
     storeFloat(index, 0, cur);

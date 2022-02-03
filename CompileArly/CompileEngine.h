@@ -73,11 +73,20 @@ protected:
     // Value is returned as an int32_t, but it might be a float
     bool value(int32_t& i, Type);
         
-    // There are 4 temp values for use by statements. They
-    // are allocated, used, then freed when done. There are
-    // special LoadTemp, StoreTemp opcodes to access them.
-    // Alloc throws if it runs out of temps. free throws if
-    // you try to free a temp that hasn't been allocated.
+    // Every function has local variables on the top of the stack.
+    // They are allocated by the 'var' keyword. Functiions can
+    // also define temp locations on top of that var storage.
+    // The methods below alloc and free those locations. The 
+    // allocated temp locations are kept in a 32 bit map, so
+    // there can be a max of 32 temps active at one time.
+    // There is also a _tempSize value which says how many words
+    // of temp storage is being used currently. When allocTemp
+    // is called the first free bit in the map is found. If
+    // its index is less than _tempSize, this is a reuse of
+    // a previously allocated and then freed location. If it
+    // is equal then this is a new temp value and _tempSize
+    // is incremented. If it is greater, there is an internal
+    // error.
     uint8_t allocTemp();
     void freeTemp(uint8_t i);
     
@@ -132,14 +141,16 @@ protected:
     
     struct Symbol
     {
-        Symbol(std::string name, uint8_t addr, bool rom)
+        enum class Type { Const, Global, Local };
+        
+        Symbol(std::string name, uint8_t addr, Type type)
             : _name(name)
             , _addr(addr)
-            , _rom(rom)
+            , _type(type)
         { }
         std::string _name;
         uint8_t _addr;
-        bool _rom;
+        Type _type;
     };
     
     struct Function
@@ -175,9 +186,18 @@ protected:
     std::vector<Effect> _effects;
     std::vector<uint32_t> _rom32;
     std::vector<uint8_t> _rom8;
-    uint32_t _nextMem = 0; // next available location in mem
     
+    // These vars deal with stack memory use for the current function.
+    // On entry, _nextMem is 0 which means no vars have been defined.
+    // It increases on every var statement, according to how many
+    // words that var takes. Once all vars are defined (which must
+    // be at the top of the function, before any statements) the
+    // next memory locations are temps, indicated by _tempSize. Var
+    // and temp memory are accessed with LoadLocal/StoreLocal.
+    uint16_t _nextMem = 0; // next available location in mem
+    uint16_t _varHighWaterMark = 0;
     uint32_t _tempAllocationMap = 0;
+    uint8_t _tempSize = 0;
 };
 
 }

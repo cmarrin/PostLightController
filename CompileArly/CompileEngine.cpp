@@ -19,9 +19,6 @@ static std::vector<OpData> _opcodes = {
     { "LoadDeref",      Op::LoadDeref       , OpParams::Rd_Rs_I },
     { "StoreDeref",     Op::StoreDeref      , OpParams::Rd_I_Rs },
     
-    { "LoadTemp",       Op::LoadTemp        , OpParams::R_Id },
-    { "StoreTemp",      Op::StoreTemp       , OpParams::Id_R },
-
     { "MoveColor",      Op::MoveColor       , OpParams::Cd_Cs },
     { "Move",           Op::Move            , OpParams::Rd_Rs },
     { "LoadColorComp",  Op::LoadColorComp   , OpParams::Rd_Cs_I },
@@ -89,13 +86,20 @@ static std::vector<OpData> _opcodes = {
 void
 CompileEngine::emit(std::vector<uint8_t>& executable)
 {
+    // Set the stack to be whatever the high water was for
+    // function variable allocation plue StackOverhead.
+    // If this is more than MaxStackSize, then we have a 
+    // problem.
+    uint32_t stackSize = uint32_t(_varHighWaterMark) + StackOverhead;
+    expect(stackSize <= MaxStackSize, Compiler::Error::StackTooBig);
+    
     executable.push_back('a');
     executable.push_back('r');
     executable.push_back('l');
     executable.push_back('y');
-    executable.push_back(_rom32.size());
-    executable.push_back(_nextMem);
-    executable.push_back(MaxTempSize); // FIXME: For now emit the full max size for Temps
+    executable.push_back(uint8_t(_rom32.size()));
+    executable.push_back(uint8_t(stackSize));
+    executable.push_back(0);
     executable.push_back(0);
     
     char* buf = reinterpret_cast<char*>(&(_rom32[0]));
@@ -154,7 +158,7 @@ CompileEngine::constant()
     expect(_rom32.size() < 128, Compiler::Error::TooManyConstants);
 
     // Save constant
-    _symbols.emplace_back(id, _rom32.size(), true);
+    _symbols.emplace_back(id, _rom32.size(), Symbol::Type::Const);
     _rom32.push_back(val);
     
     return true;
@@ -262,10 +266,23 @@ CompileEngine::value(int32_t& i, Type t)
 uint8_t
 CompileEngine::allocTemp()
 {
+    static_assert(MaxTempSize <= sizeof(_tempAllocationMap) * 8);
+
     // Find first free bit
     for (uint8_t i = 0; i < MaxTempSize; ++i) {
         if ((_tempAllocationMap & (1 << i)) == 0) {
             _tempAllocationMap |= (1 << i);
+            
+            if (i > _tempSize) {
+                // Internal error
+                _error = Compiler::Error::TempSizeMismatch;
+                throw true;
+            }
+            
+            if (i == _tempSize) {
+                _tempSize++;
+            }
+            
             return i;
         }
     }

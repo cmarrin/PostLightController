@@ -108,7 +108,7 @@ CloverCompileEngine::table()
     expect(Token::OpenBrace);
     
     // Set the start address of the table. tableEntries() will fill them in
-    _symbols.emplace_back(id, _rom32.size(), true);
+    _symbols.emplace_back(id, _rom32.size(), Symbol::Type::Const);
     
     values(t);
     expect(Token::CloseBrace);
@@ -157,11 +157,12 @@ CloverCompileEngine::var()
         size = 1;
     }
 
-    _symbols.emplace_back(id, _nextMem, false);
+    // FIXME: Deal with locals
+    _symbols.emplace_back(id, _nextMem, Symbol::Type::Global);
     _nextMem += size;
 
     // There is only enough room for 128 var values
-    expect(_nextMem <= MaxRamSize, Compiler::Error::TooManyVars);
+    expect(_nextMem <= MaxStackSize, Compiler::Error::TooManyVars);
 
     return true;
 }
@@ -172,6 +173,8 @@ CloverCompileEngine::function()
     if (!match(Reserved::Function)) {
         return false;
     }
+    
+    _nextMem = 0;
     
     std::string id;
     expect(identifier(id), Compiler::Error::ExpectedIdentifier);
@@ -190,6 +193,12 @@ CloverCompileEngine::function()
     while(statement()) { }
 
     expect(Token::CloseBrace);
+
+    // Set the high water mark
+    if (_nextMem > _varHighWaterMark) {
+        _varHighWaterMark = _nextMem;
+    }
+    
     return true;
 }
 
@@ -311,7 +320,7 @@ CloverCompileEngine::forStatement()
     // of the expression, which is the end value. Save the end
     // value in a temp
     uint8_t temp = allocTemp();
-    addOpRdI(Op::StoreTemp, 0, temp);
+    addOpRdI(Op::Store, 0, temp);
     
     expect(Token::CloseParen);
     

@@ -115,6 +115,8 @@ static void showError(arly::Compiler::Error error, uint32_t lineno)
         case arly::Compiler::Error::ExpectedDef: err = "expected def"; break;
         case arly::Compiler::Error::NoMoreTemps: err = "no more temp variables available"; break;
         case arly::Compiler::Error::TempNotAllocated: err = "temp not allocated"; break;
+        case arly::Compiler::Error::TempSizeMismatch: err = "internal error, temp size mismatch"; break;
+        case arly::Compiler::Error::StackTooBig: err = "stack too big"; break;
     }
     
     std::cout << "Compile failed: " << err << " on line " << lineno << "\n";
