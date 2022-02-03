@@ -11,7 +11,7 @@ def SpeedTableEntrySize 3
 const float IncMin          0.004
 const float IncMax          0.04
 const float BrightnessMin   0.3
-const int LedSize           24
+const int LedSize           32
 const int NumPixels         8
 const int NumLevels         8
 const int PulseDelay        25
@@ -166,6 +166,7 @@ function flickerLoop
         // c0.val = led.cur
         Load r3 led            
         LoadDeref r0 r3 LEDCur
+LogFloat r0
         StoreColorComp c0 ColorVal r0
         SetLight r2 c0
     end
