@@ -12,6 +12,7 @@
 #pragma once
 
 #include "Color.h"
+#include "Compiler.h"
 #include "Opcodes.h"
 
 #include <string.h>
