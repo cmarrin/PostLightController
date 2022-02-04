@@ -204,7 +204,7 @@ CloverCompileEngine::function()
     
     // Emit Return at the end, just in case
     addOpR(Op::LoadZero, 0);
-    addOpR(Op::Return, 0);
+    addOp(Op::Return);
     
     return true;
 }
