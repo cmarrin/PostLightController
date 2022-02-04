@@ -386,7 +386,13 @@ CloverCompileEngine::arithmeticExpression(uint8_t minPrec)
     
         switch(opInfo.op()) {
             case Op::Store:
+                // Put RHS in r0
                 emitRHS();
+                
+                // FIXME: For now we only handle simple Store case so _exprStack must have id
+                expect(_exprStack.back().type() == ExprEntry::Type::Id, Compiler::Error::ExpectedIdentifier);
+                
+                addOpRId(Op::Store, 0, addrFromId(_exprStack.back()));
                 break;
             default: break;
         }
@@ -610,41 +616,42 @@ CloverCompileEngine::findId(const std::string& s)
     return *it;
 }
 
+uint8_t
+CloverCompileEngine::addrFromId(const std::string& id)
+{
+    const Symbol& sym = findId(id);
+    switch(sym._storage) {
+        case CompileEngine::Symbol::Storage::Const:
+            return sym._addr + ConstStart;
+        case CompileEngine::Symbol::Storage::Global:
+            return sym._addr + GlobalStart;
+        case CompileEngine::Symbol::Storage::Local:
+            return sym._addr + LocalStart;
+    }
+}
+
 void
 CloverCompileEngine::emitRHS()
 {
+    // Emit code for the top of the exprStack and leave the result in r0
     expect(!_exprStack.empty(), Compiler::Error::InternalError);
     const ExprEntry& entry = _exprStack.back();
     
-    switch(entry.index()) {
-        case 0: // std::monostate
+    switch(entry.type()) {
+        case ExprEntry::Type::None:
             _error = Compiler::Error::InternalError;
             throw true;
-        case 1: // std::string
-        {
-            // Emit based on the Storage class of the id
-            Symbol sym = findId(std::get<std::string>(entry));
-            switch(sym._storage) {
-                case CompileEngine::Symbol::Storage::Const:
-                    addOpRId(Op::Load, 0, sym._addr + ConstStart);
-                    break;
-                case CompileEngine::Symbol::Storage::Global:
-                    addOpRId(Op::Load, 0, sym._addr + GlobalStart);
-                    break;
-                case CompileEngine::Symbol::Storage::Local:
-                    addOpRId(Op::Load, 0, sym._addr + LocalStart);
-                    break;
-            }
-            
+        case ExprEntry::Type::Id:
+            // Emit Load id
+            addOpRId(Op::Load, 0, addrFromId(entry));
             break;
-        }
-        case 2: // float
+        case ExprEntry::Type::Float:
             // Use an fp constant
-            addOpRInt(Op::Load, 0, findFloat(std::get<float>(entry)));
+            addOpRInt(Op::Load, 0, findFloat(entry));
             break;
-        case 3: // int32_t
+        case ExprEntry::Type::Int: // int32_t
         {
-            int32_t i = std::get<int32_t>(entry);
+            int32_t i = int32_t(entry);
             if (i >= -256 && i < 256) {
                 bool neg = i < 0;
                 if (neg) {
@@ -662,4 +669,6 @@ CloverCompileEngine::emitRHS()
             break;
         }
     }
+    
+    _exprStack.pop_back();
 }

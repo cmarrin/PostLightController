@@ -229,6 +229,7 @@ private:
     uint8_t findInt(int32_t);
     uint8_t findFloat(float);
     Symbol findId(const std::string&);
+    uint8_t addrFromId(const std::string&);
 
     void emitRHS();
 
@@ -251,7 +252,25 @@ private:
         std::vector<ParamEntry> _entries;
     };
 
-    using ExprEntry = std::variant<std::monostate, std::string, float, int32_t>;
+    class ExprEntry
+    {
+    public:
+        enum class Type { None = 0, Id = 1, Float = 2, Int = 3 };
+        
+        ExprEntry() { _variant = std::monostate(); }
+        ExprEntry(const std::string& s) { _variant = s; }
+        ExprEntry(float f) { _variant = f; }
+        ExprEntry(int32_t i) { _variant = i; }
+                
+        operator const std::string&() const { return std::get<std::string>(_variant); }
+        operator float() const { return std::get<float>(_variant); }
+        operator int32_t() const { return std::get<int32_t>(_variant); }
+        
+        Type type() const { return Type(_variant.index()); }
+        
+    private:
+        std::variant<std::monostate, std::string, float, int32_t> _variant;
+    };
 
     std::vector<Struct> _structs;
     std::vector<ExprEntry> _exprStack;
