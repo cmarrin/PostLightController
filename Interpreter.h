@@ -64,6 +64,7 @@ public:
         StackOverrun,
         AddressOutOfRange,
         InvalidColorComp,
+        ExpectedSetFrame,
     };
     
     Interpreter() { }
@@ -117,6 +118,12 @@ private:
     uint8_t getId() { return getUInt8ROM(_pc++); }
     uint8_t getConst() { return getUInt8ROM(_pc++); }
     uint8_t getSz() { return getUInt8ROM(_pc++); }
+    void getPL(uint8_t& p, uint8_t& l)
+    {
+        uint8_t pl = getUInt8ROM(_pc++);
+        p = pl >> 4;
+        l = pl & 0x0f;
+    }
 
     void getI(uint8_t& i)
     {

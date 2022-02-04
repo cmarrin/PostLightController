@@ -115,6 +115,10 @@ Interpreter::execute(uint16_t addr)
         uint8_t index;
         uint16_t targ;
         uint16_t addr;
+        uint8_t numParams;
+        uint8_t numLocals;
+        uint16_t savedPC;
+        uint16_t savedBP;
         
         switch(Op(cmd)) {
 			default:
@@ -352,16 +356,32 @@ Interpreter::execute(uint16_t addr)
                 
                 targ = (uint16_t(getId()) << 2) | r;
                 _stack[_sp++] = _pc;
-                _bp = _sp;
                 _pc = targ + _codeOffset;
+                
+                if (Op(getUInt8ROM(_pc)) != Op::SetFrame) {
+                    _error = Error::ExpectedSetFrame;
+                    _errorAddr = _pc - 1;
+                    return -1;
+                }
                 break;
             case Op::Return        :
-                _sp = _bp;
                 if (_sp == 0) {
                     // Returning from top level is like Exit
                     return 0;
                 }
+
+                savedBP = _stack[--_sp];
                 _pc = _stack[--_sp];
+                _sp = _bp;
+                _bp = savedBP;
+                break;
+            case Op::SetFrame        :
+                getPL(numParams, numLocals);
+                savedPC = _stack[--_sp];
+                _sp += numLocals;
+                _stack[_sp++] = savedPC;
+                _stack[_sp++] = _bp;
+                _bp = _sp - numParams - numLocals - 2;
                 break;
             case Op::ToFloat       :
                 _v[r] = floatToInt(float(_v[r]));

@@ -103,6 +103,23 @@ When an If instructon is generated it is preceded by an internally generated
 SetI instruction which contains the number of bytes of statements in the if.
 If the if test fails, the I value is used to skip to the end of the if.
 
+Function calls
+
+There is a stack which holds passed parameters. And each function can have locals
+on the stack. When a function is running the bp points to the first param.
+locals are on top of params. Then the return pc and the previous bp. On return
+save the previous bp, then pop the return pc into _pc, then set _sp to bp
+and finally set bp to the saved previous bp. This cleans up the stack without
+the caller needing to do any work.
+
+Each function must have a SetFrame as the first instruction. The caller ensures
+this and throws if it's not true. SetFrame establishes the number of params
+and locals. On function entry the stack contains the passed params and return
+pc. The number of passed params must match the number of formal params. This is
+ensured at compile time. SetFrame will pop the return pc and save it. Then it
+will add the number of locals to sp. then it will push the saved return pc and
+the current bp. Finally it will set bp to sp - params - locals - 2. That 
+makes it point at the first passed param.
 
 Engine
 
@@ -195,6 +212,9 @@ Opcodes:
     
     Call target             - Call function [target]
     Return                  - Return from effect
+    SetFrame p l            - Set the local frame with number of formal
+                              params (p) and locals (l). This must be
+                              the first instruction of every function
     
     21 ops always use r0 and r1 leaving result in r0
     
@@ -334,6 +354,7 @@ enum class Op: uint8_t {
     DecFloat        = 0x50,
     
     Return          = 0x51,
+    SetFrame        = 0x52,
     
 // 14 unused opcodes
     
@@ -395,6 +416,7 @@ enum class OpParams : uint8_t {
     Target,     // b+1 = call target bits 7:2, b[2:0] = call target bits 1:0
     R_Sz,       // foreach case
     Sz,         // If, Else case
+    P_L,         // b+1[7:4] = num params, b+1[3:0] = num locals
 };
 
 

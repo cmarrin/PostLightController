@@ -72,6 +72,7 @@ static std::vector<OpData> _opcodes = {
     { "Exit",           Op::Exit            , OpParams::R },
     { "Call",           Op::Call            , OpParams::Target },
     { "Return",         Op::Return          , OpParams::None },
+    { "SetFrame",       Op::SetFrame        , OpParams::P_L },
     { "ToFloat",        Op::ToFloat         , OpParams::R },
     { "ToInt",          Op::ToInt           , OpParams::R },
     { "SetAllLights",   Op::SetAllLights    , OpParams::C },
