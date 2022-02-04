@@ -166,7 +166,6 @@ function flickerLoop
         // c0.val = led.cur
         Load r3 led            
         LoadDeref r0 r3 LEDCur
-LogFloat r0
         StoreColorComp c0 ColorVal r0
         SetLight r2 c0
     end

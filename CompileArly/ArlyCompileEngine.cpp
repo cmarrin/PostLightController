@@ -168,6 +168,7 @@ ArlyCompileEngine::var()
     // FIXME: deal with locals
     _symbols.emplace_back(id, _nextMem, t, Symbol::Storage::Global);
     _nextMem += size;
+    _globalSize = _nextMem;
 
     // There is only enough room for 128 var values
     expect(_nextMem <= 128, Compiler::Error::TooManyVars);
