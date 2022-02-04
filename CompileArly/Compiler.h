@@ -72,7 +72,7 @@ public:
         ExpectedDef,
         NoMoreTemps,
         TempNotAllocated,
-        TempSizeMismatch,
+        InternalError,
         StackTooBig,
     };
     

@@ -108,7 +108,7 @@ CloverCompileEngine::table()
     expect(Token::OpenBrace);
     
     // Set the start address of the table. tableEntries() will fill them in
-    _symbols.emplace_back(id, _rom32.size(), Symbol::Type::Const);
+    _symbols.emplace_back(id, _rom32.size(), t, Symbol::Storage::Const);
     
     values(t);
     expect(Token::CloseBrace);
@@ -157,12 +157,14 @@ CloverCompileEngine::var()
         size = 1;
     }
 
-    // FIXME: Deal with locals
-    _symbols.emplace_back(id, _nextMem, Symbol::Type::Global);
+    // FIXME: Deal with locals, _nextMem and _globalSize
+    _symbols.emplace_back(id, _nextMem, t, Symbol::Storage::Global);
     _nextMem += size;
 
-    // There is only enough room for 128 var values
-    expect(_nextMem <= MaxStackSize, Compiler::Error::TooManyVars);
+    // There is only enough room for GlobalSize values
+    expect(_nextMem <= GlobalSize, Compiler::Error::TooManyVars);
+    
+    _globalSize = _nextMem;
 
     return true;
 }
@@ -181,7 +183,7 @@ CloverCompileEngine::function()
 
     // Remember the function
     _functions.emplace_back(id, uint16_t(_rom8.size()));
-    _functionParams.emplace_back(id);
+    _locals.clear();
     
     expect(Token::OpenParen);
     
@@ -190,14 +192,19 @@ CloverCompileEngine::function()
     expect(Token::CloseParen);
     expect(Token::OpenBrace);
 
+    while(var()) { }
     while(statement()) { }
 
     expect(Token::CloseBrace);
 
     // Set the high water mark
-    if (_nextMem > _varHighWaterMark) {
-        _varHighWaterMark = _nextMem;
+    if (_nextMem > _localHighWaterMark) {
+        _localHighWaterMark = _nextMem;
     }
+    
+    // Emit Return at the end, just in case
+    addOpR(Op::LoadZero, 0);
+    addOpR(Op::Return, 0);
     
     return true;
 }
@@ -377,6 +384,13 @@ CloverCompileEngine::arithmeticExpression(uint8_t minPrec)
         
         expect(arithmeticExpression(nextMinPrec), Compiler::Error::ExpectedExpr);
     
+        switch(opInfo.op()) {
+            case Op::Store:
+                emitRHS();
+                break;
+            default: break;
+        }
+        
         // FIXME: Emit a binary op here with two operands (from a stack?)
         // and the opcode in it->op(). How do we deal with Int vs Float ops?
         
@@ -464,22 +478,19 @@ CloverCompileEngine::primaryExpression()
     
     std::string id;
     if (identifier(id)) {
-        // FIXME: Push this id. We will load from it or store to it, or something
+        _exprStack.emplace_back(id);
         return true;
     }
         
     float f;
     if (floatValue(f)) {
-        // FIXME: Push this value. It will be loaded as a float constant.
-        // We'll need to generate an internal constant.
+        _exprStack.emplace_back(f);
         return true;
     }
         
     int32_t i;
     if (integerValue(i)) {
-        // FIXME: Push this value. It will be loaded as an int constant.
-        // if its 0-255, can use LoadIntConst, otherwise we need to generate
-        // an internal constant
+        _exprStack.emplace_back(i);
         return true;
     }
     return false;
@@ -497,10 +508,13 @@ CloverCompileEngine::formalParameterList()
     
     std::string id;
     expect(identifier(id), Compiler::Error::ExpectedIdentifier);
+    
+    _locals.emplace_back(id, _locals.size(), t, Symbol::Storage::Local);
 
     while (match(Token::Comma)) {
         expect(type(t), Compiler::Error::ExpectedType);
         expect(identifier(id), Compiler::Error::ExpectedIdentifier);
+        _locals.emplace_back(id, _locals.size(), t, Symbol::Storage::Local);
     }
     
     // FIXME: Process these. Put them in a list for use by function?
@@ -543,4 +557,109 @@ CloverCompileEngine::isReserved(Token token, const std::string str, Reserved& r)
         return true;
     }
     return false;
+}
+
+uint8_t
+CloverCompileEngine::findInt(int32_t i)
+{
+    // Try to find an existing int const. If found, return
+    // its address. If not found, create one and return 
+    // that address.
+    auto it = find_if(_rom32.begin(), _rom32.end(),
+                    [i](uint32_t v) { return uint32_t(i) == v; });
+    if (it != _rom32.end()) {
+        return it - _rom32.begin();
+    }
+    
+    _rom32.push_back(uint32_t(i));
+    return _rom32.size() - 1;
+}
+
+uint8_t
+CloverCompileEngine::findFloat(float f)
+{
+    // Try to find an existing fp const. If found, return
+    // its address. If not found, create one and return 
+    // that address.
+    uint32_t i = floatToInt(f);
+    auto it = find_if(_rom32.begin(), _rom32.end(),
+                    [i](uint32_t v) { return i == v; });
+    if (it != _rom32.end()) {
+        return it - _rom32.begin();
+    }
+    
+    _rom32.push_back(i);
+    return _rom32.size() - 1;
+}
+
+CompileEngine::Symbol
+CloverCompileEngine::findId(const std::string& s)
+{
+    auto it = find_if(_symbols.begin(), _symbols.end(),
+                    [s](const Symbol& sym) { return sym._name == s; });
+
+    if (it != _symbols.end()) {
+        return *it;
+    }
+    
+    // Not found. See if it's a local to the current function (param or var)
+    it = find_if(_locals.begin(), _locals.end(),
+                    [s](const Symbol& p) { return p._name == s; });
+
+    expect(it != _locals.end(), Compiler::Error::UndefinedIdentifier);
+    return *it;
+}
+
+void
+CloverCompileEngine::emitRHS()
+{
+    expect(!_exprStack.empty(), Compiler::Error::InternalError);
+    const ExprEntry& entry = _exprStack.back();
+    
+    switch(entry.index()) {
+        case 0: // std::monostate
+            _error = Compiler::Error::InternalError;
+            throw true;
+        case 1: // std::string
+        {
+            // Emit based on the Storage class of the id
+            Symbol sym = findId(std::get<std::string>(entry));
+            switch(sym._storage) {
+                case CompileEngine::Symbol::Storage::Const:
+                    addOpRId(Op::Load, 0, sym._addr + ConstStart);
+                    break;
+                case CompileEngine::Symbol::Storage::Global:
+                    addOpRId(Op::Load, 0, sym._addr + GlobalStart);
+                    break;
+                case CompileEngine::Symbol::Storage::Local:
+                    addOpRId(Op::Load, 0, sym._addr + LocalStart);
+                    break;
+            }
+            
+            break;
+        }
+        case 2: // float
+            // Use an fp constant
+            addOpRInt(Op::Load, 0, findFloat(std::get<float>(entry)));
+            break;
+        case 3: // int32_t
+        {
+            int32_t i = std::get<int32_t>(entry);
+            if (i >= -256 && i < 256) {
+                bool neg = i < 0;
+                if (neg) {
+                    i = -i;
+                }
+                addOpRInt(Op::LoadIntConst, 0, i);
+                if (neg) {
+                    addOp(Op::NegInt);
+                }
+            } else {
+                // Add an int const
+                findInt(i);
+                addOpRInt(Op::Load, 0, findInt(i));
+            }
+            break;
+        }
+    }
 }

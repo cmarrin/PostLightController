@@ -18,6 +18,7 @@
 #include "Scanner.h"
 #include <cstdint>
 #include <istream>
+#include <variant>
 
 namespace arly {
 
@@ -54,7 +55,7 @@ var:
     'var' type <id> [ '*' ] [ <integer> ] ';' ;
 
 function:
-    'function' <id> '( formalParameterList ')' '{' { statement } '}' ;
+    'function' <id> '( formalParameterList ')' '{' { var } { statement } '}' ;
 
 effect:
     'effect' <id> <integer> <id> <id> ';' ;
@@ -225,6 +226,12 @@ private:
 
     virtual bool isReserved(Token token, const std::string str, Reserved&) override;
 
+    uint8_t findInt(int32_t);
+    uint8_t findFloat(float);
+    Symbol findId(const std::string&);
+
+    void emitRHS();
+
     struct ParamEntry
     {
         ParamEntry(const std::string& name, Type type)
@@ -243,19 +250,15 @@ private:
         std::string _name;
         std::vector<ParamEntry> _entries;
     };
-    
 
-    struct FunctionParams
-    {
-        FunctionParams(const std::string& name)
-            : _name(name)
-        { }
-        std::string _name;
-        std::vector<ParamEntry> _entries;
-    };
-    
+    using ExprEntry = std::variant<std::monostate, std::string, float, int32_t>;
+
     std::vector<Struct> _structs;
-    std::vector<FunctionParams> _functionParams;
+    std::vector<ExprEntry> _exprStack;
+    
+    // Params for the current function. Cleared when function def is done.
+    std::vector<Symbol> _locals;
+
 };
 
 }

@@ -126,7 +126,7 @@ ArlyCompileEngine::table()
     expect(Token::NewLine);
     
     // Set the start address of the table. tableEntries() will fill them in
-    _symbols.emplace_back(id, _rom32.size(), Symbol::Type::Const);
+    _symbols.emplace_back(id, _rom32.size(), t, Symbol::Storage::Const);
     
     ignoreNewLines();
     tableEntries(t);
@@ -166,7 +166,7 @@ ArlyCompileEngine::var()
     expect(integerValue(size), Compiler::Error::ExpectedInt);
 
     // FIXME: deal with locals
-    _symbols.emplace_back(id, _nextMem, Symbol::Type::Global);
+    _symbols.emplace_back(id, _nextMem, t, Symbol::Storage::Global);
     _nextMem += size;
 
     // There is only enough room for 128 var values
@@ -316,10 +316,10 @@ ArlyCompileEngine::handleId()
     expect(it != _symbols.end(), Compiler::Error::UndefinedIdentifier);
 
     // Offset id as needed
-    switch(it->_type) {
-        case Symbol::Type::Const: return it->_addr + ConstStart;
-        case Symbol::Type::Global: return it->_addr + GlobalStart;
-        case Symbol::Type::Local: return it->_addr + LocalStart;
+    switch(it->_storage) {
+        case Symbol::Storage::Const: return it->_addr + ConstStart;
+        case Symbol::Storage::Global: return it->_addr + GlobalStart;
+        case Symbol::Storage::Local: return it->_addr + LocalStart;
     }
 }
 

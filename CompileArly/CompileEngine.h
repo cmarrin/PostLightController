@@ -110,14 +110,26 @@ protected:
     bool reserved();
     bool reserved(Reserved &r);
     
+    void addOp(Op op) { _rom8.push_back(uint8_t(op)); }
+    void addOpR(Op op, uint8_t r) { _rom8.push_back(uint8_t(op) | (r & 0x03)); }
     void addOpRdRs(Op op, uint8_t rd, uint8_t rs) { addOpRdRsI(op, rd, rs, 0); }
     void addOpRsI(Op op, uint8_t rs, uint8_t i) { addOpRdRsI(op, 0, rs, i); }
     void addOpRdI(Op op, uint8_t rd, uint8_t i) { addOpRdRsI(op, rd, 0, i); }
     
     void addOpRdRsI(Op op, uint8_t rd, uint8_t rs, uint8_t i)
     {
-        _rom8.push_back(uint8_t(op) | (rd << 6) | ((rs & 0x03) << 4) | (i & 0x0f));
+        _rom8.push_back(uint8_t(op));
+        _rom8.push_back(uint8_t((rd << 6) | ((rs & 0x03) << 4) | (i & 0x0f)));
     }
+    
+    void addOpRInt(Op op, uint8_t r, uint8_t i)
+    {
+        _rom8.push_back(uint8_t(op) | (r & 0x03));
+        _rom8.push_back(i);
+    }
+    
+    void addOpRId(Op op, uint8_t r, uint8_t id) { addOpRInt(op, r, id); }
+    void addOpRConst(Op op, uint8_t r, uint8_t c) { addOpRInt(op, r, c); }
     
     virtual bool isReserved(Token token, const std::string str, Reserved& r);
 
@@ -141,16 +153,18 @@ protected:
     
     struct Symbol
     {
-        enum class Type { Const, Global, Local };
+        enum class Storage { Const, Global, Local };
         
-        Symbol(std::string name, uint8_t addr, Type type)
+        Symbol(std::string name, uint8_t addr, Type type, Storage storage)
             : _name(name)
             , _addr(addr)
             , _type(type)
+            , _storage(storage)
         { }
         std::string _name;
         uint8_t _addr;
         Type _type;
+        Storage _storage;
     };
     
     struct Function
@@ -187,6 +201,11 @@ protected:
     std::vector<uint32_t> _rom32;
     std::vector<uint8_t> _rom8;
     
+    // Vars are defined in 2 places. At global scope (when there are
+    // no active functions) they are placed in _global memory.
+    // When a function is being defined the vars are placed on the
+    // stack.
+    
     // These vars deal with stack memory use for the current function.
     // On entry, _nextMem is 0 which means no vars have been defined.
     // It increases on every var statement, according to how many
@@ -195,9 +214,10 @@ protected:
     // next memory locations are temps, indicated by _tempSize. Var
     // and temp memory are accessed with LoadLocal/StoreLocal.
     uint16_t _nextMem = 0; // next available location in mem
-    uint16_t _varHighWaterMark = 0;
+    uint16_t _localHighWaterMark = 0;
     uint32_t _tempAllocationMap = 0;
     uint8_t _tempSize = 0;
+    uint16_t _globalSize = 0;
 };
 
 }

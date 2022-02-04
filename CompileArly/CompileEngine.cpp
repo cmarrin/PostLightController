@@ -90,7 +90,7 @@ CompileEngine::emit(std::vector<uint8_t>& executable)
     // function variable allocation plue StackOverhead.
     // If this is more than MaxStackSize, then we have a 
     // problem.
-    uint32_t stackSize = uint32_t(_varHighWaterMark) + StackOverhead;
+    uint32_t stackSize = uint32_t(_localHighWaterMark) + StackOverhead;
     expect(stackSize <= MaxStackSize, Compiler::Error::StackTooBig);
     
     executable.push_back('a');
@@ -98,8 +98,8 @@ CompileEngine::emit(std::vector<uint8_t>& executable)
     executable.push_back('l');
     executable.push_back('y');
     executable.push_back(uint8_t(_rom32.size()));
+    executable.push_back(uint8_t(_globalSize));
     executable.push_back(uint8_t(stackSize));
-    executable.push_back(0);
     executable.push_back(0);
     
     char* buf = reinterpret_cast<char*>(&(_rom32[0]));
@@ -122,7 +122,7 @@ CompileEngine::emit(std::vector<uint8_t>& executable)
 bool
 CompileEngine::def()
 {
-    if (!match(Reserved::Def)) {
+     if (!match(Reserved::Def)) {
         return false;
     }
     
@@ -158,7 +158,7 @@ CompileEngine::constant()
     expect(_rom32.size() < 128, Compiler::Error::TooManyConstants);
 
     // Save constant
-    _symbols.emplace_back(id, _rom32.size(), Symbol::Type::Const);
+    _symbols.emplace_back(id, _rom32.size(), t, Symbol::Storage::Const);
     _rom32.push_back(val);
     
     return true;
@@ -275,7 +275,7 @@ CompileEngine::allocTemp()
             
             if (i > _tempSize) {
                 // Internal error
-                _error = Compiler::Error::TempSizeMismatch;
+                _error = Compiler::Error::InternalError;
                 throw true;
             }
             
