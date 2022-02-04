@@ -200,20 +200,6 @@ private:
         }
     }
 
-    float intToFloat(uint32_t i)
-    {
-        float f;
-        memcpy(&f, &i, sizeof(float));
-        return f;
-    }
-
-    uint32_t floatToInt(float f)
-    {
-        uint32_t i;
-        memcpy(&i, &f, sizeof(float));
-        return i;
-    }
-    
     int32_t animate(uint32_t index);
     
     Error _error = Error::None;
