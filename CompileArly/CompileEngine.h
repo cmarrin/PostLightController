@@ -9,6 +9,7 @@
 #pragma once
 
 #include "Compiler.h"
+#include "Interpreter.h"
 #include "Scanner.h"
 #include <cstdint>
 #include <istream>
@@ -60,7 +61,7 @@ protected:
     virtual bool function() = 0;
     virtual bool table() = 0;
 
-    enum class Type { Float, Int };
+    enum class Type { None, Float, Int, UInt8, Color };
     
     bool def();
     bool constant();
@@ -137,10 +138,6 @@ protected:
 
     static bool opDataFromString(const std::string str, OpData& data);
 
-    Compiler::Error _error = Compiler::Error::None;
-    Token _expectedToken = Token::None;
-    std::string _expectedString;
-    
     struct Def
     {
         Def(std::string name, uint8_t value)
@@ -151,30 +148,67 @@ protected:
         uint8_t _value;
     };
     
-    struct Symbol
+    class Symbol
     {
-        enum class Storage { Const, Global, Local };
+    public:
+        enum class Storage { None, Const, Global, Local, Color };
         
-        Symbol(std::string name, uint8_t addr, Type type, Storage storage)
+        Symbol() { }
+        
+        Symbol(const std::string& name, uint8_t addr, Type type, Storage storage, uint8_t size = 1)
             : _name(name)
             , _addr(addr)
             , _type(type)
             , _storage(storage)
+            , _size(size)
         { }
+        
+        // Used to add locals to function
+        Symbol(const char* name, uint8_t addr, Type type)
+            : _name(name)
+            , _addr(addr)
+            , _type(type)
+            , _storage(Storage::Local)
+            , _size(1)
+        { }
+
+        const std::string& name() const { return _name; }
+        uint8_t addr() const;
+
+    private:
         std::string _name;
-        uint8_t _addr;
-        Type _type;
-        Storage _storage;
+        uint8_t _addr = 0;
+        Type _type = Type::None;
+        Storage _storage = Storage::None;
+        uint8_t _size = 0;
     };
     
-    struct Function
+    using SymbolList = std::vector<Symbol>;
+    
+    class Function
     {
-        Function(std::string name, uint16_t addr)
+    public:
+        Function(const std::string& name, uint16_t addr)
             : _name(name)
             , _addr(addr)
         { }
+
+        // Used to create built-in native functions
+        Function(const char* name, Interpreter::NativeFunction native, const SymbolList& locals)
+            : _name(name)
+            , _native(native)
+            , _locals(locals)
+        { }
+
+        const std::string& name() const { return _name; }
+        uint16_t addr() const { return _addr; }
+        std::vector<Symbol>& locals() { return _locals; }
+        
+    private:
         std::string _name;
-        uint16_t _addr;
+        uint16_t _addr = 0;
+        Interpreter::NativeFunction _native = Interpreter::NativeFunction:: None;
+        std::vector<Symbol> _locals;        
     };
     
     struct Effect
@@ -192,10 +226,28 @@ protected:
         uint16_t _loopAddr = 0;
     };
     
+    Function& currentFunction()
+    {
+        if (_functions.empty()) {
+            _error = Compiler::Error::InternalError;
+            throw true;
+        }
+        return _functions.back();
+    }
+    
+    std::vector<Symbol>& currentLocals() { return currentFunction().locals(); }
+
+    bool findSymbol(const std::string&, Symbol&);
+    bool findFunction(const std::string&, Function&);
+
+    Compiler::Error _error = Compiler::Error::None;
+    Token _expectedToken = Token::None;
+    std::string _expectedString;
+    
     Scanner _scanner;
 
     std::vector<Def> _defs;
-    std::vector<Symbol> _symbols;
+    std::vector<Symbol> _globals;
     std::vector<Function> _functions;
     std::vector<Effect> _effects;
     std::vector<uint32_t> _rom32;

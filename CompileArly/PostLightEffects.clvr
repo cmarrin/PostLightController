@@ -1,23 +1,21 @@
 // Arly script for different Post Light Controller effects
 //
 
-
-
-
-// Do a simple test
-
-def Num 3;
-
-const float Brightness 0.5;
-
-var int myVar;
-
-function go(int b)
+//
+// Constant effect
+//
+function constantInit()
 {
-	myVar = b;
+	LoadColorParam(0, 0);
 }
 
-effect c 3 go go
+function constantLoop()
+{
+	SetAllLights(0);
+}
+
+effect c 3 constantInit constantLoop;
+
 
 /*
 

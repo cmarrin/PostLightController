@@ -9,8 +9,6 @@
 
 #include "CloverCompileEngine.h"
 
-#include "Interpreter.h"
-
 #include <map>
 #include <vector>
 
@@ -52,6 +50,29 @@ CloverCompileEngine::operatorInfo(Token token, OperatorInfo& op) const
         return true;
     }
     return false;
+}
+
+CloverCompileEngine::CloverCompileEngine(std::istream* stream)
+    : CompileEngine(stream)
+{
+    // Add built-in native functions to _functions
+    _functions.emplace_back("LoadColorParam",
+                            Interpreter::NativeFunction::LoadColorParam,
+                            SymbolList {
+                                { "c", 0, Type::Int },
+                                { "p", 1, Type::Int }
+                            });
+    _functions.emplace_back("SetAllLights",
+                            Interpreter::NativeFunction::SetAllLights,
+                            SymbolList {
+                                { "c", 0, Type::Int },
+                            });
+    _builtins = {
+        { "c0", 0, Type::Color, Symbol::Storage::Color },
+        { "c1", 1, Type::Color, Symbol::Storage::Color },
+        { "c2", 2, Type::Color, Symbol::Storage::Color },
+        { "c3", 3, Type::Color, Symbol::Storage::Color },
+    };
 }
 
 bool
@@ -108,7 +129,7 @@ CloverCompileEngine::table()
     expect(Token::OpenBrace);
     
     // Set the start address of the table. tableEntries() will fill them in
-    _symbols.emplace_back(id, _rom32.size(), t, Symbol::Storage::Const);
+    _globals.emplace_back(id, _rom32.size(), t, Symbol::Storage::Const);
     
     values(t);
     expect(Token::CloseBrace);
@@ -158,7 +179,7 @@ CloverCompileEngine::var()
     }
 
     // FIXME: Deal with locals, _nextMem and _globalSize
-    _symbols.emplace_back(id, _nextMem, t, Symbol::Storage::Global);
+    _globals.emplace_back(id, _nextMem, t, Symbol::Storage::Global);
     _nextMem += size;
 
     // There is only enough room for GlobalSize values
@@ -183,13 +204,11 @@ CloverCompileEngine::function()
 
     // Remember the function
     _functions.emplace_back(id, uint16_t(_rom8.size()));
-    _locals.clear();
     
     expect(Token::OpenParen);
     
     expect(formalParameterList(), Compiler::Error::ExpectedFormalParams);
     
-    expect(Token::CloseParen);
     expect(Token::OpenBrace);
 
     while(var()) { }
@@ -385,15 +404,16 @@ CloverCompileEngine::arithmeticExpression(uint8_t minPrec)
         expect(arithmeticExpression(nextMinPrec), Compiler::Error::ExpectedExpr);
     
         switch(opInfo.op()) {
-            case Op::Store:
+            case Op::Store: {
                 // Put RHS in r0
                 emitRHS();
                 
                 // FIXME: For now we only handle simple Store case so _exprStack must have id
-                expect(_exprStack.back().type() == ExprEntry::Type::Id, Compiler::Error::ExpectedIdentifier);
-                
-                addOpRId(Op::Store, 0, addrFromId(_exprStack.back()));
+                Symbol sym;
+                expect(findSymbol(_exprStack.back(), sym), Compiler::Error::ExpectedIdentifier);
+                addOpRId(Op::Store, 0, sym.addr());
                 break;
+            }
             default: break;
         }
         
@@ -515,12 +535,12 @@ CloverCompileEngine::formalParameterList()
     std::string id;
     expect(identifier(id), Compiler::Error::ExpectedIdentifier);
     
-    _locals.emplace_back(id, _locals.size(), t, Symbol::Storage::Local);
+    currentLocals().emplace_back(id, currentLocals().size(), t, Symbol::Storage::Local);
 
     while (match(Token::Comma)) {
         expect(type(t), Compiler::Error::ExpectedType);
         expect(identifier(id), Compiler::Error::ExpectedIdentifier);
-        _locals.emplace_back(id, _locals.size(), t, Symbol::Storage::Local);
+        currentLocals().emplace_back(id, currentLocals().size(), t, Symbol::Storage::Local);
     }
     
     // FIXME: Process these. Put them in a list for use by function?
@@ -598,38 +618,6 @@ CloverCompileEngine::findFloat(float f)
     return _rom32.size() - 1;
 }
 
-CompileEngine::Symbol
-CloverCompileEngine::findId(const std::string& s)
-{
-    auto it = find_if(_symbols.begin(), _symbols.end(),
-                    [s](const Symbol& sym) { return sym._name == s; });
-
-    if (it != _symbols.end()) {
-        return *it;
-    }
-    
-    // Not found. See if it's a local to the current function (param or var)
-    it = find_if(_locals.begin(), _locals.end(),
-                    [s](const Symbol& p) { return p._name == s; });
-
-    expect(it != _locals.end(), Compiler::Error::UndefinedIdentifier);
-    return *it;
-}
-
-uint8_t
-CloverCompileEngine::addrFromId(const std::string& id)
-{
-    const Symbol& sym = findId(id);
-    switch(sym._storage) {
-        case CompileEngine::Symbol::Storage::Const:
-            return sym._addr + ConstStart;
-        case CompileEngine::Symbol::Storage::Global:
-            return sym._addr + GlobalStart;
-        case CompileEngine::Symbol::Storage::Local:
-            return sym._addr + LocalStart;
-    }
-}
-
 void
 CloverCompileEngine::emitRHS()
 {
@@ -641,10 +629,13 @@ CloverCompileEngine::emitRHS()
         case ExprEntry::Type::None:
             _error = Compiler::Error::InternalError;
             throw true;
-        case ExprEntry::Type::Id:
+        case ExprEntry::Type::Id: {
             // Emit Load id
-            addOpRId(Op::Load, 0, addrFromId(entry));
+            Symbol sym;
+            expect(findSymbol(entry, sym), Compiler::Error::UndefinedIdentifier);
+            addOpRId(Op::Load, 0, sym.addr());
             break;
+        }
         case ExprEntry::Type::Float:
             // Use an fp constant
             addOpRInt(Op::Load, 0, findFloat(entry));

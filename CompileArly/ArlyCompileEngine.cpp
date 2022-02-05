@@ -126,7 +126,7 @@ ArlyCompileEngine::table()
     expect(Token::NewLine);
     
     // Set the start address of the table. tableEntries() will fill them in
-    _symbols.emplace_back(id, _rom32.size(), t, Symbol::Storage::Const);
+    _globals.emplace_back(id, _rom32.size(), t, Symbol::Storage::Const);
     
     ignoreNewLines();
     tableEntries(t);
@@ -166,7 +166,7 @@ ArlyCompileEngine::var()
     expect(integerValue(size), Compiler::Error::ExpectedInt);
 
     // FIXME: deal with locals
-    _symbols.emplace_back(id, _nextMem, t, Symbol::Storage::Global);
+    _globals.emplace_back(id, _nextMem, t, Symbol::Storage::Global);
     _nextMem += size;
     _globalSize = _nextMem;
 
@@ -307,21 +307,13 @@ ArlyCompileEngine::handleConst()
 }
 
 uint8_t
-ArlyCompileEngine::handleId()
+ArlyCompileEngine::handleId(Symbol::Storage& storage)
 {
     std::string id;
+    Symbol sym;
     expect(identifier(id), Compiler::Error::ExpectedIdentifier);
-    
-    auto it = find_if(_symbols.begin(), _symbols.end(),
-                    [id](const Symbol& sym) { return sym._name == id; });
-    expect(it != _symbols.end(), Compiler::Error::UndefinedIdentifier);
-
-    // Offset id as needed
-    switch(it->_storage) {
-        case Symbol::Storage::Const: return it->_addr + ConstStart;
-        case Symbol::Storage::Global: return it->_addr + GlobalStart;
-        case Symbol::Storage::Local: return it->_addr + LocalStart;
-    }
+    expect(findSymbol(id, sym), Compiler::Error::UndefinedIdentifier);
+    return sym.addr();
 }
 
 void

@@ -159,7 +159,7 @@ CompileEngine::constant()
     expect(_rom32.size() < 128, Compiler::Error::TooManyConstants);
 
     // Save constant
-    _symbols.emplace_back(id, _rom32.size(), t, Symbol::Storage::Const);
+    _globals.emplace_back(id, _rom32.size(), t, Symbol::Storage::Const);
     _rom32.push_back(val);
     
     return true;
@@ -429,10 +429,10 @@ CompileEngine::handleFunctionName()
     expect(identifier(targ), Compiler::Error::ExpectedIdentifier);
     
     auto it = find_if(_functions.begin(), _functions.end(),
-                    [targ](const Function& fun) { return fun._name == targ; });
+                    [targ](const Function& fun) { return fun.name() == targ; });
     expect(it != _functions.end(), Compiler::Error::UndefinedIdentifier);
 
-    return it->_addr;
+    return it->addr();
 }
 
 bool
@@ -487,3 +487,55 @@ CompileEngine::isReserved(Token token, const std::string str, Reserved& r)
     }
     return false;
 }
+
+bool
+CompileEngine::findSymbol(const std::string& s, Symbol& sym)
+{
+    auto it = find_if(_globals.begin(), _globals.end(),
+                    [s](const Symbol& sym) { return sym.name() == s; });
+
+    if (it == _globals.end()) {    
+        // Not found. See if it's a local to the current function (param or var)
+        it = find_if(currentLocals().begin(), currentLocals().end(),
+                        [s](const Symbol& p) { return p.name() == s; });
+
+        if (it == currentLocals().end()) {
+            return false;
+        }
+    }
+    sym = *it;
+    return true;
+}
+
+bool
+CompileEngine::findFunction(const std::string& s, Function& fun)
+{
+    auto it = find_if(_functions.begin(), _functions.end(),
+                    [s](const Function& fun) { return fun.name() == s; });
+
+    if (it != _functions.end()) {
+        fun = *it;
+        return true;
+    }
+    
+    return false;
+}
+
+
+uint8_t
+CompileEngine::Symbol::addr() const
+{
+    switch(_storage) {
+        case CompileEngine::Symbol::Storage::None:
+            return 0;
+        case CompileEngine::Symbol::Storage::Const:
+            return addr() + ConstStart;
+        case CompileEngine::Symbol::Storage::Global:
+            return addr() + GlobalStart;
+        case CompileEngine::Symbol::Storage::Local:
+            return addr() + LocalStart;
+        case CompileEngine::Symbol::Storage::Color:
+            return addr();
+    }
+}
+

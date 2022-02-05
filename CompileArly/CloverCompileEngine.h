@@ -159,7 +159,7 @@ operator: (* operator   precedence   association *)
 
 class CloverCompileEngine : public CompileEngine {
 public:
-  	CloverCompileEngine(std::istream* stream) : CompileEngine(stream) { }
+  	CloverCompileEngine(std::istream*);
   	
     virtual bool program() override;
 
@@ -228,11 +228,9 @@ private:
 
     uint8_t findInt(int32_t);
     uint8_t findFloat(float);
-    Symbol findId(const std::string&);
-    uint8_t addrFromId(const std::string&);
 
     void emitRHS();
-
+    
     struct ParamEntry
     {
         ParamEntry(const std::string& name, Type type)
@@ -275,9 +273,8 @@ private:
     std::vector<Struct> _structs;
     std::vector<ExprEntry> _exprStack;
     
-    // Params for the current function. Cleared when function def is done.
-    std::vector<Symbol> _locals;
-
+    // built-in variables. These can be color registers, functions, arrays, etc.
+    std::vector<Symbol> _builtins;
 };
 
 }

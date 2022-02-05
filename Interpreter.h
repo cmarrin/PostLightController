@@ -67,6 +67,12 @@ public:
         ExpectedSetFrame,
     };
     
+    enum class NativeFunction {
+        None = 0,
+        LoadColorParam = 1,
+        SetAllLights = 2,
+    };
+    
     Interpreter() { }
     
     bool init(uint8_t cmd, const uint8_t* buf, uint8_t size);
