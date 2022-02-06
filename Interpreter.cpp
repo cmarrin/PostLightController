@@ -117,8 +117,6 @@ Interpreter::execute(uint16_t addr)
         uint16_t addr;
         uint8_t numParams;
         uint8_t numLocals;
-        uint16_t savedPC;
-        uint16_t savedBP;
         
         switch(Op(cmd)) {
 			default:
@@ -364,24 +362,48 @@ Interpreter::execute(uint16_t addr)
                     return -1;
                 }
                 break;
+            case Op::CallNative    :
+                // FIXME: Probably better this be function pointers
+                id = getId();
+                switch(NativeFunction(id)) {
+                    case NativeFunction::None:
+                        _error = Error::InvalidNativeFunction;
+                        _errorAddr = _pc - 1;
+                        return -1;
+                    case NativeFunction::LoadColorParam: {
+                        setFrame(2, 0);
+                        uint32_t r = _stack[_bp];
+                        uint32_t i = _stack[_bp + 1];
+                        _c[r] = Color(_params[i], _params[i + 1], _params[i + 2]);
+                        restoreFrame();
+                        break;
+                    }
+                    case NativeFunction::SetAllLights: {
+                        setFrame(2, 0);
+                        uint32_t r = _stack[_bp];
+                        setAllLights(r);
+                        restoreFrame();
+                        restoreFrame();
+                        break;
+                    }
+                }
+                break;
             case Op::Return        :
                 if (_sp == 0) {
                     // Returning from top level is like Exit
                     return 0;
                 }
-
-                savedBP = _stack[--_sp];
-                _pc = _stack[--_sp];
-                _sp = _bp;
-                _bp = savedBP;
+                restoreFrame();
                 break;
             case Op::SetFrame        :
                 getPL(numParams, numLocals);
-                savedPC = _stack[--_sp];
-                _sp += numLocals;
-                _stack[_sp++] = savedPC;
-                _stack[_sp++] = _bp;
-                _bp = _sp - numParams - numLocals - 2;
+                setFrame(numParams, numLocals);
+                break;
+            case Op::Push          :
+                _stack[_sp++] = _v[0];
+                break;
+            case Op::Pop           :
+                _v[0] = _stack[_sp++];
                 break;
             case Op::ToFloat       :
                 _v[r] = floatToInt(float(_v[r]));
@@ -469,6 +491,35 @@ Interpreter::execute(uint16_t addr)
                 logColor(_pc - 1, r, _c[r]);
                 break;
         }
+    }
+}
+
+void
+Interpreter::setFrame(uint8_t params, uint8_t locals)
+{
+    uint16_t savedPC = _stack[--_sp];
+    _sp += locals;
+    _stack[_sp++] = savedPC;
+    _stack[_sp++] = _bp;
+    _bp = _sp - params - locals - 2;
+}
+
+void
+Interpreter::restoreFrame()
+{
+    uint16_t savedBP = _stack[--_sp];
+    _pc = _stack[--_sp];
+    _sp = _bp;
+    _bp = savedBP;
+}
+
+void
+Interpreter::setAllLights(uint8_t r)
+{
+    uint32_t rgb = _c[r].rgb();
+    uint8_t n = numPixels();
+    for (uint8_t i = 0; i < n; ++i) {
+        setLight(i, rgb);
     }
 }
 

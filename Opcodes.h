@@ -211,6 +211,7 @@ Opcodes:
     EndFor                  - End of for loop
     
     Call target             - Call function [target]
+    CallNative              - Call native function [enum NativeFunction] (0..255)
     Return                  - Return from effect
     SetFrame p l            - Set the local frame with number of formal
                               params (p) and locals (l). This must be
@@ -313,8 +314,10 @@ enum class Op: uint8_t {
     EndIf           = 0x22, // At the end of if
     EndForEach      = 0x23, // At the end of foreach
     End             = 0x24, // Indicates the end of init or loop
+    Call            = 0x25,
+    CallNative      = 0x26,
 
-// 11 unused opcodes
+// 9 unused opcodes
 
     Or              = 0x30,
     Xor             = 0x31,
@@ -387,9 +390,8 @@ enum class Op: uint8_t {
     SetAllLights    = 0xa4,
 
     ForEach         = 0xa8,
-    Call            = 0xac,
 
-// 16 unused opcode sets (of 4 each)
+// 10 unused opcode sets (of 4 each)
 
     Log             = 0xe0, // Print r as int32_t with addr - For debugging
     LogFloat        = 0xe4, // Print r as float with addr - For debugging

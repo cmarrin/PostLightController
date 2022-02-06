@@ -60,6 +60,8 @@ public:
         ExpectedExpr,
         ExpectedArgList,
         ExpectedFormalParams,
+        ExpectedFunction,
+        ExpectedLHSExpr,
         InvalidParamCount,
         UndefinedIdentifier,
         ParamOutOfRange,
@@ -74,6 +76,8 @@ public:
         TempNotAllocated,
         InternalError,
         StackTooBig,
+        MismatchedType,
+        WrongNumberOfArgs,
     };
     
     Compiler() { }

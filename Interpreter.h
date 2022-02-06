@@ -65,6 +65,7 @@ public:
         AddressOutOfRange,
         InvalidColorComp,
         ExpectedSetFrame,
+        InvalidNativeFunction,
     };
     
     enum class NativeFunction {
@@ -213,6 +214,10 @@ private:
             _stack[addr] = v;
         }
     }
+    
+    void setFrame(uint8_t params, uint8_t locals);
+    void restoreFrame();
+    void setAllLights(uint8_t c);
 
     int32_t animate(uint32_t index);
     

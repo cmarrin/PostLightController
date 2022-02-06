@@ -220,7 +220,7 @@ private:
     bool primaryExpression();
 
     bool formalParameterList();
-    bool argumentList();
+    bool argumentList(const Function& fun);
     
     bool operatorInfo(Token token, OperatorInfo&) const;
 
@@ -229,7 +229,11 @@ private:
     uint8_t findInt(int32_t);
     uint8_t findFloat(float);
 
-    void emitRHS();
+    enum class ExprSide { Left, Right };
+    Type bakeExpr(ExprSide);    
+    bool isExprFunction();
+        
+
     
     struct ParamEntry
     {
@@ -253,7 +257,11 @@ private:
     class ExprEntry
     {
     public:
-        enum class Type { None = 0, Id = 1, Float = 2, Int = 3 };
+        struct Ref
+        {
+        };
+        
+        enum class Type { None = 0, Id = 1, Float = 2, Int = 3, Ref = 4 };
         
         ExprEntry() { _variant = std::monostate(); }
         ExprEntry(const std::string& s) { _variant = s; }
@@ -265,9 +273,14 @@ private:
         operator int32_t() const { return std::get<int32_t>(_variant); }
         
         Type type() const { return Type(_variant.index()); }
-        
+
     private:
-        std::variant<std::monostate, std::string, float, int32_t> _variant;
+        std::variant<std::monostate
+                     , std::string
+                     , float
+                     , int32_t
+                     , Ref
+                     > _variant;
     };
 
     std::vector<Struct> _structs;

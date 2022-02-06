@@ -354,6 +354,12 @@ Decompiler::statement()
             _out->append(std::to_string(getUInt8()));
             _out->append("]");
             break;
+        case OpParams::P_L:
+            id = getUInt8();
+            _out->append(std::to_string(id >> 4));
+            _out->append(" ");
+            _out->append(std::to_string(id & 0x0f));
+            break;
     }
     
     _out->append("\n");

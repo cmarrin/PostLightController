@@ -129,8 +129,15 @@ protected:
         _rom8.push_back(i);
     }
     
+    void addOpId(Op op, uint8_t id) { addOpRInt(op, 0, id); }
     void addOpRId(Op op, uint8_t r, uint8_t id) { addOpRInt(op, r, id); }
     void addOpRConst(Op op, uint8_t r, uint8_t c) { addOpRInt(op, r, c); }
+    
+    void addOpTarg(Op op, uint16_t targ)
+    {
+        _rom8.push_back(uint8_t(op) | ((targ >> 6) & 0x03));
+        _rom8.push_back(uint8_t(targ));
+    }
     
     virtual bool isReserved(Token token, const std::string str, Reserved& r);
 
@@ -174,6 +181,9 @@ protected:
 
         const std::string& name() const { return _name; }
         uint8_t addr() const;
+        Type type() const { return _type; }
+        Storage storage() const { return _storage; }
+        uint8_t size() const { return _size; }
 
     private:
         std::string _name;
@@ -188,6 +198,8 @@ protected:
     class Function
     {
     public:
+        Function() { }
+        
         Function(const std::string& name, uint16_t addr)
             : _name(name)
             , _addr(addr)
@@ -202,12 +214,16 @@ protected:
 
         const std::string& name() const { return _name; }
         uint16_t addr() const { return _addr; }
+        Interpreter::NativeFunction native() const { return _native; }
         std::vector<Symbol>& locals() { return _locals; }
+        const std::vector<Symbol>& locals() const { return _locals; }
+        
+        bool isNative() const { return _native != Interpreter::NativeFunction::None; }
         
     private:
         std::string _name;
         uint16_t _addr = 0;
-        Interpreter::NativeFunction _native = Interpreter::NativeFunction:: None;
+        Interpreter::NativeFunction _native = Interpreter::NativeFunction::None;
         std::vector<Symbol> _locals;        
     };
     

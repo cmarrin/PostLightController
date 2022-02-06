@@ -406,7 +406,7 @@ CloverCompileEngine::arithmeticExpression(uint8_t minPrec)
         switch(opInfo.op()) {
             case Op::Store: {
                 // Put RHS in r0
-                emitRHS();
+                bakeExpr(ExprSide::Right);
                 
                 // FIXME: For now we only handle simple Store case so _exprStack must have id
                 Symbol sym;
@@ -472,11 +472,17 @@ CloverCompileEngine::postfixExpression()
     } else if (match(Token::Dec)) {
         // FIXME: decrement result of primaryExpression above
     } else if (match(Token::OpenParen)) {
-        expect(argumentList(), Compiler::Error::ExpectedArgList);
+        // Top of exprStack must be a function id
+        Function fun;
+        expect(findFunction(_exprStack.back(), fun), Compiler::Error::ExpectedFunction);
+        expect(argumentList(fun), Compiler::Error::ExpectedArgList);
         expect(Token::CloseParen);
         
-        // FIXME: The primaryExpression is a function call with the
-        // argumentList. Emit that
+        if (fun.isNative()) {
+            addOpId(Op::CallNative, uint8_t(fun.native()));
+        } else { 
+            addOpTarg(Op::Call, fun.addr());
+        }
     } else if (match(Token::OpenBracket)) {
         expect(arithmeticExpression(), Compiler::Error::ExpectedExpr);
         expect(Token::CloseBracket);
@@ -548,17 +554,32 @@ CloverCompileEngine::formalParameterList()
 }
 
 bool
-CloverCompileEngine::argumentList()
+CloverCompileEngine::argumentList(const Function& fun)
 {
-    if (!arithmeticExpression()) {
-        return true;
+    int i = 0;
+    while (true) {
+        if (!arithmeticExpression()) {
+            if (i == 0) {
+                break;
+            }
+            expect(false, Compiler::Error::ExpectedExpr);
+        }
+        
+        i++;
+        
+        expect(fun.locals().size() >= i, Compiler::Error::WrongNumberOfArgs);
+    
+        // Bake the arithmeticExpression, leaving the result in r0.
+        // Make sure the type matches the formal argument and push r0
+        expect(bakeExpr(ExprSide::Right) == fun.locals()[0].type(), Compiler::Error::MismatchedType);
+        addOp(Op::Push);
+
+        if (!match(Token::Comma)) {
+            break;
+        }
     }
 
-    while (match(Token::Comma)) {
-        expect(arithmeticExpression(), Compiler::Error::ExpectedExpr);
-    }
-    
-    // FIXME: Process these. Put in registers starting at r0?
+    expect(fun.locals().size() == i, Compiler::Error::WrongNumberOfArgs);
     return true;
 }
 
@@ -618,12 +639,16 @@ CloverCompileEngine::findFloat(float f)
     return _rom32.size() - 1;
 }
 
-void
-CloverCompileEngine::emitRHS()
+CompileEngine::Type
+CloverCompileEngine::bakeExpr(ExprSide side)
 {
-    // Emit code for the top of the exprStack and leave the result in r0
+    // Emit code for the top of the exprStack and leave the result in r0.
+    // Pop stack.
+    // FIXME: Lots more to do here. Need to deal with Refs, etc.
     expect(!_exprStack.empty(), Compiler::Error::InternalError);
     const ExprEntry& entry = _exprStack.back();
+    
+    Type type = Type::None;
     
     switch(entry.type()) {
         case ExprEntry::Type::None:
@@ -634,14 +659,20 @@ CloverCompileEngine::emitRHS()
             Symbol sym;
             expect(findSymbol(entry, sym), Compiler::Error::UndefinedIdentifier);
             addOpRId(Op::Load, 0, sym.addr());
+            type = sym.type();
             break;
         }
         case ExprEntry::Type::Float:
+            expect(side != ExprSide::Left, Compiler::Error::ExpectedLHSExpr);
+            
             // Use an fp constant
             addOpRInt(Op::Load, 0, findFloat(entry));
+            type = Type::Float;
             break;
         case ExprEntry::Type::Int: // int32_t
         {
+            expect(side != ExprSide::Left, Compiler::Error::ExpectedLHSExpr);
+
             int32_t i = int32_t(entry);
             if (i >= -256 && i < 256) {
                 bool neg = i < 0;
@@ -657,9 +688,22 @@ CloverCompileEngine::emitRHS()
                 findInt(i);
                 addOpRInt(Op::Load, 0, findInt(i));
             }
+            type = Type::Int;
             break;
         }
+        case ExprEntry::Type::Ref:
+            break;
     }
     
     _exprStack.pop_back();
+    return type;
+}
+        
+bool
+CloverCompileEngine::isExprFunction()
+{
+    expect(!_exprStack.empty(), Compiler::Error::InternalError);
+    
+    Function fun;
+    return findFunction(_exprStack.back(), fun);
 }

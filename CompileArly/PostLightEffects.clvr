@@ -17,6 +17,8 @@ function constantLoop()
 effect c 3 constantInit constantLoop;
 
 
+
+
 /*
 
 struct FlickerSpeedEntry

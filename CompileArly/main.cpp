@@ -101,8 +101,10 @@ static void showError(arly::Compiler::Error error, uint32_t lineno)
         case arly::Compiler::Error::ExpectedRegister: err = "expected register"; break;
         case arly::Compiler::Error::ExpectedCommandId: err = "expected command"; break;
         case arly::Compiler::Error::ExpectedExpr: err = "expected expression"; break;
+        case arly::Compiler::Error::ExpectedLHSExpr: err = "expected left-hand side expression"; break;
         case arly::Compiler::Error::ExpectedArgList: err = "expected arg list"; break;
         case arly::Compiler::Error::ExpectedFormalParams: err = "expected formal params"; break;
+        case arly::Compiler::Error::ExpectedFunction: err = "expected function name"; break;
         case arly::Compiler::Error::InvalidParamCount: err = "invalid param count"; break;
         case arly::Compiler::Error::UndefinedIdentifier: err = "undefined identifier"; break;
         case arly::Compiler::Error::ParamOutOfRange: err = "param must be 0..15"; break;
@@ -117,6 +119,8 @@ static void showError(arly::Compiler::Error error, uint32_t lineno)
         case arly::Compiler::Error::TempNotAllocated: err = "temp not allocated"; break;
         case arly::Compiler::Error::InternalError: err = "internal error"; break;
         case arly::Compiler::Error::StackTooBig: err = "stack too big"; break;
+        case arly::Compiler::Error::MismatchedType: err = "mismatched type"; break;
+        case arly::Compiler::Error::WrongNumberOfArgs: err = "wrong number of args"; break;
     }
     
     std::cout << "Compile failed: " << err << " on line " << lineno << "\n";
@@ -284,6 +288,7 @@ int main(int argc, char * const argv[])
                     case arly::Interpreter::Error::NestedForEachNotAllowed: err = "nested foreach not allowed"; break;
                     case arly::Interpreter::Error::UnexpectedOpInIf: err = "unexpected op in if (internal error)"; break;
                     case arly::Interpreter::Error::InvalidOp: err = "invalid opcode"; break;
+                    case arly::Interpreter::Error::InvalidNativeFunction: err = "invalid native function"; break;
                     case arly::Interpreter::Error::OnlyMemAddressesAllowed: err = "only Mem addresses allowed"; break;
                     case arly::Interpreter::Error::StackOverrun: err = "can't call, stack full"; break;
                     case arly::Interpreter::Error::AddressOutOfRange: err = "address out of range"; break;
