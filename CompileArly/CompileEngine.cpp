@@ -531,13 +531,13 @@ CompileEngine::Symbol::addr() const
         case CompileEngine::Symbol::Storage::None:
             return 0;
         case CompileEngine::Symbol::Storage::Const:
-            return addr() + ConstStart;
+            return _addr + ConstStart;
         case CompileEngine::Symbol::Storage::Global:
-            return addr() + GlobalStart;
+            return _addr + GlobalStart;
         case CompileEngine::Symbol::Storage::Local:
-            return addr() + LocalStart;
+            return _addr + LocalStart;
         case CompileEngine::Symbol::Storage::Color:
-            return addr();
+            return _addr;
     }
 }
 
