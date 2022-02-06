@@ -251,6 +251,8 @@ Opcodes:
     NegInt                  - v[0] = -v[0] (assumes int32_t, result is int32_t)
     NegFloat                - v[0] = -v[0] (assumes float, result is float)
     
+    Push                    - stack[sp++] = v[0]
+    Pop                     - v[0] = stack[--sp]
     
     Executable format
     
@@ -356,7 +358,10 @@ enum class Op: uint8_t {
     Return          = 0x51,
     SetFrame        = 0x52,
     
-// 14 unused opcodes
+    Push            = 0x53,
+    Pop             = 0x54,
+    
+// 11 unused opcodes
     
     LoadColorParam  = 0x60,
     LoadIntParam    = 0x61,
