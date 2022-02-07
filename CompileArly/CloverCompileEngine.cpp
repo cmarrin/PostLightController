@@ -52,29 +52,6 @@ CloverCompileEngine::operatorInfo(Token token, OperatorInfo& op) const
     return false;
 }
 
-CloverCompileEngine::CloverCompileEngine(std::istream* stream)
-    : CompileEngine(stream)
-{
-    // Add built-in native functions to _functions
-    _functions.emplace_back("LoadColorParam",
-                            Interpreter::NativeFunction::LoadColorParam,
-                            SymbolList {
-                                { "c", 0, Type::Int },
-                                { "p", 1, Type::Int }
-                            });
-    _functions.emplace_back("SetAllLights",
-                            Interpreter::NativeFunction::SetAllLights,
-                            SymbolList {
-                                { "c", 0, Type::Int },
-                            });
-    _builtins = {
-        { "c0", 0, Type::Color, Symbol::Storage::Color },
-        { "c1", 1, Type::Color, Symbol::Storage::Color },
-        { "c2", 2, Type::Color, Symbol::Storage::Color },
-        { "c3", 3, Type::Color, Symbol::Storage::Color },
-    };
-}
-
 bool
 CloverCompileEngine::program()
 {

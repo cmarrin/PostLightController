@@ -27,11 +27,9 @@ static std::vector<OpData> _opcodes = {
     { "MinFloat",       Op::MinFloat        , OpParams::None },
     { "MaxInt",         Op::MaxInt          , OpParams::None },
     { "MaxFloat",       Op::MaxFloat        , OpParams::None },
-    { "SetLight",       Op::SetLight        , OpParams::Rd_Cs },
     { "Init",           Op::Init            , OpParams::Id },
     { "RandomInt",      Op::RandomInt       , OpParams::None },
     { "RandomFloat",    Op::RandomFloat     , OpParams::None },
-    { "Animate",        Op::Animate         , OpParams::None },
     { "Or",             Op::Or              , OpParams::None },
     { "Xor",            Op::Xor             , OpParams::None },
     { "And",            Op::And             , OpParams::None },
@@ -61,7 +59,6 @@ static std::vector<OpData> _opcodes = {
     { "DivFloat",       Op::DivFloat        , OpParams::None },
     { "NegInt",         Op::NegInt          , OpParams::None },
     { "NegFloat",       Op::NegFloat        , OpParams::None },
-    { "LoadColorParam", Op::LoadColorParam  , OpParams::Cd_I },
     { "LoadIntParam",   Op::LoadIntParam    , OpParams::Rd_I },
     { "LoadFloatParam", Op::LoadFloatParam  , OpParams::Rd_I },
     { "Load",           Op::Load            , OpParams::R_Id },
@@ -78,7 +75,6 @@ static std::vector<OpData> _opcodes = {
     { "SetFrame",       Op::SetFrame        , OpParams::P_L },
     { "ToFloat",        Op::ToFloat         , OpParams::R },
     { "ToInt",          Op::ToInt           , OpParams::R },
-    { "SetAllLights",   Op::SetAllLights    , OpParams::C },
     { "foreach",        Op::ForEach         , OpParams::R_Sz },
     { "if",             Op::If              , OpParams::Sz },
     { "else",           Op::Else            , OpParams::Sz },
@@ -86,6 +82,34 @@ static std::vector<OpData> _opcodes = {
     { "LogFloat",       Op::LogFloat        , OpParams::R },
     { "LogColor",       Op::LogColor        , OpParams::C },
 };
+
+CompileEngine::CompileEngine(std::istream* stream)
+    : _scanner(stream)
+{
+    // Add built-in native functions to _functions
+    _functions.emplace_back("LoadColorParam",
+                            Interpreter::NativeFunction::LoadColorParam,
+                            SymbolList {
+                                { "c", 0, Type::Int },
+                                { "p", 1, Type::Int }
+                            });
+    _functions.emplace_back("SetAllLights",
+                            Interpreter::NativeFunction::SetAllLights,
+                            SymbolList {
+                                { "c", 0, Type::Int },
+                            });
+    _functions.emplace_back("SetLight",
+                            Interpreter::NativeFunction::SetLight,
+                            SymbolList {
+                                { "i", 0, Type::Int },
+                                { "c", 1, Type::Int },
+                            });
+    _functions.emplace_back("Animate",
+                            Interpreter::NativeFunction::Animate,
+                            SymbolList {
+                                { "p", 0, Type::Int },
+                            });
+}
 
 void
 CompileEngine::emit(std::vector<uint8_t>& executable)

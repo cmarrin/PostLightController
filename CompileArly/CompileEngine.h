@@ -20,7 +20,7 @@ namespace arly {
 class CompileEngine
 {
 public:
-    CompileEngine(std::istream* stream) : _scanner(stream) { }
+    CompileEngine(std::istream* stream);
     
     virtual ~CompileEngine() { }
     

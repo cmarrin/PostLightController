@@ -187,15 +187,9 @@ Opcodes:
     ToFloat r               - v[r] = float(v[r])
     ToInt r                 - v[r] = int32_t(v[r])
     
-    SetAllLights r          - Set all lights to color in c[r].
-
-    SetLight rd rs          - light(v[rd]) = c[rs]
     Init id                 - Init mem at id with value in r[0] for r[1] values
     RandomInt               - random(v[0], v[1]), integer params, integer return
     RandomFloat             - random(v[0], v[1]), float params, float return
-    Animate                 - r0 contains address of 4 entry structure (cur, inc, min, max)
-                              Increment cur by inc and reverse direction when hit min or max.
-                              When going down and hit min return 1, otherwise return 0.
 
     If sz                   - If v[0] is non-zero execute statements in first clause. 
                               If zero skip the statements. Number of bytes to skip is 
@@ -387,7 +381,6 @@ enum class Op: uint8_t {
     Exit            = 0x98,
     ToFloat         = 0x9c,
     ToInt           = 0xa0,
-    SetAllLights    = 0xa4,
 
     ForEach         = 0xa8,
 

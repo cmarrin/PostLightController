@@ -135,10 +135,6 @@ Interpreter::execute(uint16_t addr)
             case Op::MaxFloat      :
                 _v[0] = floatToInt(fmaxf(intToFloat(_v[0]), intToFloat(_v[1])));
                 break;
-            case Op::SetLight      :
-                getRdRs(rd, rs);
-                setLight(_v[rd], _c[rs].rgb());
-                break;
             case Op::Init          :
                 id = getId();
                 
@@ -162,9 +158,6 @@ Interpreter::execute(uint16_t addr)
                 break;
             case Op::RandomFloat   :
                 _v[0] = floatToInt(random(intToFloat(_v[0]), intToFloat(_v[1])));
-                break;
-            case Op::Animate   :
-                _v[0] = animate(_v[0]);
                 break;
             case Op::Or            :
                 _v[0] |= _v[1];
@@ -389,6 +382,21 @@ Interpreter::execute(uint16_t addr)
                         restoreFrame();
                         break;
                     }
+                    case NativeFunction::SetLight: {
+                        setFrame(2, 0);
+                        uint32_t i = _stack[_bp];
+                        uint32_t r = _stack[_bp + 1];
+                        setLight(i, _c[r].rgb());
+                        restoreFrame();
+                        break;
+                    }
+                    case NativeFunction::Animate: {
+                        setFrame(1, 0);
+                        uint32_t i = _stack[_bp];
+                        _v[0] = animate(i);
+                        restoreFrame();
+                        break;
+                    }
                 }
                 break;
             case Op::Return        :
@@ -414,14 +422,6 @@ Interpreter::execute(uint16_t addr)
             case Op::ToInt         :
                 _v[r] = int32_t(intToFloat(_v[r]));
                 break;
-            case Op::SetAllLights  : {
-                uint32_t rgb = _c[r].rgb();
-                uint8_t n = numPixels();
-                for (uint8_t i = 0; i < n; ++i) {
-                    setLight(i, rgb);
-                }
-                break;
-            }
             case Op::ForEach       :
                 if (_foreachSz >= 0) {
                     // Can't do nested for loops

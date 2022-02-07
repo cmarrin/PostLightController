@@ -86,6 +86,8 @@ public:
         None = 0,
         LoadColorParam = 1,
         SetAllLights = 2,
+        SetLight = 3,
+        Animate = 4,
     };
     
     Interpreter() { }

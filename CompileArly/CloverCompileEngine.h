@@ -159,7 +159,9 @@ operator: (* operator   precedence   association *)
 
 class CloverCompileEngine : public CompileEngine {
 public:
-  	CloverCompileEngine(std::istream*);
+  	CloverCompileEngine(std::istream* stream)
+        : CompileEngine(stream)
+    { }
   	
     virtual bool program() override;
 
