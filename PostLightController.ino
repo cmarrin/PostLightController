@@ -262,11 +262,20 @@ public:
 								        case Device::Error::StackOverrun:
 										errorMsg = F("can't call, stack full");
 										break;
+								        case Device::Error::MisalignedStack:
+										errorMsg = F("misaligned stack");
+										break;
 								        case Device::Error::AddressOutOfRange:
 										errorMsg = F("address out of range");
 										break;
 								        case Device::Error::InvalidColorComp:
 										errorMsg = F("invalid color component");
+										break;
+								        case Device::Error::ExpectedSetFrame:
+										errorMsg = F("expected SetFrame as first function op");
+										break;
+								        case Device::Error::InvalidNativeFunction:
+										errorMsg = F("invalid native function");
 										break;
 									}
 
