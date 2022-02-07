@@ -71,7 +71,7 @@ static std::vector<OpData> _opcodes = {
     { "LoadIntConst",   Op::LoadIntConst    , OpParams::R_Const },
     { "Exit",           Op::Exit            , OpParams::R },
     { "Call",           Op::Call            , OpParams::Target },
-    { "CallNative",     Op::CallNative      , OpParams::Id },
+    { "CallNative",     Op::CallNative      , OpParams::Const },
     { "Return",         Op::Return          , OpParams::None },
     { "Push",           Op::Push            , OpParams::None },
     { "Pop",            Op::Pop             , OpParams::None },

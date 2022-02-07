@@ -442,6 +442,11 @@ ArlyCompileEngine::opStatement()
         case OpParams::R_Const:
             handleOpParams(handleR(op), handleConst()); break;
             break;
+        case OpParams::Const:
+            _rom8.push_back(uint8_t(op));
+            _rom8.push_back(handleConst());
+            expectWithoutRetire(Token::NewLine);
+            break;
         case OpParams::P_L:
             _rom8.push_back(uint8_t(op));
             _rom8.push_back((handleI() << 4) | handleI());

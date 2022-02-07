@@ -420,6 +420,7 @@ enum class OpParams : uint8_t {
     Cd_Cs,      // b+1[7:6] = 'c0'-'c3', b+1[5:4] = 'c0'-'c3'
     Id,         // b+1 = <id>
     R_Const,    // b[1:0] = 'r0'-'r3', b+1 = 0-255
+    Const,      // b+1 = 0-255
     Target,     // b+1 = call target bits 7:2, b[2:0] = call target bits 1:0
     R_Sz,       // foreach case
     Sz,         // If, Else case

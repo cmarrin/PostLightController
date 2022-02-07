@@ -7,6 +7,8 @@ def LEDInc      1
 def LEDMin      2
 def LEDMax      3
 def SpeedTableEntrySize 3
+def NativeLoadColorParam 1
+def NativeSetAllLights 2
 
 const float IncMin          0.004
 const float IncMax          0.04
@@ -38,70 +40,27 @@ var int i 1
 
 var float pulseState 4 // cur, inc, min, max
 
-// r0 contains index of structure: cur, inc, min, max
-// Animate cur between min and max but adding inc
-// Return:  r0 = integer 1 if we just reversed into the positive
-//          direction, 0 otherwise
-function animate
-    Move r3 r0
-    
-    // r3 has base index
-    // r2 has cur
-    
-    // cur += inc
-    LoadDeref r0 r3 LEDCur
-    LoadDeref r1 r3 LEDInc
-    AddFloat
-    StoreDeref r3 LEDCur r0
-    Move r2 r0
-    
-    // if (0 < inc)
-    LoadZero r0
-    LTFloat
-    if
-        // if cur > max
-        Move r0 r2
-        LoadDeref r1 r3 LEDMax
-        GTFloat
-        if
-            // Reverse direction
-            StoreDeref r3 LEDCur r1
-            LoadDeref r0 r3 LEDInc
-            NegFloat
-            StoreDeref r3 LEDInc r0
-        end
-    else
-        // if (cur <= min)
-        Move r0 r2
-        LoadDeref r1 r3 LEDMin
-        LEFloat
-        if
-            // Reverse direction
-            StoreDeref r3 LEDCur r1
-            LoadDeref r0 r3 LEDInc
-            NegFloat
-            StoreDeref r3 LEDInc r0
-            LoadIntConst r0 1
-            Return
-        end
-    end
-    LoadZero r0
-    Return
-end
-
 function constantInit
-    LoadColorParam c0 0
+	LoadZero r0
+	Push
+	Push
+	CallNative NativeLoadColorParam
 end
 
 function constantLoop
-    SetAllLights c0
+	LoadZero r0
+	Push
+	CallNative NativeSetAllLights
     LoadZero r0
     Exit r0
 end
 
 function flickerInit
     // Get color param
-    LoadColorParam c0 0
+	LoadZero r0
+	Push
+	Push
+	CallNative NativeLoadColorParam
     
     // Init leds
     LoadZero r0
@@ -176,7 +135,10 @@ function flickerLoop
 end
 
 function pulseInit
-    LoadColorParam c0 0
+	LoadZero r0
+	Push
+	Push
+	CallNative NativeLoadColorParam
     
     // Keep index in r3
     LoadRef r3 pulseState
@@ -233,7 +195,11 @@ function pulseLoop
     LoadRef r3 pulseState
     LoadDeref r0 r3 LEDCur
     StoreColorComp c0 ColorVal r0
-    SetAllLights c0
+	
+	LoadZero r0
+	Push
+	CallNative NativeSetAllLights
+	
     Load r0 PulseDelay
     Exit r0
 end
