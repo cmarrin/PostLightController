@@ -19,20 +19,6 @@
 
 namespace arly {
 
-static inline float intToFloat(uint32_t i)
-{
-    float f;
-    memcpy(&f, &i, sizeof(float));
-    return f;
-}
-
-static inline uint32_t floatToInt(float f)
-{
-    uint32_t i;
-    memcpy(&i, &f, sizeof(float));
-    return i;
-}
-
 struct OpData
 {
     OpData() { }

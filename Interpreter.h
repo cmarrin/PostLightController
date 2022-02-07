@@ -12,7 +12,6 @@
 #pragma once
 
 #include "Color.h"
-#include "Compiler.h"
 #include "Opcodes.h"
 
 #include <string.h>
@@ -50,6 +49,20 @@ static constexpr uint8_t StackOverhead = 64;    // Amount added to var mem high 
 static constexpr uint8_t MaxTempSize = 32;      // Allocator uses a uint32_t map. That would 
                                                 // need to be changed to increase this.
 static constexpr uint8_t ParamsSize = 16;       // Constrained by the 4 bit field with the index
+
+static inline float intToFloat(uint32_t i)
+{
+    float f;
+    memcpy(&f, &i, sizeof(float));
+    return f;
+}
+
+static inline uint32_t floatToInt(float f)
+{
+    uint32_t i;
+    memcpy(&i, &f, sizeof(float));
+    return i;
+}
 
 class Interpreter
 {
