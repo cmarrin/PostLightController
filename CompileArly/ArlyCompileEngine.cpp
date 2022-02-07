@@ -295,9 +295,15 @@ ArlyCompileEngine::handleConst()
         // See if this is a def
         auto it = find_if(_defs.begin(), _defs.end(),
                     [id](const Def& d) { return d._name == id; });
-        expect(it != _defs.end(), Compiler::Error::ExpectedDef);
+        if (it != _defs.end()) {
+            return it->_value;
+        }
         
-        i = it->_value;
+        // See if it's a native function
+        Function fun;
+        expect(findFunction(id, fun), Compiler::Error::UndefinedIdentifier);
+        expect(fun.isNative(), Compiler::Error::ExpectedDef);
+        i = uint8_t(fun.native());
     } else {
         expect(integerValue(i), Compiler::Error::ExpectedInt);
     }
