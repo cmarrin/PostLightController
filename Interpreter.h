@@ -66,6 +66,7 @@ public:
         InvalidColorComp,
         ExpectedSetFrame,
         InvalidNativeFunction,
+        MisalignedStack,
     };
     
     enum class NativeFunction {
@@ -215,8 +216,8 @@ private:
         }
     }
     
-    void setFrame(uint8_t params, uint8_t locals);
-    void restoreFrame();
+    bool setFrame(uint8_t params, uint8_t locals);
+    bool restoreFrame();
     void setAllLights(uint8_t c);
 
     int32_t animate(uint32_t index);

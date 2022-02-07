@@ -294,6 +294,7 @@ int main(int argc, char * const argv[])
                     case arly::Interpreter::Error::AddressOutOfRange: err = "address out of range"; break;
                     case arly::Interpreter::Error::InvalidColorComp: err = "invalid color component"; break;
                     case arly::Interpreter::Error::ExpectedSetFrame: err = "expected SetFrame as first function op"; break;
+                    case arly::Interpreter::Error::MisalignedStack: err = "misaligned stack"; break;
                 }
                 std::cout << "Interpreter failed: " << err;
                 

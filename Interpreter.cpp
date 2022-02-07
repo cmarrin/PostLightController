@@ -365,6 +365,10 @@ Interpreter::execute(uint16_t addr)
             case Op::CallNative    :
                 // FIXME: Probably better this be function pointers
                 id = getId();
+
+                // Save the _pc just to make setFrame work
+                _stack[_sp++] = _pc;
+
                 switch(NativeFunction(id)) {
                     case NativeFunction::None:
                         _error = Error::InvalidNativeFunction;
@@ -379,10 +383,9 @@ Interpreter::execute(uint16_t addr)
                         break;
                     }
                     case NativeFunction::SetAllLights: {
-                        setFrame(2, 0);
+                        setFrame(1, 0);
                         uint32_t r = _stack[_bp];
                         setAllLights(r);
-                        restoreFrame();
                         restoreFrame();
                         break;
                     }
@@ -494,23 +497,33 @@ Interpreter::execute(uint16_t addr)
     }
 }
 
-void
+bool
 Interpreter::setFrame(uint8_t params, uint8_t locals)
 {
+    // FIXME: Add more error checking
     uint16_t savedPC = _stack[--_sp];
     _sp += locals;
     _stack[_sp++] = savedPC;
     _stack[_sp++] = _bp;
-    _bp = _sp - params - locals - 2;
+    int16_t newBP = _sp - params - locals - 2;
+    if (newBP < 0) {
+        _errorAddr = _pc - 1;
+        _error = Error::MisalignedStack;
+        return false;
+    }
+    _bp = newBP;
+    return true;
 }
 
-void
+bool
 Interpreter::restoreFrame()
 {
+    // FIXME: Do some error checking here and return false if so (also check error at call site)
     uint16_t savedBP = _stack[--_sp];
     _pc = _stack[--_sp];
     _sp = _bp;
     _bp = savedBP;
+    return true;
 }
 
 void
