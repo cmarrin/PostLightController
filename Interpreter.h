@@ -88,6 +88,11 @@ public:
         SetAllLights = 2,
         SetLight = 3,
         Animate = 4,
+        Param = 5,
+        LoadColorComp = 6,
+        StoreColorComp = 7,
+        Float = 8,
+        Int = 9,
     };
     
     Interpreter() { }

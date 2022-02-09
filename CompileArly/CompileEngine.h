@@ -57,18 +57,18 @@ protected:
         C0, C1, C2, C3,
     };
     
+    // Built-in types are 0x00-0x7f, custom types are 0x80-0xff
+    enum class Type : uint8_t { None = 0, Float = 1, Int = 2, UInt8 = 3, Color = 4, Ref = 6 };
+
     virtual bool statement() = 0;
     virtual bool function() = 0;
     virtual bool table() = 0;
-
-    enum class Type { None, Float, Int, UInt8, Color };
+    virtual bool type(Type& t);
     
     bool def();
     bool constant();
     bool effect();
-    
-    bool type(Type& t);
-    
+
     bool values(Type);
 
     // Value is returned as an int32_t, but it might be a float
@@ -122,7 +122,14 @@ protected:
         _rom8.push_back(uint8_t(op));
         _rom8.push_back(uint8_t((rd << 6) | ((rs & 0x03) << 4) | (i & 0x0f)));
     }
-    
+
+    void addOpRdIdRsI(Op op, uint8_t rd, uint8_t id, uint8_t rs, uint8_t i)
+    {
+        _rom8.push_back(uint8_t(op));
+        _rom8.push_back(id);
+        _rom8.push_back(uint8_t((rd << 6) | ((rs & 0x03) << 4) | (i & 0x0f)));
+    }
+
     void addOpRInt(Op op, uint8_t r, uint8_t i)
     {
         _rom8.push_back(uint8_t(op) | (r & 0x03));
@@ -184,6 +191,13 @@ protected:
         Type type() const { return _type; }
         Storage storage() const { return _storage; }
         uint8_t size() const { return _size; }
+        bool isCustomType() const { return uint8_t(_type) >= 0x80; }
+        
+        uint8_t customTypeIndex() const
+        {
+            int16_t t = int16_t(_type) - 0x80;
+            return (t < 0) ? 0 : uint8_t(t);
+        }
 
     private:
         std::string _name;

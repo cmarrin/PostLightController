@@ -397,6 +397,60 @@ Interpreter::execute(uint16_t addr)
                         restoreFrame();
                         break;
                     }
+                    case NativeFunction::Param: {
+                        setFrame(1, 0);
+                        uint32_t i = _stack[_bp];
+                        _v[0] = uint32_t(_params[i]);
+                        restoreFrame();
+                        break;
+                    }
+                    case NativeFunction::LoadColorComp: {
+                        setFrame(2, 0);
+                        uint32_t c = _stack[_bp];
+                        uint32_t i = _stack[_bp + 1];
+                        switch(i) {
+                            case 0: _v[0] = _c[c].hue(); break;
+                            case 1: _v[0] = _c[c].sat(); break;
+                            case 2: _v[0] = _c[c].val(); break;
+                            default:
+                                _error = Error::InvalidColorComp;
+                                _errorAddr = _pc - 1;
+                                return -1;
+                        }
+                        restoreFrame();
+                        break;
+                    }
+                    case NativeFunction::StoreColorComp: {
+                        setFrame(3, 0);
+                        uint32_t c = _stack[_bp];
+                        uint32_t i = _stack[_bp + 1];
+                        float v = intToFloat(_stack[_bp + 2]);
+                        switch(i) {
+                            case 0: _c[c].setHue(v); break;
+                            case 1: _c[c].setSat(v); break;
+                            case 2: _c[c].setVal(v); break;
+                            default:
+                                _error = Error::InvalidColorComp;
+                                _errorAddr = _pc - 1;
+                                return -1;
+                        }
+                        restoreFrame();
+                        break;
+                    }
+                    case NativeFunction::Float: {
+                        setFrame(1, 0);
+                        uint32_t v = _stack[_bp];
+                        _v[0] = floatToInt(float(v));
+                        restoreFrame();
+                        break;
+                    }
+                    case NativeFunction::Int: {
+                        setFrame(1, 0);
+                        float v = intToFloat(_stack[_bp]);
+                        _v[0] = uint32_t(int32_t(v));
+                        restoreFrame();
+                        break;
+                    }
                 }
                 break;
             case Op::Return        :

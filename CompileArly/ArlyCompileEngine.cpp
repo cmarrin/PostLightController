@@ -21,6 +21,10 @@ ArlyCompileEngine::program()
         vars();
         functions();
         effects();
+        
+        // Must be at the EOF
+        ignoreNewLines();
+        expect(Token::EndOfFile);
     }
     catch(...) {
         return false;
@@ -156,9 +160,7 @@ ArlyCompileEngine::var()
     Type t;
     std::string id;
     
-    if (!type(t)) {
-        return false;
-    }
+    expect(type(t), Compiler::Error::ExpectedType);
     
     expect(identifier(id), Compiler::Error::ExpectedIdentifier);
     
@@ -378,15 +380,6 @@ ArlyCompileEngine::handleOpParamsRdRs(Op op, uint8_t id, uint8_t rd, uint8_t i, 
     expectWithoutRetire(Token::NewLine);
 }
 
-void
-ArlyCompileEngine::handleOpParamsRdRsSplit(Op op, uint8_t rd, uint8_t id, uint8_t rs, uint8_t i)
-{
-    _rom8.push_back(uint8_t(op));
-    _rom8.push_back(id);
-    _rom8.push_back((rd << 6) | (rs << 4) | (i & 0x0f));
-    expectWithoutRetire(Token::NewLine);
-}
-
 bool
 ArlyCompileEngine::opStatement()
 {
@@ -420,7 +413,8 @@ ArlyCompileEngine::opStatement()
         case OpParams::Cd_Cs: handleOpParamsRdRs(op, handleC(), handleC()); break;
 
         case OpParams::Rd_Id_Rs_I:
-            handleOpParamsRdRsSplit(op, handleR(), handleId(), handleR(), handleI());
+            addOpRdIdRsI(op, handleR(), handleId(), handleR(), handleI());
+            expectWithoutRetire(Token::NewLine);
             break;
         case OpParams::Rd_Rs_I:
             handleOpParamsRdRsI(op, handleR(), handleR(), handleI());

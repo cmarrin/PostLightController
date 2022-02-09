@@ -93,7 +93,6 @@ private:
     void handleOpParamsRdRs(Op op, uint8_t id, uint8_t rd, uint8_t i, uint8_t rs);
     void handleOpParamsRdRsI(Op op, uint8_t rd, uint8_t rs, uint8_t i);
     void handleOpParamsRdIRs(Op op, uint8_t rd, uint8_t i, uint8_t rs);
-    void handleOpParamsRdRsSplit(Op op, uint8_t rd, uint8_t a, uint8_t rs, uint8_t i);
     
     bool opStatement();
     bool forStatement();

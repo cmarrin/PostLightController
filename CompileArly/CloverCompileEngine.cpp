@@ -59,6 +59,7 @@ CloverCompileEngine::program()
     
     try {
         while(element()) { }
+        expect(Token::EndOfFile);
     }
     catch(...) {
         return false;
@@ -80,15 +81,15 @@ CloverCompileEngine::element()
         return true;
     }
     
-    if (var()) {
-        expect(Token::Semicolon);
-        return true;
-    }
-    
+    if (var()) return true;    
     if (table()) return true;
     if (strucT()) return true;
     if (function()) return true;
-    if (effect()) return true;
+    
+    if (effect()) {
+        expect(Token::Semicolon);
+        return true;
+    }
     return false;
 }
 
@@ -144,8 +145,11 @@ CloverCompileEngine::var()
     Type t;
     std::string id;
     
-    if (!type(t)) {
-        return false;
+    expect(type(t), Compiler::Error::ExpectedType);
+    
+    bool isPointer = false;
+    if (match(Token::Mul)) {
+        isPointer = true;
     }
     
     expect(identifier(id), Compiler::Error::ExpectedIdentifier);
@@ -154,6 +158,8 @@ CloverCompileEngine::var()
     if (!integerValue(size)) {
         size = 1;
     }
+
+    expect(Token::Semicolon);
 
     // FIXME: Deal with locals, _nextMem and _globalSize
     _globals.emplace_back(id, _nextMem, t, Symbol::Storage::Global);
@@ -165,6 +171,30 @@ CloverCompileEngine::var()
     _globalSize = _nextMem;
 
     return true;
+}
+
+bool
+CloverCompileEngine::type(Type& t)
+{
+    if (CompileEngine::type(t)) {
+        return true;
+    }
+    
+    // See if it's a struct
+    std::string id;
+    if (!identifier(id)) {
+        return false;
+    }
+    
+    auto it = find_if(_structs.begin(), _structs.end(),
+                    [id](const Struct s) { return s.name() == id; });
+    if (it != _structs.end()) {
+        // Types from 0x80 - 0xff are structs. Make the enum the struct
+        // index + 0x80
+        t = Type(0x80 + (it - _structs.begin()));
+        return true;
+    }
+    return false;
 }
 
 bool
@@ -186,6 +216,7 @@ CloverCompileEngine::function()
     
     expect(formalParameterList(), Compiler::Error::ExpectedFormalParams);
     
+    expect(Token::CloseParen);
     expect(Token::OpenBrace);
 
     while(var()) { }
@@ -219,7 +250,7 @@ CloverCompileEngine::structEntry()
     
     expect(Token::Semicolon);
     
-    _structs.back()._entries.emplace_back(id, t);
+    _structs.back().addEntry(id, t);
     return true;
 }
 
@@ -353,9 +384,12 @@ CloverCompileEngine::expressionStatement()
     }
     
     // Discard result of expression
-    //_parser->discardResult();
+    _exprStack.pop_back();
     
     expect(Token::Semicolon);
+
+    // Ensure exprStack is empty
+    expect(_exprStack.empty(), Compiler::Error::InternalError);
     return true;
 }
 
@@ -383,7 +417,7 @@ CloverCompileEngine::arithmeticExpression(uint8_t minPrec)
         switch(opInfo.op()) {
             case Op::Store: {
                 // Put RHS in r0
-                bakeExpr(ExprSide::Right);
+                bakeExpr(ExprAction::Right);
                 
                 // FIXME: For now we only handle simple Store case so _exprStack must have id
                 Symbol sym;
@@ -423,6 +457,9 @@ CloverCompileEngine::unaryExpression()
         op = Op::Not;
     } else if (match(Token::Bang)) {
         op = Op::LNot;
+    } else if (match(Token::And)) {
+        // This is just a placeholder to indicate that this is a ref
+        op = Op::LoadRef;
     }
 
     if (op == Op::None) {
@@ -430,10 +467,13 @@ CloverCompileEngine::unaryExpression()
     }
     
     expect(unaryExpression(), Compiler::Error::ExpectedExpr);
-    unaryExpression();
     
-    // FIXME: Emit unary op. Apply op to result from unaryExpression()
-
+    // FIXME: Handle all cases
+    if (op == Op::LoadRef) {
+        expect(bakeExpr(ExprAction::Ref) == Type::Ref, Compiler::Error::ExpectedRef);
+        _exprStack.emplace_back(ExprEntry::Ref());
+    }
+    
     return true;
 }
 
@@ -455,6 +495,10 @@ CloverCompileEngine::postfixExpression()
         expect(argumentList(fun), Compiler::Error::ExpectedArgList);
         expect(Token::CloseParen);
         
+        // Replace the top of the exprStack with the Function
+        _exprStack.pop_back();
+        _exprStack.emplace_back(ExprEntry::Function(fun.name()));
+        
         if (fun.isNative()) {
             addOpId(Op::CallNative, uint8_t(fun.native()));
         } else { 
@@ -464,11 +508,18 @@ CloverCompileEngine::postfixExpression()
         expect(arithmeticExpression(), Compiler::Error::ExpectedExpr);
         expect(Token::CloseBracket);
         
-        // FIXME: The primaryExpression is a deref using the 
-        // arithmeticExpression. Emit that
+        // Bake the contents of the brackets, leaving the result in r0
+        expect(bakeExpr(ExprAction::Right) == Type::Int, Compiler::Error::ExpectedInt);
+        
+        // Now Create a Ref using LoadRefX. The type of the TOS determines i. Result is in r0
+        expect(bakeExpr(ExprAction::Ref) == Type::Ref, Compiler::Error::ExpectedRef);
+        _exprStack.emplace_back(ExprEntry::Ref());
     } else if (match(Token::Dot)) {
         std::string id;
         expect(identifier(id), Compiler::Error::ExpectedIdentifier);
+        
+        _exprStack.emplace_back(id);
+        bakeExpr(ExprAction::Ref);
         
         // FIXME: The primaryExpression is an address. The identifier is
         // a struct member. Use its offset in a deref op (load or store?)
@@ -509,24 +560,20 @@ bool
 CloverCompileEngine::formalParameterList()
 {
     Type t;
-    if (match(Token::CloseParen)) {
-        return true;
-    }
-    
-    expect(type(t), Compiler::Error::ExpectedType);
-    
-    std::string id;
-    expect(identifier(id), Compiler::Error::ExpectedIdentifier);
-    
-    currentLocals().emplace_back(id, currentLocals().size(), t, Symbol::Storage::Local);
-
-    while (match(Token::Comma)) {
-        expect(type(t), Compiler::Error::ExpectedType);
+    while (true) {
+        if (!type(t)) {
+            return true;
+        }
+        
+        std::string id;
         expect(identifier(id), Compiler::Error::ExpectedIdentifier);
         currentLocals().emplace_back(id, currentLocals().size(), t, Symbol::Storage::Local);
+        
+        if (!match(Token::Comma)) {
+            return true;
+        }
     }
     
-    // FIXME: Process these. Put them in a list for use by function?
     return true;
 }
 
@@ -548,7 +595,7 @@ CloverCompileEngine::argumentList(const Function& fun)
     
         // Bake the arithmeticExpression, leaving the result in r0.
         // Make sure the type matches the formal argument and push r0
-        expect(bakeExpr(ExprSide::Right) == fun.locals()[0].type(), Compiler::Error::MismatchedType);
+        expect(bakeExpr(ExprAction::Right) == fun.locals()[0].type(), Compiler::Error::MismatchedType);
         addOp(Op::Push);
 
         if (!match(Token::Comma)) {
@@ -617,7 +664,7 @@ CloverCompileEngine::findFloat(float f)
 }
 
 CompileEngine::Type
-CloverCompileEngine::bakeExpr(ExprSide side)
+CloverCompileEngine::bakeExpr(ExprAction action)
 {
     // Emit code for the top of the exprStack and leave the result in r0.
     // Pop stack.
@@ -632,15 +679,54 @@ CloverCompileEngine::bakeExpr(ExprSide side)
             _error = Compiler::Error::InternalError;
             throw true;
         case ExprEntry::Type::Id: {
-            // Emit Load id
             Symbol sym;
             expect(findSymbol(entry, sym), Compiler::Error::UndefinedIdentifier);
-            addOpRId(Op::Load, 0, sym.addr());
             type = sym.type();
+            
+            switch(action) {
+                case ExprAction::Right:
+                    // Emit Load id
+                    addOpRId(Op::Load, 0, sym.addr());
+                    break;
+                case ExprAction::Left:
+                    // Emit Store id
+                    addOpRId(Op::Store, 0, sym.addr());
+                    break;
+                case ExprAction::Function:
+                    // FIXME: Do something?
+                    break;
+                case ExprAction::Ref: {
+                    uint8_t elementSize = 1;
+                    if (sym.isCustomType()) {
+                        uint8_t index = sym.customTypeIndex();
+                        expect(index < _structs.size(), Compiler::Error::InternalError);
+                        elementSize = _structs[index].size();
+                    }
+                    
+                    // Emit LoadRefX. r0 has index, type determines i
+                    addOpRdIdRsI(Op::LoadRefX, 0, sym.addr(), 0, elementSize);
+                    type = Type::Ref;
+                    break;
+                }
+                case ExprAction::Deref: {
+                    // id must be a Struct entry. There must be an exprStack - 1 entry
+                    // and it must be a reference to a var with the Struct type
+                    expect(_exprStack.size() >= 2, Compiler::Error::InternalError);
+                    
+                    // FIXME: For now only deal with ids. If a ref need to know its type
+                    const ExprEntry& prevEntry = _exprStack.end()[-2];
+                    expect(prevEntry.type() != ExprEntry::Type::Id, Compiler::Error::InternalError);
+                    
+                    uint8_t index = findStructEntry(prevEntry, entry);
+                    
+                    // Emit a deref
+                    addOpRdRsI(Op::LoadDeref, 0, 0, index);
+                }
+            }
             break;
         }
         case ExprEntry::Type::Float:
-            expect(side != ExprSide::Left, Compiler::Error::ExpectedLHSExpr);
+            expect(action != ExprAction::Left, Compiler::Error::ExpectedLHSExpr);
             
             // Use an fp constant
             addOpRInt(Op::Load, 0, findFloat(entry));
@@ -648,7 +734,7 @@ CloverCompileEngine::bakeExpr(ExprSide side)
             break;
         case ExprEntry::Type::Int: // int32_t
         {
-            expect(side != ExprSide::Left, Compiler::Error::ExpectedLHSExpr);
+            expect(action != ExprAction::Left, Compiler::Error::ExpectedLHSExpr);
 
             int32_t i = int32_t(entry);
             if (i >= -256 && i < 256) {
@@ -669,6 +755,9 @@ CloverCompileEngine::bakeExpr(ExprSide side)
             break;
         }
         case ExprEntry::Type::Ref:
+            type = Type::Ref;
+            break;
+        case ExprEntry::Type::Function:
             break;
     }
     
@@ -683,4 +772,26 @@ CloverCompileEngine::isExprFunction()
     
     Function fun;
     return findFunction(_exprStack.back(), fun);
+}
+
+uint8_t
+CloverCompileEngine::findStructEntry(const std::string& id, const std::string& structId)
+{    
+    Symbol sym;
+    expect(findSymbol(id, sym), Compiler::Error::UndefinedIdentifier);
+    expect(sym.isCustomType(), Compiler::Error::ExpectedStructType);
+    
+    // Make sure the entry id is in the Struct for the prev entry
+    uint8_t structIndex = sym.customTypeIndex();
+    expect(structIndex < _structs.size(), Compiler::Error::InternalError);
+    
+    const std::vector<ParamEntry>& entries = _structs[structIndex].entries();
+
+
+    auto it = find_if(entries.begin(), entries.end(),
+                    [structId](const ParamEntry& ent) { return ent._name == structId; });
+    expect(it != entries.end(), Compiler::Error::InvalidStructId);
+    
+    // FIXME: For now assume structs can only have 1 word entries. If we ever support Structs with Structs this is not true
+    return it - entries.begin();
 }

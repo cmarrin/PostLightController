@@ -52,7 +52,7 @@ struct:
     
 // First integer is num elements, second is size of each element
 var:
-    'var' type <id> [ '*' ] [ <integer> ] ';' ;
+    'var' type [ '*' ] <id> [ <integer> ] ';' ;
 
 function:
     'function' <id> '( formalParameterList ')' '{' { var } { statement } '}' ;
@@ -65,7 +65,7 @@ structEntry:
 
 // <id> is a struct name
 type:
-    'float' | 'int' | <id>
+    'float' | 'int' | <id> 
 
 value:
     ['-'] <float> | ['-'] <integer>
@@ -169,6 +169,7 @@ protected:
     virtual bool statement() override;
     virtual bool function() override;
     virtual bool table() override;
+    virtual bool type(Type&) override;
   
     bool var();
 
@@ -230,13 +231,35 @@ private:
 
     uint8_t findInt(int32_t);
     uint8_t findFloat(float);
-
-    enum class ExprSide { Left, Right };
-    Type bakeExpr(ExprSide);    
-    bool isExprFunction();
-        
-
     
+    // The ExprStack
+    //
+    // This is a stack of the operators being processed. Values can be:
+    //
+    //      Id      - string id
+    //      Float   - float constant
+    //      Int     - int32_t constant
+    //      Dot     - r0 contains a ref. entry is an index into a Struct.
+
+    // ExprAction indicates what to do with the top entry on the ExprStack during baking
+    //
+    //      Right       - Entry is a RHS, so it can be a float, int or id and the value 
+    //                    is loaded into r0
+    //      Left        - Entry is a LHS, so it must be an id, value in r0 is stored at the id
+    //      Function    - Entry is the named function which has already been emitted so value
+    //                    is the return value in r0
+    //      Ref         - Value left in r0 must be an address to a value (Const or RAM)
+    //      Deref       = Value must be a Struct entry for the value in _stackEntry - 1
+    //      Dot         - Dot operator. TOS must be a struct id, TOS-1 must be a ref with
+    //                    a type. Struct id must be a member of the type of the ref.
+    //                    pop the two 
+    //
+    enum class ExprAction { Left, Right, Function, Ref, Deref };
+    Type bakeExpr(ExprAction);
+    bool isExprFunction();
+    
+    uint8_t findStructEntry(const std::string& id, const std::string& structId);
+
     struct ParamEntry
     {
         ParamEntry(const std::string& name, Type type)
@@ -247,13 +270,31 @@ private:
         Type _type;
     };
     
-    struct Struct
+    class Struct
     {
+    public:
         Struct(const std::string& name)
             : _name(name)
         { }
+        
+        void addEntry(const std::string& name, Type type)
+        {
+            _entries.emplace_back(name, type);
+            
+            // FIXME: For now assume all 1 word types. Will we support Structs in Structs?
+            // FIXME: Max size is 16, check that
+            _size++;
+        }
+        
+        const std::vector<ParamEntry>& entries() const { return _entries; }
+        
+        const std::string& name() const { return _name; }
+        uint8_t size() const { return _size; }
+        
+    private:
         std::string _name;
         std::vector<ParamEntry> _entries;
+        uint8_t _size;
     };
 
     class ExprEntry
@@ -263,12 +304,20 @@ private:
         {
         };
         
-        enum class Type { None = 0, Id = 1, Float = 2, Int = 3, Ref = 4 };
+        struct Function
+        {
+            Function(const std::string& s) : _name(s) { }
+            std::string _name;
+        };
+        
+        enum class Type { None = 0, Id = 1, Float = 2, Int = 3, Ref = 4, Function = 5 };
         
         ExprEntry() { _variant = std::monostate(); }
         ExprEntry(const std::string& s) { _variant = s; }
         ExprEntry(float f) { _variant = f; }
         ExprEntry(int32_t i) { _variant = i; }
+        ExprEntry(const Function& fun) { _variant = fun; }
+        ExprEntry(const Ref& ref) { _variant = ref; }
                 
         operator const std::string&() const { return std::get<std::string>(_variant); }
         operator float() const { return std::get<float>(_variant); }
@@ -282,6 +331,7 @@ private:
                      , float
                      , int32_t
                      , Ref
+                     , Function
                      > _variant;
     };
 

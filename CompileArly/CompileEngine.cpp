@@ -109,6 +109,34 @@ CompileEngine::CompileEngine(std::istream* stream)
                             SymbolList {
                                 { "p", 0, Type::Int },
                             });
+    _functions.emplace_back("Param",
+                            Interpreter::NativeFunction::Param,
+                            SymbolList {
+                                { "p", 0, Type::Int },
+                            });
+    _functions.emplace_back("LoadColorComp",
+                            Interpreter::NativeFunction::LoadColorComp,
+                            SymbolList {
+                                { "c", 0, Type::Int },
+                                { "i", 1, Type::Int },
+                            });
+    _functions.emplace_back("StoreColorComp",
+                            Interpreter::NativeFunction::StoreColorComp,
+                            SymbolList {
+                                { "c", 0, Type::Int },
+                                { "i", 1, Type::Int },
+                                { "v", 2, Type::Float },
+                            });
+    _functions.emplace_back("Float",
+                            Interpreter::NativeFunction::Float,
+                            SymbolList {
+                                { "v", 0, Type::Int },
+                            });
+    _functions.emplace_back("Int",
+                            Interpreter::NativeFunction::Int,
+                            SymbolList {
+                                { "v", 0, Type::Float },
+                            });
 }
 
 void
@@ -233,6 +261,9 @@ CompileEngine::type(Type& t)
         t = Type::Int;
         return true;
     }
+    
+    // See if it's a struct
+    
     return false;
 }
 
@@ -345,7 +376,13 @@ CompileEngine::expect(Token token, const char* str)
     
     if (err) {
         _expectedToken = token;
-        _expectedString = str ? : "";
+        if (str) {
+            _expectedString = str;
+        } else if (uint8_t(token) < 0x80) {
+            _expectedString = char(token);
+        } else {
+            _expectedString = "";
+        }
         throw true;
     }
 
@@ -547,7 +584,6 @@ CompileEngine::findFunction(const std::string& s, Function& fun)
     
     return false;
 }
-
 
 uint8_t
 CompileEngine::Symbol::addr() const

@@ -85,7 +85,7 @@ static std::vector<Test> Tests = {
     { 'f', { 20, 224, 200, 0 } },
 };
 
-static void showError(arly::Compiler::Error error, uint32_t lineno)
+static void showError(arly::Compiler::Error error, arly::Token token, const std::string& str, uint32_t lineno)
 {
     const char* err = "unknown";
     switch(error) {
@@ -95,6 +95,7 @@ static void showError(arly::Compiler::Error error, uint32_t lineno)
         case arly::Compiler::Error::ExpectedType: err = "expected type"; break;
         case arly::Compiler::Error::ExpectedValue: err = "expected value"; break;
         case arly::Compiler::Error::ExpectedInt: err = "expected int"; break;
+        case arly::Compiler::Error::ExpectedRef: err = "expected ref"; break;
         case arly::Compiler::Error::ExpectedOpcode: err = "expected opcode"; break;
         case arly::Compiler::Error::ExpectedEnd: err = "expected 'end'"; break;
         case arly::Compiler::Error::ExpectedIdentifier: err = "expected identifier"; break;
@@ -105,6 +106,8 @@ static void showError(arly::Compiler::Error error, uint32_t lineno)
         case arly::Compiler::Error::ExpectedArgList: err = "expected arg list"; break;
         case arly::Compiler::Error::ExpectedFormalParams: err = "expected formal params"; break;
         case arly::Compiler::Error::ExpectedFunction: err = "expected function name"; break;
+        case arly::Compiler::Error::ExpectedStructType: err = "expected Struct type"; break;
+        case arly::Compiler::Error::InvalidStructId: err = "invalid Struct identifier"; break;
         case arly::Compiler::Error::InvalidParamCount: err = "invalid param count"; break;
         case arly::Compiler::Error::UndefinedIdentifier: err = "undefined identifier"; break;
         case arly::Compiler::Error::ParamOutOfRange: err = "param must be 0..15"; break;
@@ -123,7 +126,15 @@ static void showError(arly::Compiler::Error error, uint32_t lineno)
         case arly::Compiler::Error::WrongNumberOfArgs: err = "wrong number of args"; break;
     }
     
-    std::cout << "Compile failed: " << err << " on line " << lineno << "\n";
+    if (token == arly::Token::EndOfFile) {
+        err = "unexpected tokens after EOF";
+    }
+    
+    std::cout << "Compile failed: " << err;
+    if (!str.empty()) {
+        std::cout << " ('" << str << "')";
+    }
+    std::cout << " on line " << lineno << "\n";
 }
 
 static constexpr int NumLoops = 10;
@@ -170,9 +181,11 @@ int main(int argc, char * const argv[])
     
     std::vector<uint8_t> executable;
     
+    std::cout << "\n\nTrying Arly...\n";
+
     compiler.compile(&stream, arly::Compiler::Language::Arly, executable);
     if (compiler.error() != arly::Compiler::Error::None) {
-        showError(compiler.error(), compiler.lineno());
+        showError(compiler.error(), compiler.expectedToken(), compiler.expectedString(), compiler.lineno());
         
         std::cout << "\n\nTrying Clover...\n";
         
@@ -180,7 +193,7 @@ int main(int argc, char * const argv[])
         compiler.compile(&stream, arly::Compiler::Language::Clover, executable);
 
         if (compiler.error() != arly::Compiler::Error::None) {
-            showError(compiler.error(), compiler.lineno());
+            showError(compiler.error(), compiler.expectedToken(), compiler.expectedString(), compiler.lineno());
             return -1;
         }
     }
