@@ -38,7 +38,7 @@ Interpreter::init(uint8_t cmd, const uint8_t* buf, uint8_t size)
     }
     
     // Alloc stack
-    _stackk.alloc(getUInt8ROM(6));
+    _stack.alloc(getUInt8ROM(6));
 
     // Find command
     while (1) {
@@ -116,70 +116,70 @@ Interpreter::execute(uint16_t addr)
 				return -1;
             case Op::Push:
                 id = getId();
-                _stackk.push(loadInt(id));
+                _stack.push(loadInt(id));
                 break;
             case Op::Pop:
                 id = getId();
-                storeInt(id, _stackk.pop());
+                storeInt(id, _stack.pop());
                 break;
             case Op::PushZero:
-                _stackk.push(0);
+                _stack.push(0);
                 break;
             case Op::PushIntConst:
-                _stackk.push(getConst());
+                _stack.push(getConst());
                 break;
                 
             case Op::PushRef:
-                _stackk.push(getId());
+                _stack.push(getId());
                 break;
             case Op::PushRefX:
                 id = getId();
                 i = getI();
-                value = _stackk.pop();
-                _stackk.push(id + value * i);
+                value = _stack.pop();
+                _stack.push(id + value * i);
                 break;
             case Op::PushDeref:
                 i = getI();
-                value = _stackk.pop();
-                _stackk.push(loadInt(value + i));
+                value = _stack.pop();
+                _stack.push(loadInt(value + i));
                 break;
             case Op::PopDeref:
                 i = getI();
-                value = _stackk.pop();
-                index = _stackk.pop() + i;
+                value = _stack.pop();
+                index = _stack.pop() + i;
                 storeInt(index, value);
                 break;
 
             case Op::Dup:
-                _stackk.push(_stackk.top());
+                _stack.push(_stack.top());
                 break;
             case Op::Drop:
-                _stackk.pop();
+                _stack.pop();
                 break;
             case Op::Swap:
-                _stackk.swap();
+                _stack.swap();
                 break;
 
             case Op::MinInt:
-                _stackk.push(min(int32_t(_stackk.pop()), int32_t(_stackk.pop())));
+                _stack.push(min(int32_t(_stack.pop()), int32_t(_stack.pop())));
                 break;
             case Op::MinFloat:
-                _stackk.push(floatToInt(min(intToFloat(_stackk.pop()), intToFloat(_stackk.pop()))));
+                _stack.push(floatToInt(min(intToFloat(_stack.pop()), intToFloat(_stack.pop()))));
                 break;
             case Op::MaxInt:
-                _stackk.push(max(int32_t(_stackk.pop()), int32_t(_stackk.pop())));
+                _stack.push(max(int32_t(_stack.pop()), int32_t(_stack.pop())));
                 break;
             case Op::MaxFloat:
-                _stackk.push(floatToInt(max(intToFloat(_stackk.pop()), intToFloat(_stackk.pop()))));
+                _stack.push(floatToInt(max(intToFloat(_stack.pop()), intToFloat(_stack.pop()))));
                 break;
 
             case Op::Exit:
-                return _stackk.pop();
+                return _stack.pop();
             case Op::ToFloat:
-                _stackk.top() = floatToInt(float(int32_t(_stackk.top())));
+                _stack.top() = floatToInt(float(int32_t(_stack.top())));
                 break;
             case Op::ToInt:
-                _stackk.top() = uint32_t(int32_t(intToFloat(_stackk.top())));
+                _stack.top() = uint32_t(int32_t(intToFloat(_stack.top())));
                 break;
 
             case Op::Init:
@@ -191,31 +191,31 @@ Interpreter::execute(uint16_t addr)
                     return -1;
                 }
                 
-                value = _stackk.pop();
+                value = _stack.pop();
                 if (id < LocalStart) {
                     addr = id - GlobalStart;
-                    memset(_global + addr, _stackk.pop(), value * sizeof(uint32_t));
+                    memset(_global + addr, _stack.pop(), value * sizeof(uint32_t));
                 } else {
                     addr = id - LocalStart;
-                    memset(&_stackk.local(addr), _stackk.pop(), value * sizeof(uint32_t));
+                    memset(&_stack.local(addr), _stack.pop(), value * sizeof(uint32_t));
                 }
                 break;
             case Op::RandomInt: {
-                int32_t max = _stackk.pop();
-                int32_t min = _stackk.pop();
-                _stackk.push(uint32_t(random(min, max)));
+                int32_t max = _stack.pop();
+                int32_t min = _stack.pop();
+                _stack.push(uint32_t(random(min, max)));
                 break;
             }
             case Op::RandomFloat: {
-                float max = intToFloat(_stackk.pop());
-                float min = intToFloat(_stackk.pop());
-                _stackk.push(floatToInt(random(min, max)));
+                float max = intToFloat(_stack.pop());
+                float min = intToFloat(_stack.pop());
+                _stack.push(floatToInt(random(min, max)));
                 break;
             }
 
             case Op::If:
                 id = getSz();
-                if (_stackk.pop() == 0) {
+                if (_stack.pop() == 0) {
                     // Skip if
                     _pc += id;
                     
@@ -249,7 +249,7 @@ Interpreter::execute(uint16_t addr)
                 
                 _foreachId = getId();
                 _foreachSz = getSz();
-                _foreachCount = _stackk.pop();
+                _foreachCount = int32_t(_stack.pop());
                 _foreachLoopAddr = _pc;
                 
                 // See if we've already gone past count
@@ -273,7 +273,7 @@ Interpreter::execute(uint16_t addr)
             
             case Op::Call:
                 targ = (uint16_t(getId()) << 2) | (cmd & 0x03);
-                _stackk.push(_pc);
+                _stack.push(_pc);
                 _pc = targ + _codeOffset;
                 
                 if (Op(getUInt8ROM(_pc)) != Op::SetFrame) {
@@ -286,64 +286,64 @@ Interpreter::execute(uint16_t addr)
                 id = getConst();
 
                 // Save the _pc just to make setFrame work
-                _stackk.push(_pc);
+                _stack.push(_pc);
 
                 switch(NativeFunction(id)) {
                     case NativeFunction::None:
                         _error = Error::InvalidNativeFunction;
                         return -1;
                     case NativeFunction::LoadColorParam: {
-                        uint32_t r = _stackk.local(0);
-                        uint32_t i = _stackk.local(1);
                         if (!_stack.setFrame(2, 0)) {
                             return -1;
                         }
+                        uint32_t r = _stack.local(0);
+                        uint32_t i = _stack.local(1);
                         _c[r] = Color(_params[i], _params[i + 1], _params[i + 2]);
-                        _pc = _stackk.restoreFrame(0);
+                        _pc = _stack.restoreFrame(0);
                         break;
                     }
                     case NativeFunction::SetAllLights: {
-                        uint32_t r = _stackk.local(0);
                         if (!_stack.setFrame(1, 0)) {
                             return -1;
                         }
+                        uint32_t r = _stack.local(0);
                         setAllLights(r);
-                        _pc = _stackk.restoreFrame(0);
+                        _pc = _stack.restoreFrame(0);
                         break;
                     }
                     case NativeFunction::SetLight: {
-                        uint32_t i = _stackk.local(0);
-                        uint32_t r = _stackk.local(1);
                         if (!_stack.setFrame(2, 0)) {
                             return -1;
                         }
+                        uint32_t i = _stack.local(0);
+                        uint32_t r = _stack.local(1);
                         setLight(i, _c[r].rgb());
-                        _pc = _stackk.restoreFrame(0);
+                        _pc = _stack.restoreFrame(0);
                         break;
                     }
                     case NativeFunction::Animate: {
-                        uint32_t i = _stackk.local(0);
-                        _pc = _stackk.restoreFrame(animate(i));
                         if (!_stack.setFrame(1, 0)) {
                             return -1;
                         }
+                        uint32_t i = _stack.local(0);
+                        _pc = _stack.restoreFrame(animate(i));
                         
                         break;
                     }
                     case NativeFunction::Param: {
-                        uint32_t i = _stackk.local(0);
-                        _pc = _stackk.restoreFrame(uint32_t(_params[i]));
                         if (!_stack.setFrame(1, 0)) {
                             return -1;
                         }
+                        uint32_t i = _stack.local(0);
+                        _pc = _stack.restoreFrame(uint32_t(_params[i]));
                         break;
                     }
                     case NativeFunction::LoadColorComp: {
-                        uint32_t c = _stackk.local(0);
-                        uint32_t i = _stackk.local(1);
                         if (!_stack.setFrame(2, 0)) {
                             return -1;
                         }
+                        uint32_t c = _stack.local(0);
+                        uint32_t i = _stack.local(1);
                         float comp;
                         switch(i) {
                             case 0: comp = _c[c].hue(); break;
@@ -353,54 +353,53 @@ Interpreter::execute(uint16_t addr)
                                 _error = Error::InvalidColorComp;
                                 return -1;
                         }
-                        _pc = _stackk.restoreFrame(floatToInt(comp));
+                        _pc = _stack.restoreFrame(floatToInt(comp));
                         break;
                     }
                     case NativeFunction::StoreColorComp: {
-                        uint32_t c = _stackk.local(0);
-                        uint32_t i = _stackk.local(1);
-                        float v = intToFloat(_stackk.local(2));
                         if (!_stack.setFrame(3, 0)) {
                             return -1;
                         }
+                        uint32_t c = _stack.local(0);
+                        uint32_t i = _stack.local(1);
+                        float v = intToFloat(_stack.local(2));
                         switch(i) {
                             case 0: _c[c].setHue(v); break;
                             case 1: _c[c].setSat(v); break;
                             case 2: _c[c].setVal(v); break;
                             default:
                                 _error = Error::InvalidColorComp;
-                                _errorAddr = _pc - 1;
                                 return -1;
                         }
-                        _pc = _stackk.restoreFrame(0);
+                        _pc = _stack.restoreFrame(0);
                         break;
                     }
                     case NativeFunction::Float: {
-                        uint32_t v = _stackk.local(0);
-                        _pc = _stackk.restoreFrame(floatToInt(float(v)));
                         if (!_stack.setFrame(1, 0)) {
                             return -1;
                         }
+                        uint32_t v = _stack.local(0);
+                        _pc = _stack.restoreFrame(floatToInt(float(v)));
                         break;
                     }
                     case NativeFunction::Int: {
-                        float v = intToFloat(_stackk.local(0));
-                        _pc = _stackk.restoreFrame(uint32_t(int32_t(v)));
                         if (!_stack.setFrame(1, 0)) {
                             return -1;
                         }
+                        float v = intToFloat(_stack.local(0));
+                        _pc = _stack.restoreFrame(uint32_t(int32_t(v)));
                         break;
                     }
                 }
                 break;
             case Op::Return: {
-                if (_stackk.empty()) {
+                if (_stack.empty()) {
                     // Returning from top level is like Exit
                     return 0;
                 }
                 
                 // TOS has return value. Pop it and push it back after restore
-                _pc = _stackk.restoreFrame(_stackk.pop());
+                _pc = _stack.restoreFrame(_stack.pop());
                 break;
             }
             case Op::SetFrame:
@@ -410,111 +409,111 @@ Interpreter::execute(uint16_t addr)
                 }
                 break;
 
-            case Op::Or:    _stackk.top() |= _stackk.pop(); break;
-            case Op::Xor:   _stackk.top() ^= _stackk.pop(); break;
-            case Op::And:   _stackk.top() &= _stackk.pop(); break;
-            case Op::Not:   _stackk.top() = ~_stackk.top(); break;
-            case Op::LOr:   _stackk.push(_stackk.pop() || _stackk.pop()); break;
-            case Op::LAnd:   _stackk.push(_stackk.pop() && _stackk.pop()); break;
-            case Op::LNot:   _stackk.top() = !_stackk.top(); break;
+            case Op::Or:    _stack.top() |= _stack.pop(); break;
+            case Op::Xor:   _stack.top() ^= _stack.pop(); break;
+            case Op::And:   _stack.top() &= _stack.pop(); break;
+            case Op::Not:   _stack.top() = ~_stack.top(); break;
+            case Op::LOr:   _stack.push(_stack.pop() || _stack.pop()); break;
+            case Op::LAnd:   _stack.push(_stack.pop() && _stack.pop()); break;
+            case Op::LNot:   _stack.top() = !_stack.top(); break;
 
             case Op::LTInt:
-                value = _stackk.pop();
-                _stackk.top() = int32_t(_stackk.top()) < int32_t(value);
+                value = _stack.pop();
+                _stack.top() = int32_t(_stack.top()) < int32_t(value);
                 break;
             case Op::LTFloat:
-                value = _stackk.pop();
-                _stackk.top() = intToFloat(_stackk.top()) < intToFloat(value);
+                value = _stack.pop();
+                _stack.top() = intToFloat(_stack.top()) < intToFloat(value);
                 break;
             case Op::LEInt:
-                value = _stackk.pop();
-                _stackk.top() = int32_t(_stackk.top()) <= int32_t(value);
+                value = _stack.pop();
+                _stack.top() = int32_t(_stack.top()) <= int32_t(value);
                 break;
             case Op::LEFloat:
-                value = _stackk.pop();
-                _stackk.top() = intToFloat(_stackk.top()) <= intToFloat(value);
+                value = _stack.pop();
+                _stack.top() = intToFloat(_stack.top()) <= intToFloat(value);
                 break;
             case Op::EQInt:
-                value = _stackk.pop();
-                _stackk.top() = int32_t(_stackk.top()) == int32_t(value);
+                value = _stack.pop();
+                _stack.top() = int32_t(_stack.top()) == int32_t(value);
                 break;
             case Op::EQFloat:
-                value = _stackk.pop();
-                _stackk.top() = intToFloat(_stackk.top()) == intToFloat(value);
+                value = _stack.pop();
+                _stack.top() = intToFloat(_stack.top()) == intToFloat(value);
                 break;
             case Op::NEInt:
-                value = _stackk.pop();
-                _stackk.top() = int32_t(_stackk.top()) != int32_t(value);
+                value = _stack.pop();
+                _stack.top() = int32_t(_stack.top()) != int32_t(value);
                 break;
             case Op::NEFloat:
-                value = _stackk.pop();
-                _stackk.top() = intToFloat(_stackk.top()) != intToFloat(value);
+                value = _stack.pop();
+                _stack.top() = intToFloat(_stack.top()) != intToFloat(value);
                 break;
             case Op::GEInt:
-                value = _stackk.pop();
-                _stackk.top() = int32_t(_stackk.top()) >= int32_t(value);
+                value = _stack.pop();
+                _stack.top() = int32_t(_stack.top()) >= int32_t(value);
                 break;
             case Op::GEFloat:
-                value = _stackk.pop();
-                _stackk.top() = intToFloat(_stackk.top()) >= intToFloat(value);
+                value = _stack.pop();
+                _stack.top() = intToFloat(_stack.top()) >= intToFloat(value);
                 break;
             case Op::GTInt:
-                value = _stackk.pop();
-                _stackk.top() = int32_t(_stackk.top()) > int32_t(value);
+                value = _stack.pop();
+                _stack.top() = int32_t(_stack.top()) > int32_t(value);
                 break;
             case Op::GTFloat:
-                value = _stackk.pop();
-                _stackk.top() = intToFloat(_stackk.top()) > intToFloat(value);
+                value = _stack.pop();
+                _stack.top() = intToFloat(_stack.top()) > intToFloat(value);
                 break;
 
             case Op::AddInt:
-                value = _stackk.pop();
-                _stackk.top() = int32_t(_stackk.top()) + int32_t(value);
+                value = _stack.pop();
+                _stack.top() = int32_t(_stack.top()) + int32_t(value);
                 break;
             case Op::AddFloat:
-                value = _stackk.pop();
-                _stackk.top() = floatToInt(intToFloat(_stackk.top()) + intToFloat(value));
+                value = _stack.pop();
+                _stack.top() = floatToInt(intToFloat(_stack.top()) + intToFloat(value));
                 break;
             case Op::SubInt:
-                value = _stackk.pop();
-                _stackk.top() = int32_t(_stackk.top()) - int32_t(value);
+                value = _stack.pop();
+                _stack.top() = int32_t(_stack.top()) - int32_t(value);
                 break;
             case Op::SubFloat:
-                value = _stackk.pop();
-                _stackk.top() = floatToInt(intToFloat(_stackk.top()) - intToFloat(value));
+                value = _stack.pop();
+                _stack.top() = floatToInt(intToFloat(_stack.top()) - intToFloat(value));
                 break;
             case Op::MulInt:
-                value = _stackk.pop();
-                _stackk.top() = int32_t(_stackk.top()) * int32_t(value);
+                value = _stack.pop();
+                _stack.top() = int32_t(_stack.top()) * int32_t(value);
                 break;
             case Op::MulFloat:
-                value = _stackk.pop();
-                _stackk.top() = floatToInt(intToFloat(_stackk.top()) * intToFloat(value));
+                value = _stack.pop();
+                _stack.top() = floatToInt(intToFloat(_stack.top()) * intToFloat(value));
                 break;
             case Op::DivInt:
-                value = _stackk.pop();
-                _stackk.top() = int32_t(_stackk.top()) / int32_t(value);
+                value = _stack.pop();
+                _stack.top() = int32_t(_stack.top()) / int32_t(value);
                 break;
             case Op::DivFloat:
-                value = _stackk.pop();
-                _stackk.top() = floatToInt(intToFloat(_stackk.top()) / intToFloat(value));
+                value = _stack.pop();
+                _stack.top() = floatToInt(intToFloat(_stack.top()) / intToFloat(value));
                 break;
             case Op::NegInt:
-                _stackk.top() = -int32_t(_stackk.top());
+                _stack.top() = -int32_t(_stack.top());
                 break;
             case Op::NegFloat:
-                _stackk.top() = floatToInt(-intToFloat(_stackk.top()));
+                _stack.top() = floatToInt(-intToFloat(_stack.top()));
                 break;
 
             case Op::Log:
                 // Log tos-i and current addr
                 i = getI();
-                log(_pc - 1, i, int32_t(_stackk.top(i)));
+                log(_pc - 1, i, int32_t(_stack.top(i)));
                 break;
             case Op::LogFloat:
                 // Log tos-i and current addr
                 i = getI();
-                logFloat(_pc - 1, i, intToFloat(_stackk.top(i)));
+                logFloat(_pc - 1, i, intToFloat(_stack.top(i)));
                 break;
             case Op::LogColor:
                 // Log color[i] and current addr

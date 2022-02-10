@@ -306,7 +306,7 @@ private:
         }
 
         // Local address. Relative to current bp.
-        return _stackk.local(id - LocalStart + index);        
+        return _stack.local(id - LocalStart + index);        
     }
     
     void storeInt(uint8_t id, uint32_t v) { storeInt(id, 0, v); }
@@ -327,7 +327,7 @@ private:
             
         // Local address. Relative to current bp.
         uint32_t addr = uint32_t(id) - LocalStart + uint32_t(index);
-        _stackk.local(addr) = v;
+        _stack.local(addr) = v;
     }
     
     void setAllLights(uint8_t c);
@@ -346,7 +346,7 @@ private:
     uint16_t _globalSize = 0;
     
     uint16_t _pc = 0;
-    Stack _stackk;
+    Stack _stack;
     
     uint16_t _constOffset = 0; // In bytes
     uint8_t _numParams = 0;
