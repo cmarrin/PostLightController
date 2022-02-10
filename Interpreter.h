@@ -74,12 +74,14 @@ public:
         UnexpectedOpInIf,
 		InvalidOp,
         OnlyMemAddressesAllowed,
-        StackOverrun,
         AddressOutOfRange,
         InvalidColorComp,
         ExpectedSetFrame,
         InvalidNativeFunction,
         MisalignedStack,
+        StackOverrun,
+        StackUnderrun,
+        StackOutOfRange,
     };
     
     enum class NativeFunction {
@@ -128,6 +130,103 @@ protected:
     virtual void logColor(uint16_t addr, uint8_t r, const Color& c) const = 0;
 
 private:
+    enum class ExceptionSource { Exec, Stack };
+    
+    class Stack
+    {
+    public:
+        void alloc(uint16_t size)
+        {
+            if (_stack) {
+                delete [ ] _stack;
+            }
+            _size = size;
+            _stack = new uint32_t [size];
+        }
+            
+        void push(uint32_t v) { ensurePush(); _stack[_sp++] = v; }
+        uint32_t pop() { ensureCount(1); return _stack[--_sp]; }
+        void swap()
+        {
+            ensureCount(2); 
+            uint32_t t = _stack[_sp - 1];
+            _stack[_sp - 1] = _stack[_sp - 2];
+            _stack[_sp - 2] = t;
+        }
+        
+        const uint32_t& top(uint8_t rel = 0) const { ensureRel(rel); return _stack[_sp - rel - 1]; }
+        uint32_t& top(uint8_t rel = 0) { ensureRel(rel); return _stack[_sp - rel - 1]; }
+        const uint32_t& local(uint16_t addr) const { return get(addr + _bp); }
+        uint32_t& local(uint16_t addr) { return get(addr + _bp); }
+
+        bool empty() const { return _sp == 0; }
+
+    void setFrame(uint8_t params, uint8_t locals)
+    {
+        uint16_t savedPC = pop();
+        _sp += locals;
+        push(savedPC);
+        push(_bp);
+        int16_t newBP = _sp - params - locals - 2;
+        if (newBP < 0) {
+            _error = Error::MisalignedStack;
+            throw ExceptionSource::Stack;
+        }
+        _bp = newBP;
+    }
+
+    uint16_t restoreFrame(uint32_t returnValue)
+    {
+        uint16_t savedBP = pop();
+        uint16_t pc = pop();
+        _sp = _bp;
+        _bp = savedBP;
+        push(returnValue);
+        return pc;
+    }
+
+    private:
+        void ensureCount(uint8_t n) const
+        {
+            if (_sp < n) {
+                _error = Error::StackUnderrun;
+                throw ExceptionSource::Stack;
+            }
+        }
+        
+        void ensureRel(uint8_t rel) const
+        {
+            int16_t addr = _sp - rel - 1;
+            if (addr < 0 || addr >= _size) {
+                _error = Error::StackOutOfRange;
+                throw ExceptionSource::Stack;
+            }
+        }
+        
+        void ensurePush() const
+        {
+            if (_sp >= _size) {
+                _error = Error::StackOverrun;
+                throw ExceptionSource::Stack;
+            }
+        }
+        
+        uint32_t& get(uint16_t addr) const
+        {
+            if (addr >= _size) {
+                _error = Error::StackOverrun;
+                throw ExceptionSource::Stack;
+            }
+            return _stack[addr];
+        }
+        
+        uint32_t* _stack = nullptr;
+        uint16_t _size = 0;
+        uint16_t _sp = 0;
+        uint16_t _bp = 0;
+        mutable Error _error = Error::None;
+    };
+
     int32_t execute(uint16_t addr);
     
     // Index is in bytes
@@ -207,7 +306,7 @@ private:
         }
 
         // Local address. Relative to current bp.
-        return _stack[id - LocalStart + index + _bp];        
+        return _stackk.local(id - LocalStart + index);        
     }
     
     void storeInt(uint8_t id, uint32_t v) { storeInt(id, 0, v); }
@@ -227,17 +326,10 @@ private:
         }
             
         // Local address. Relative to current bp.
-        uint32_t addr = uint32_t(id) - LocalStart + uint32_t(index) + _bp;
-        if (addr >= MaxStackSize) {
-            _error = Error::AddressOutOfRange;
-            _errorAddr = _pc - 1;
-        } else {
-            _stack[addr] = v;
-        }
+        uint32_t addr = uint32_t(id) - LocalStart + uint32_t(index);
+        _stackk.local(addr) = v;
     }
     
-    bool setFrame(uint8_t params, uint8_t locals);
-    bool restoreFrame(uint32_t returnValue);
     void setAllLights(uint8_t c);
 
     int32_t animate(uint32_t index);
@@ -253,12 +345,9 @@ private:
 
     uint32_t* _global = nullptr;
     uint16_t _globalSize = 0;
-    uint32_t* _stack = nullptr;
-    uint16_t _stackSize = 0;
     
     uint16_t _pc = 0;
-    uint16_t _sp = 0;
-    uint16_t _bp = 0;
+    Stack _stackk;
     
     uint16_t _constOffset = 0; // In bytes
     uint8_t _numParams = 0;
