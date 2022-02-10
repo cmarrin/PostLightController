@@ -78,7 +78,7 @@ public:
         InvalidColorComp,
         ExpectedSetFrame,
         InvalidNativeFunction,
-        MisalignedStack,
+        NotEnoughArgs,
         StackOverrun,
         StackUnderrun,
         StackOutOfRange,
@@ -160,30 +160,31 @@ private:
         uint32_t& local(uint16_t addr) { return get(addr + _bp); }
 
         bool empty() const { return _sp == 0; }
-
-    void setFrame(uint8_t params, uint8_t locals)
-    {
-        uint16_t savedPC = pop();
-        _sp += locals;
-        push(savedPC);
-        push(_bp);
-        int16_t newBP = _sp - params - locals - 2;
-        if (newBP < 0) {
-            _error = Error::MisalignedStack;
-            throw ExceptionSource::Stack;
+        Error error() const { return _error; }
+        
+        void setFrame(uint8_t params, uint8_t locals)
+        {
+            uint16_t savedPC = pop();
+            _sp += locals;
+            push(savedPC);
+            push(_bp);
+            int16_t newBP = _sp - params - locals - 2;
+            if (newBP < 0) {
+                _error = Error::NotEnoughArgs;
+                throw ExceptionSource::Stack;
+            }
+            _bp = newBP;
         }
-        _bp = newBP;
-    }
 
-    uint16_t restoreFrame(uint32_t returnValue)
-    {
-        uint16_t savedBP = pop();
-        uint16_t pc = pop();
-        _sp = _bp;
-        _bp = savedBP;
-        push(returnValue);
-        return pc;
-    }
+        uint16_t restoreFrame(uint32_t returnValue)
+        {
+            uint16_t savedBP = pop();
+            uint16_t pc = pop();
+            _sp = _bp;
+            _bp = savedBP;
+            push(returnValue);
+            return pc;
+        }
 
     private:
         void ensureCount(uint8_t n) const

@@ -165,7 +165,7 @@ Opcodes:
     PushRef id              - stack[sp++] = id
     PushRefX id i           - t = stack[--sp], stack[sp++] = id + t * i
     PushDeref i             - t = stack[--sp], stack[sp++] = mem[t + i]
-    PopDeref i              - t = stack[--sp], mem[t + i] = stack[--sp]
+    PopDeref i              - v = stack[--sp], mem[stack[--sp] + i] = t
     
     Dup                     - stack[sp++] = stack[sp]
     Drop                    - --sp

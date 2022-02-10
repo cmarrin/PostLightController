@@ -40,6 +40,7 @@ var float pulseState 4 // cur, inc, min, max
 
 function constantInit
 	PushZero
+	PushZero
 	CallNative LoadColorParam
 	Drop
 end
@@ -170,7 +171,6 @@ function pulseInit
 	Dup
 	Push BrightnessMin
 	SubFloat
-	
 	PushIntConst 4
 	CallNative Param
 	PushIntConst 1
@@ -197,6 +197,7 @@ function pulseInit
 	SubInt
 	CallNative Float
 	Push PulseSpeedMult
+	CallNative Float
 	MulFloat
 	DivFloat
 	PopDeref LEDInc

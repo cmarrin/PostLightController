@@ -75,7 +75,10 @@ Interpreter::init(uint8_t cmd, const uint8_t* buf, uint8_t size)
     try {
         execute(_initStart);
     }
-    catch(...) {
+    catch(ExceptionSource src) {
+        if (src == ExceptionSource::Stack) {
+            _error = _stackk.error();
+        }
         return false;
     }
     
@@ -146,8 +149,8 @@ Interpreter::execute(uint16_t addr)
             case Op::PopDeref:
                 i = getI();
                 value = _stackk.pop();
-                index = value + i;
-                storeInt(index, _stackk.pop());
+                index = _stackk.pop() + i;
+                storeInt(index, value);
                 break;
 
             case Op::Dup:

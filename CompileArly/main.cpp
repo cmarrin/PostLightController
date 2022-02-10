@@ -39,12 +39,12 @@ public:
     virtual void log(uint16_t addr, uint8_t r, int32_t v) const override
     {
         logAddr(addr);
-        std::cout << ": r[" << uint32_t(r) << "] = " << v << std::endl;
+        std::cout << ": tos-" << uint32_t(r) << " = " << v << std::endl;
     }
     virtual void logFloat(uint16_t addr, uint8_t r, float v) const override
     {
         logAddr(addr);
-        std::cout << ": r[" << uint32_t(r) << "] = " << v << std::endl;
+        std::cout << ": tos-" << uint32_t(r) << " = " << v << std::endl;
     }
 
     virtual void logColor(uint16_t addr, uint8_t r, const Color& c) const override
@@ -80,9 +80,9 @@ struct Test
 };
 
 static std::vector<Test> Tests = {
-    { 'p', { 40, 224, 250, 7, 7 } },
-    { 'c', { 240, 224, 64 } },
-    { 'f', { 20, 224, 200, 0 } },
+    //{ 'p', { 40, 224, 250, 7, 7 } },
+    //{ 'c', { 240, 224, 64 } },
+    //{ 'f', { 20, 224, 200, 0 } },
 };
 
 static void showError(arly::Compiler::Error error, arly::Token token, const std::string& str, uint32_t lineno)
@@ -308,7 +308,7 @@ int main(int argc, char * const argv[])
                     case arly::Interpreter::Error::AddressOutOfRange: err = "address out of range"; break;
                     case arly::Interpreter::Error::InvalidColorComp: err = "invalid color component"; break;
                     case arly::Interpreter::Error::ExpectedSetFrame: err = "expected SetFrame as first function op"; break;
-                    case arly::Interpreter::Error::MisalignedStack: err = "misaligned stack"; break;
+                    case arly::Interpreter::Error::NotEnoughArgs: err = "not enough args on stack"; break;
                 }
                 std::cout << "Interpreter failed: " << err;
                 
