@@ -72,16 +72,10 @@ Interpreter::init(uint8_t cmd, const uint8_t* buf, uint8_t size)
     _loopStart += _codeOffset;
     
     // Execute init();
-    try {
-        execute(_initStart);
+    execute(_initStart);
+    if (_error == Error::None) {
+        _error = _stack.error();
     }
-    catch(ExceptionSource src) {
-        if (src == ExceptionSource::Stack) {
-            _error = _stackk.error();
-        }
-        return false;
-    }
-    
     return _error == Error::None;
 }
 
@@ -97,7 +91,11 @@ Interpreter::execute(uint16_t addr)
     _pc = addr;
     
     while(1) {
+        if (_stack.error() != Error::None) {
+            _error = _stack.error();
+        }
         if (_error != Error::None) {
+            _errorAddr = _pc - 1;
             return -1;
         }
         
@@ -115,7 +113,6 @@ Interpreter::execute(uint16_t addr)
         switch(Op(cmd)) {
 			default:
 				_error = Error::InvalidOp;
-                _errorAddr = _pc - 1;
 				return -1;
             case Op::Push:
                 id = getId();
@@ -191,7 +188,6 @@ Interpreter::execute(uint16_t addr)
                 // Only global or local
                 if (id < GlobalStart) {
                     _error = Error::OnlyMemAddressesAllowed;
-                    _errorAddr = _pc - 1;
                     return -1;
                 }
                 
@@ -231,7 +227,6 @@ Interpreter::execute(uint16_t addr)
                         // We have an Else, execute it
                         getSz(); // Ignore Sz
                     } else {
-                        _errorAddr = _pc - 1;
                         _error = Error::UnexpectedOpInIf;
                         return -1;
                     }
@@ -249,7 +244,6 @@ Interpreter::execute(uint16_t addr)
                 if (_foreachSz >= 0) {
                     // Can't do nested for loops
                     _error = Error::NestedForEachNotAllowed;
-                    _errorAddr = _pc - 1;
                     return -1;
                 }
                 
@@ -284,7 +278,6 @@ Interpreter::execute(uint16_t addr)
                 
                 if (Op(getUInt8ROM(_pc)) != Op::SetFrame) {
                     _error = Error::ExpectedSetFrame;
-                    _errorAddr = _pc - 1;
                     return -1;
                 }
                 break;
@@ -298,48 +291,59 @@ Interpreter::execute(uint16_t addr)
                 switch(NativeFunction(id)) {
                     case NativeFunction::None:
                         _error = Error::InvalidNativeFunction;
-                        _errorAddr = _pc - 1;
                         return -1;
                     case NativeFunction::LoadColorParam: {
-                        _stackk.setFrame(2, 0);
                         uint32_t r = _stackk.local(0);
                         uint32_t i = _stackk.local(1);
+                        if (!_stack.setFrame(2, 0)) {
+                            return -1;
+                        }
                         _c[r] = Color(_params[i], _params[i + 1], _params[i + 2]);
                         _pc = _stackk.restoreFrame(0);
                         break;
                     }
                     case NativeFunction::SetAllLights: {
-                        _stackk.setFrame(1, 0);
                         uint32_t r = _stackk.local(0);
+                        if (!_stack.setFrame(1, 0)) {
+                            return -1;
+                        }
                         setAllLights(r);
                         _pc = _stackk.restoreFrame(0);
                         break;
                     }
                     case NativeFunction::SetLight: {
-                        _stackk.setFrame(2, 0);
                         uint32_t i = _stackk.local(0);
                         uint32_t r = _stackk.local(1);
+                        if (!_stack.setFrame(2, 0)) {
+                            return -1;
+                        }
                         setLight(i, _c[r].rgb());
                         _pc = _stackk.restoreFrame(0);
                         break;
                     }
                     case NativeFunction::Animate: {
-                        _stackk.setFrame(1, 0);
                         uint32_t i = _stackk.local(0);
                         _pc = _stackk.restoreFrame(animate(i));
+                        if (!_stack.setFrame(1, 0)) {
+                            return -1;
+                        }
                         
                         break;
                     }
                     case NativeFunction::Param: {
-                        _stackk.setFrame(1, 0);
                         uint32_t i = _stackk.local(0);
                         _pc = _stackk.restoreFrame(uint32_t(_params[i]));
+                        if (!_stack.setFrame(1, 0)) {
+                            return -1;
+                        }
                         break;
                     }
                     case NativeFunction::LoadColorComp: {
-                        _stackk.setFrame(2, 0);
                         uint32_t c = _stackk.local(0);
                         uint32_t i = _stackk.local(1);
+                        if (!_stack.setFrame(2, 0)) {
+                            return -1;
+                        }
                         float comp;
                         switch(i) {
                             case 0: comp = _c[c].hue(); break;
@@ -347,17 +351,18 @@ Interpreter::execute(uint16_t addr)
                             case 2: comp = _c[c].val(); break;
                             default:
                                 _error = Error::InvalidColorComp;
-                                _errorAddr = _pc - 1;
                                 return -1;
                         }
                         _pc = _stackk.restoreFrame(floatToInt(comp));
                         break;
                     }
                     case NativeFunction::StoreColorComp: {
-                        _stackk.setFrame(3, 0);
                         uint32_t c = _stackk.local(0);
                         uint32_t i = _stackk.local(1);
                         float v = intToFloat(_stackk.local(2));
+                        if (!_stack.setFrame(3, 0)) {
+                            return -1;
+                        }
                         switch(i) {
                             case 0: _c[c].setHue(v); break;
                             case 1: _c[c].setSat(v); break;
@@ -371,15 +376,19 @@ Interpreter::execute(uint16_t addr)
                         break;
                     }
                     case NativeFunction::Float: {
-                        _stackk.setFrame(1, 0);
                         uint32_t v = _stackk.local(0);
                         _pc = _stackk.restoreFrame(floatToInt(float(v)));
+                        if (!_stack.setFrame(1, 0)) {
+                            return -1;
+                        }
                         break;
                     }
                     case NativeFunction::Int: {
-                        _stackk.setFrame(1, 0);
                         float v = intToFloat(_stackk.local(0));
                         _pc = _stackk.restoreFrame(uint32_t(int32_t(v)));
+                        if (!_stack.setFrame(1, 0)) {
+                            return -1;
+                        }
                         break;
                     }
                 }
@@ -396,7 +405,9 @@ Interpreter::execute(uint16_t addr)
             }
             case Op::SetFrame:
                 getPL(numParams, numLocals);
-                _stackk.setFrame(numParams, numLocals);
+                if (!_stack.setFrame(numParams, numLocals)) {
+                    return -1;
+                }
                 break;
 
             case Op::Or:    _stackk.top() |= _stackk.pop(); break;

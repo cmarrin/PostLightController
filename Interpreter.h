@@ -129,9 +129,7 @@ protected:
     virtual void logFloat(uint16_t addr, uint8_t r, float v) const = 0;
     virtual void logColor(uint16_t addr, uint8_t r, const Color& c) const = 0;
 
-private:
-    enum class ExceptionSource { Exec, Stack };
-    
+private:    
     class Stack
     {
     public:
@@ -162,7 +160,7 @@ private:
         bool empty() const { return _sp == 0; }
         Error error() const { return _error; }
         
-        void setFrame(uint8_t params, uint8_t locals)
+        bool setFrame(uint8_t params, uint8_t locals)
         {
             uint16_t savedPC = pop();
             _sp += locals;
@@ -171,9 +169,10 @@ private:
             int16_t newBP = _sp - params - locals - 2;
             if (newBP < 0) {
                 _error = Error::NotEnoughArgs;
-                throw ExceptionSource::Stack;
+                return false;
             }
             _bp = newBP;
+            return true;
         }
 
         uint16_t restoreFrame(uint32_t returnValue)
@@ -190,33 +189,33 @@ private:
         void ensureCount(uint8_t n) const
         {
             if (_sp < n) {
+                // Set the error, but let the exec catch it
                 _error = Error::StackUnderrun;
-                throw ExceptionSource::Stack;
             }
         }
         
         void ensureRel(uint8_t rel) const
         {
             int16_t addr = _sp - rel - 1;
-            if (addr < 0 || addr >= _size) {
+            if (addr < 0 || addr >= int16_t(_size)) {
+                // Set the error, but let the exec catch it
                 _error = Error::StackOutOfRange;
-                throw ExceptionSource::Stack;
             }
         }
         
         void ensurePush() const
         {
             if (_sp >= _size) {
+                // Set the error, but let the exec catch it
                 _error = Error::StackOverrun;
-                throw ExceptionSource::Stack;
             }
         }
         
         uint32_t& get(uint16_t addr) const
         {
             if (addr >= _size) {
+                // Set the error, but let the exec catch it
                 _error = Error::StackOverrun;
-                throw ExceptionSource::Stack;
             }
             return _stack[addr];
         }
