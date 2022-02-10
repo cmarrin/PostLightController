@@ -340,7 +340,6 @@ private:
     uint8_t _params[ParamsSize];
     uint8_t _paramsSize = 0;
 
-    uint32_t _v[4];
     Color _c[4];
 
     uint32_t* _global = nullptr;
@@ -357,7 +356,7 @@ private:
     
     int16_t _foreachSz = -1; // -1 means no foreach is active
     uint8_t _foreachId = 0;
-    uint32_t _foreachCount = 0;
+    int32_t _foreachCount = 0;
     uint16_t _foreachLoopAddr = 0;
 };
 

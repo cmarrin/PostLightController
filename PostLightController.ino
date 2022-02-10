@@ -259,12 +259,6 @@ public:
 								        case Device::Error::OnlyMemAddressesAllowed:
 										errorMsg = F("only memory addresses allowed");
 										break;
-								        case Device::Error::StackOverrun:
-										errorMsg = F("can't call, stack full");
-										break;
-								        case Device::Error::MisalignedStack:
-										errorMsg = F("misaligned stack");
-										break;
 								        case Device::Error::AddressOutOfRange:
 										errorMsg = F("address out of range");
 										break;
@@ -276,6 +270,18 @@ public:
 										break;
 								        case Device::Error::InvalidNativeFunction:
 										errorMsg = F("invalid native function");
+										break;
+								        case Device::Error::NotEnoughArgs:
+										errorMsg = F("not enough args on stack");
+										break;
+								        case Device::Error::StackOverrun:
+										errorMsg = F("can't call, stack full");
+										break;
+								        case Device::Error::StackUnderrun:
+										errorMsg = F("stack underrun");
+										break;
+								        case Device::Error::StackOutOfRange:
+										errorMsg = F("stack access out of range");
 										break;
 									}
 
