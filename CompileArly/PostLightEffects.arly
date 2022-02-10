@@ -100,12 +100,13 @@ function flickerLoop
             // Increment inc value for each step a random amount
             
             // led.cur = BrightnessMin
-            Push BrightnessMin
 			Push led
 			Dup
 			Dup
 			Dup
 			Dup
+            Push BrightnessMin
+
             PopDeref LEDCur
                 
             // led.inc = Random(IncMin, IncMax)
