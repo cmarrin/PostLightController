@@ -14,22 +14,42 @@
 using namespace arly;
 
 static std::vector<OpData> _opcodes = {
-    { "LoadRef",        Op::LoadRef         , OpParams::R_Id },
-    { "LoadRefX",       Op::LoadRefX        , OpParams::Rd_Id_Rs_I },
-    { "LoadDeref",      Op::LoadDeref       , OpParams::Rd_Rs_I },
-    { "StoreDeref",     Op::StoreDeref      , OpParams::Rd_I_Rs },
+    { "Push",           Op::Push            , OpParams::Id },
+    { "Pop",            Op::Pop             , OpParams::Id },
+    { "PushZero",       Op::PushZero        , OpParams::None },
+    { "PushIntConst",   Op::PushIntConst    , OpParams::Const },
+
+    { "PushRef",        Op::PushRef         , OpParams::Id },
+    { "PushRefX",       Op::PushRefX        , OpParams::Id_I },
+    { "PushDeref",      Op::PushDeref       , OpParams::I },
+    { "PopDeref",       Op::PopDeref        , OpParams::I },
+
+    { "Dup",            Op::Dup             , OpParams::None },
+    { "Drop",           Op::Drop            , OpParams::None },
+    { "Swap",           Op::Swap            , OpParams::None },
     
-    { "MoveColor",      Op::MoveColor       , OpParams::Cd_Cs },
-    { "Move",           Op::Move            , OpParams::Rd_Rs },
-    { "LoadColorComp",  Op::LoadColorComp   , OpParams::Rd_Cs_I },
-    { "StoreColorComp", Op::StoreColorComp  , OpParams::Cd_I_Rs },
     { "MinInt",         Op::MinInt          , OpParams::None },
     { "MinFloat",       Op::MinFloat        , OpParams::None },
     { "MaxInt",         Op::MaxInt          , OpParams::None },
     { "MaxFloat",       Op::MaxFloat        , OpParams::None },
+
+    { "Exit",           Op::Exit            , OpParams::None },
+    { "ToFloat",        Op::ToFloat         , OpParams::None },
+    { "ToInt",          Op::ToInt           , OpParams::None },
+
     { "Init",           Op::Init            , OpParams::Id },
     { "RandomInt",      Op::RandomInt       , OpParams::None },
     { "RandomFloat",    Op::RandomFloat     , OpParams::None },
+    
+    { "if",             Op::If              , OpParams::Sz },
+    { "else",           Op::Else            , OpParams::Sz },
+    { "foreach",        Op::ForEach         , OpParams::Id_Sz },
+
+    { "Call",           Op::Call            , OpParams::Target },
+    { "CallNative",     Op::CallNative      , OpParams::Const },
+    { "Return",         Op::Return          , OpParams::None },
+    { "SetFrame",       Op::SetFrame        , OpParams::P_L },
+    
     { "Or",             Op::Or              , OpParams::None },
     { "Xor",            Op::Xor             , OpParams::None },
     { "And",            Op::And             , OpParams::None },
@@ -59,28 +79,10 @@ static std::vector<OpData> _opcodes = {
     { "DivFloat",       Op::DivFloat        , OpParams::None },
     { "NegInt",         Op::NegInt          , OpParams::None },
     { "NegFloat",       Op::NegFloat        , OpParams::None },
-    { "LoadIntParam",   Op::LoadIntParam    , OpParams::Rd_I },
-    { "LoadFloatParam", Op::LoadFloatParam  , OpParams::Rd_I },
-    { "Load",           Op::Load            , OpParams::R_Id },
-    { "Store",          Op::Store           , OpParams::Id_R },
-    { "LoadBlack",      Op::LoadBlack       , OpParams::C },
-    { "LoadZero",       Op::LoadZero        , OpParams::R },
-    { "LoadIntConst",   Op::LoadIntConst    , OpParams::R_Const },
-    { "Exit",           Op::Exit            , OpParams::R },
-    { "Call",           Op::Call            , OpParams::Target },
-    { "CallNative",     Op::CallNative      , OpParams::Const },
-    { "Return",         Op::Return          , OpParams::None },
-    { "Push",           Op::Push            , OpParams::None },
-    { "Pop",            Op::Pop             , OpParams::None },
-    { "SetFrame",       Op::SetFrame        , OpParams::P_L },
-    { "ToFloat",        Op::ToFloat         , OpParams::R },
-    { "ToInt",          Op::ToInt           , OpParams::R },
-    { "foreach",        Op::ForEach         , OpParams::R_Sz },
-    { "if",             Op::If              , OpParams::Sz },
-    { "else",           Op::Else            , OpParams::Sz },
-    { "Log",            Op::Log             , OpParams::R },
-    { "LogFloat",       Op::LogFloat        , OpParams::R },
-    { "LogColor",       Op::LogColor        , OpParams::C },
+    
+    { "Log",            Op::Log             , OpParams::I },
+    { "LogFloat",       Op::LogFloat        , OpParams::I },
+    { "LogColor",       Op::LogColor        , OpParams::I },
 };
 
 CompileEngine::CompileEngine(std::istream* stream)

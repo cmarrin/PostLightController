@@ -136,9 +136,11 @@ protected:
         _rom8.push_back(i);
     }
     
+    void addOpI(Op op, uint8_t i) { addOpRInt(op, 0, i); }
     void addOpId(Op op, uint8_t id) { addOpRInt(op, 0, id); }
+    void addOpIdI(Op op, uint8_t id, uint8_t i) { addOpRdIdRsI(op, 0, id, 0, i); }
     void addOpRId(Op op, uint8_t r, uint8_t id) { addOpRInt(op, r, id); }
-    void addOpRConst(Op op, uint8_t r, uint8_t c) { addOpRInt(op, r, c); }
+    void addOpConst(Op op, uint8_t c) { addOpRInt(op, 0, c); }
     
     void addOpTarg(Op op, uint16_t targ)
     {

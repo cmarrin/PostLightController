@@ -39,173 +39,195 @@ var int i 1
 var float pulseState 4 // cur, inc, min, max
 
 function constantInit
-	LoadZero r0
-	Push
-	Push
+	PushZero
 	CallNative LoadColorParam
+	Drop
 end
 
 function constantLoop
-	LoadZero r0
-	Push
+	PushZero
 	CallNative SetAllLights
-    LoadZero r0
-    Exit r0
+	Drop
+    PushZero
+    Exit
 end
 
 function flickerInit
     // Get color param
-	LoadZero r0
-	Push
-	Push
+	PushZero
+	PushZero
 	CallNative LoadColorParam
+	Drop
     
     // Init leds
-    LoadZero r0
-    Load r1 LedSize
+    PushZero
+    Push LedSize
     Init flickerLeds
     
     // Init min, max and delay from SpeedTable
-    LoadIntParam r0 3
-    LoadRefX r1 FlickerSpeedTable r0 SpeedTableEntrySize
-    LoadDeref r0 r1 0
-    Store flickerStepsMin r0
-    LoadDeref r0 r1 1
-    Store flickerStepsMax r0
-    LoadDeref r0 r1 2
-    ToInt r0
-    Store flickerSpeedDelay r0
+	PushIntConst 3
+	CallNative Param
+    PushRefX FlickerSpeedTable SpeedTableEntrySize
+	Dup
+	Dup
+    PushDeref 0
+    Pop flickerStepsMin
+    PushDeref 1
+    Pop flickerStepsMax
+    PushDeref 2
+    ToInt
+    Pop flickerSpeedDelay
 end
 
 function flickerLoop
-    LoadZero r2
-    Load r0 NumPixels
+	PushZero
+	Pop i
+    Push NumPixels
     
     // for (i = 0; i < NumPixels; ++i)
-    foreach r2
+    foreach i
         // Set r0 to point at the current LED
-        LoadRefX r0 flickerLeds r2 4
-        Store led r0
-        Store i r2
-		Push
+		Push i
+        PushRefX flickerLeds 4
+		Dup
+        Pop led
 		CallNative Animate
-        Load r2 i
 
-        // On return r0 is 1 if we have completed the throb
+        // On return TOS is 1 if we have completed the throb
         if
             // We are done with the throb, select a new inc and lim
             // Increment inc value for each step a random amount
-            Load r3 led            
             
             // led.cur = BrightnessMin
-            Load r0 BrightnessMin
-            StoreDeref r3 LEDCur r0
+            Push BrightnessMin
+			Push led
+			Dup
+			Dup
+			Dup
+			Dup
+            PopDeref LEDCur
                 
             // led.inc = Random(IncMin, IncMax)
-            Load r0 IncMin
-            Load r1 IncMax
+            Push IncMin
+            Push IncMax
             RandomFloat
-            StoreDeref r3 LEDInc r0
+            PopDeref LEDInc
         
             // Random number of steps to throb up and down
             // led.min = BrightnessMin
-            Load r0 BrightnessMin
-            StoreDeref r3 LEDMin r0
+            Push BrightnessMin
+            PopDeref LEDMin
 
             // led.max = led.inc + Random(flickerStepsMin, flickerStepsMax);
-            Load r0 flickerStepsMin
-            Load r1 flickerStepsMax
+            PushDeref LEDInc
+            Push flickerStepsMin
+            Push flickerStepsMax
             RandomFloat
-            LoadDeref r1 r3 LEDInc
             AddFloat
-            StoreDeref r3 LEDMax r0
+            PopDeref LEDMax
         end
 
         // c0.val = led.cur
-        Load r3 led            
-        LoadDeref r0 r3 LEDCur
-        StoreColorComp c0 ColorVal r0
-		Move r0 r2
-		Push
-		LoadZero r0
-		Push
+		PushZero
+		PushIntConst 2
+        Push led            
+        PushDeref LEDCur
+		CallNative StoreColorComp
+		Drop
+		
+		// SetLight(i, c0)
+		Push i
+		PushZero
 		CallNative SetLight
+		Drop
     end
     
     // return flickerSpeedDelay
-    Load r0 flickerSpeedDelay
-    Exit r0
+    Push flickerSpeedDelay
+    Exit
 end
 
 function pulseInit
-	LoadZero r0
-	Push
-	Push
+	PushZero
+	PushZero
 	CallNative LoadColorParam
+	Drop
     
-    // Keep index in r3
-    LoadRef r3 pulseState
+    PushRef pulseState
 
-    // max = c.val
-    LoadColorComp r0 c0 ColorVal
-    StoreDeref r3 LEDMax r0
+    // pulseState.max = c.val
+    PushRef pulseState
+	PushZero
+	PushIntConst 2
+    CallNative LoadColorComp
+    PopDeref LEDMax
     
-    // min = c.val - (float(depth + 1) / 8 * (c.val - BrightnessMin))
-    LoadIntParam r0 4
-    LoadIntConst r1 1
-    AddInt
-    ToFloat r0
-    Load r1 NumLevels
-    ToFloat r1
-    DivFloat
-    Move r2 r0
-    LoadColorComp r0 c0 ColorVal
-    Load r1 BrightnessMin
-    SubFloat
-    Move r1 r2
-    MulFloat
-    Move r1 r0
-    LoadColorComp r0 c0 ColorVal
-    SubFloat
-    StoreDeref r3 LEDMin r0
+    // pulseState.min = c.val - (float(depth + 1) / float(NumLevels) * (c.val - BrightnessMin))
+    PushRef pulseState
+	PushZero
+	PushIntConst 2
+    CallNative LoadColorComp
+	Dup
+	Push BrightnessMin
+	SubFloat
+	
+	PushIntConst 4
+	CallNative Param
+	PushIntConst 1
+	AddInt
+	CallNative Float
+	
+	Push NumLevels
+	CallNative Float
+	DivFloat
+	MulFloat
+	SubFloat
+    PopDeref LEDMin
 
-    // inc = (max - min) / float((NumLevels - speed) * PulseSpeedMult)
-    LoadDeref r0 r3 LEDMax
-    LoadDeref r1 r3 LEDMin
-    SubFloat
-    Move r2 r0
-    Load r0 NumLevels
-    LoadIntParam r1 3
-    SubInt
-    Load r1 PulseSpeedMult
-    MulInt
-    ToFloat r0
-    Move r1 r0
-    Move r0 r2
-    DivFloat
-    StoreDeref r3 LEDInc r0
+    // pulseState.inc = (pulseState.max - pulseState.min) / float((NumLevels - speed) * PulseSpeedMult)
+    PushRef pulseState
+	Dup
+	PushDeref LEDMax
+    PushRef pulseState
+	PushDeref LEDMin
+	SubFloat
+	Push NumLevels
+	PushIntConst 3
+	CallNative Param
+	SubInt
+	CallNative Float
+	Push PulseSpeedMult
+	MulFloat
+	DivFloat
+	PopDeref LEDInc
 
     // Start with a random value for cur
-    LoadDeref r0 r3 LEDMin
-    LoadDeref r1 r3 LEDMax
+    PushRef pulseState
+	Dup
+    PushDeref LEDMin
+	Swap
+    PushDeref LEDMax
     RandomFloat
-    StoreDeref r3 LEDCur r0
+    PopDeref LEDCur
 end
 
 function pulseLoop
-    LoadRef r0 pulseState
-    Push
+	PushZero
+	PushIntConst 2
+    PushRef pulseState
+	Dup
     CallNative Animate
-    LoadRef r3 pulseState
-    LoadDeref r0 r3 LEDCur
-    StoreColorComp c0 ColorVal r0
+	Drop
+    PushDeref LEDCur
+    CallNative StoreColorComp
+	Drop
 	
-	LoadZero r0
-	Push
+	PushZero
 	CallNative SetAllLights
+	Drop
 	
-    Load r0 PulseDelay
-    Exit r0
+    Push PulseDelay
+    Exit
 end
 
 effect c 3 constantInit constantLoop

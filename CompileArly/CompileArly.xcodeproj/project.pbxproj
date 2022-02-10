@@ -7,10 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		491A56E727B4946700AC5FBC /* CloverCompileEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4963436527A4BCC000ABF09F /* CloverCompileEngine.cpp */; };
 		491DED262793225B00D007C2 /* Interpreter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 491DED242793225B00D007C2 /* Interpreter.cpp */; };
 		491DED29279385B700D007C2 /* Color.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 491DED27279385B700D007C2 /* Color.cpp */; };
 		4963436C27A81DA200ABF09F /* CompileEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4963436B27A81DA200ABF09F /* CompileEngine.cpp */; };
-		4963436D27A82AA900ABF09F /* CloverCompileEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4963436527A4BCC000ABF09F /* CloverCompileEngine.cpp */; };
 		49DAA647278B212E00F67EEB /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49DAA646278B212E00F67EEB /* main.cpp */; };
 		49DAA651278B3AFE00F67EEB /* Compiler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49DAA64F278B3AFE00F67EEB /* Compiler.cpp */; };
 		49DAA657278CD00500F67EEB /* Scanner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49DAA656278CD00500F67EEB /* Scanner.cpp */; };
@@ -178,7 +178,7 @@
 				491DED29279385B700D007C2 /* Color.cpp in Sources */,
 				49DAA6602791C0A500F67EEB /* Decompiler.cpp in Sources */,
 				49DAA657278CD00500F67EEB /* Scanner.cpp in Sources */,
-				4963436D27A82AA900ABF09F /* CloverCompileEngine.cpp in Sources */,
+				491A56E727B4946700AC5FBC /* CloverCompileEngine.cpp in Sources */,
 				491DED262793225B00D007C2 /* Interpreter.cpp in Sources */,
 				49DAA65D2791B78A00F67EEB /* ArlyCompileEngine.cpp in Sources */,
 				4963436C27A81DA200ABF09F /* CompileEngine.cpp in Sources */,

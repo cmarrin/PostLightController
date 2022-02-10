@@ -225,112 +225,25 @@ Decompiler::statement()
     switch(opData._par) {
         case OpParams::None:
             break;
-        case OpParams::R:
-            _out->append(regString(r));
-            break;
-        case OpParams::C:
-            _out->append(colorString(r));
-            break;
-        case OpParams::Rd_I:
-            rdrsi = getUInt8();
-            _out->append(regString(rdrsi >> 6));
-            _out->append(" ");
-            _out->append(std::to_string(rdrsi & 0x0f));
-            break;
-        case OpParams::I_Rs:
-            rdrsi = getUInt8();
-            _out->append(std::to_string(rdrsi & 0x0f));
-            _out->append(" ");
-            _out->append(regString((rdrsi >> 4) & 0x03));
-            break;
-        case OpParams::Cd_I:
-            rdrsi = getUInt8();
-            _out->append(colorString(rdrsi >> 6));
-            _out->append(" ");
-            _out->append(std::to_string(rdrsi & 0x0f));
-            break;
-        case OpParams::R_Id:
-            _out->append(regString(r));
-            _out->append(" [");
-            _out->append(std::to_string(getUInt8()));
-            _out->append("]");
-            break;
-        case OpParams::Id_R:
-            _out->append("[");
-            _out->append(std::to_string(getUInt8()));
-            _out->append("] ");
-            _out->append(regString(r));
-            break;
-        case OpParams::Rd_Id_Rs_I:
-            id = getUInt8();
-            rdrsi = getUInt8();
-            
-            _out->append(regString(rdrsi >> 6));
-            _out->append(" [");
-            _out->append(std::to_string(id));
-            _out->append("] ");
-            _out->append(regString((rdrsi >> 4) & 0x03));
-            _out->append(" ");
-            _out->append(std::to_string(rdrsi & 0x0f));
-            break;
-        case OpParams::Rd_Rs_I:
-            rdrsi = getUInt8();
-            
-            _out->append(regString(rdrsi >> 6));
-            _out->append(" ");
-            _out->append(regString((rdrsi >> 4) & 0x03));
-            _out->append(" ");
-            _out->append(std::to_string(rdrsi & 0x0f));
-            break;
-        case OpParams::Rd_Cs_I:
-            rdrsi = getUInt8();
-            
-            _out->append(regString(rdrsi >> 6));
-            _out->append(" ");
-            _out->append(regString((rdrsi >> 4) & 0x03), true);
-            _out->append(" ");
-            _out->append(std::to_string(rdrsi & 0x0f));
-            break;
-        case OpParams::Rd_I_Rs:
-            rdrsi = getUInt8();
-            
-            _out->append(regString(rdrsi >> 6));
-            _out->append(" ");
-            _out->append(std::to_string(rdrsi & 0x0f));
-            _out->append(" ");
-            _out->append(regString((rdrsi >> 4) & 0x03));
-            break;
-        case OpParams::Cd_I_Rs:
-            rdrsi = getUInt8();
-            
-            _out->append(regString(rdrsi >> 6), true);
-            _out->append(" ");
-            _out->append(std::to_string(rdrsi & 0x0f));
-            _out->append(" ");
-            _out->append(regString((rdrsi >> 4) & 0x03));
-            break;
-        case OpParams::Rd_Rs:
-            rdrsi = getUInt8();
-            _out->append(regString(rdrsi >> 6));
-            _out->append(" ");
-            _out->append(regString((rdrsi >> 4) & 0x03));
-            break;
-        case OpParams::Rd_Cs:
-            rdrsi = getUInt8();
-            _out->append(regString(rdrsi >> 6));
-            _out->append(" ");
-            _out->append(colorString((rdrsi >> 4) & 0x03));
-            break;
-        case OpParams::Cd_Cs:
-            rdrsi = getUInt8();
-            _out->append(colorString(rdrsi >> 6));
-            _out->append(" ");
-            _out->append(colorString((rdrsi >> 4) & 0x03));
-            break;
         case OpParams::Id:
             _out->append("[");
             _out->append(std::to_string(getUInt8()));
             _out->append("]");
+            break;
+        case OpParams::Id_I:
+            id = getUInt8();
+            rdrsi = getUInt8();
+            _out->append("[");
+            _out->append(std::to_string(id));
+            _out->append("] ");
+            _out->append(std::to_string(rdrsi & 0x0f));
+            break;
+        case OpParams::I:
+            rdrsi = getUInt8();
+            _out->append(std::to_string(rdrsi & 0x0f));
+            break;
+        case OpParams::Const:
+            _out->append(std::to_string(getUInt8()));
             break;
         case OpParams::Target:
             targ = (uint16_t(getUInt8()) << 2) | r;
@@ -338,30 +251,23 @@ Decompiler::statement()
             _out->append(std::to_string(targ + _codeOffset));
             _out->append("]");
             break;
-        case OpParams::R_Const:
-            _out->append(regString(r));
+        case OpParams::P_L:
+            id = getUInt8();
+            _out->append(std::to_string(id >> 4));
             _out->append(" ");
-            _out->append(std::to_string(getUInt8()));
-            break;
-        case OpParams::Const:
-            _out->append(std::to_string(getUInt8()));
-            break;
-        case OpParams::R_Sz:
-            _out->append(regString(r));
-            _out->append(" [");
-            _out->append(std::to_string(getUInt8()));
-            _out->append("]");
+            _out->append(std::to_string(id & 0x0f));
             break;
         case OpParams::Sz:
             _out->append("[");
             _out->append(std::to_string(getUInt8()));
             _out->append("]");
             break;
-        case OpParams::P_L:
-            id = getUInt8();
-            _out->append(std::to_string(id >> 4));
-            _out->append(" ");
-            _out->append(std::to_string(id & 0x0f));
+        case OpParams::Id_Sz:
+            _out->append(" [");
+            _out->append(std::to_string(getUInt8()));
+            _out->append("] [");
+            _out->append(std::to_string(getUInt8()));
+            _out->append("]");
             break;
     }
     

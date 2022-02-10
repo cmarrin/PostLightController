@@ -141,16 +141,11 @@ Opcodes:
         rs, rd, i   - Packed in byte (rs:2, rd:2, i:4) after opcode or after id
         
         
-    LoadColorParam r i      - c[r] = p[i] (3 bytes, hsv converted to floats)
-    LoadIntParam r i        - v[r] = p[i] (1 byte converted to int32)
-    LoadFloatParam r i      - v[r] = p[i] (1 byte converted to float)
+    Push id                 - stack[sp++] = global[id - 0x80] or const[id] or stack[bp + id - 0xc0]
+    Pop id                  - global[id - 0x80] or stack[bp + id = 0xc0] = stack[--sp]
     
-    Load r id               - v[r] = global[id - 0x80] or const[id] or stack[bp + id = 0xc0]
-    Store id r              - global[id - 0x80] or stack[bp + id = 0xc0] = v[r]
-    
-    LoadBlack r             - c[r] = Color()
-    LoadZero r              - v[r] = 0
-    LoadIntConst r const    - v[r] = const (constant value 0-255)
+    PushZero                - stack[sp++] = 0
+    PushIntConst const      - stack[sp++] = const (constant value 0-255)
 
     // The opcodes deal with variable references. LoadRef simply places
     // the address of the passed id in the passed register. It can later
@@ -167,31 +162,29 @@ Opcodes:
     // StoreDeref does the same but the value in the source register is
     // stored at the address.
     
-    LoadRef rd id           - v[rd] = id
-    LoadRefX rd id rs i     - v[rd] = id + v[rs] * i
-    LoadDeref rd rs i       - v[rd] = mem[v[rs] + i]
-    StoreDeref rd i rs      - mem[v[rd] + i] = v[rs]
+    PushRef id              - stack[sp++] = id
+    PushRefX id i           - t = stack[--sp], stack[sp++] = id + t * i
+    PushDeref i             - t = stack[--sp], stack[sp++] = mem[t + i]
+    PopDeref i              - t = stack[--sp], mem[t + i] = stack[--sp]
     
-    MoveColor rd, rs        - c[rd] = c[rs]
-    Move rd, rs             - v[rd] = v[rs]
-    
-    LoadColorComp rd rs i   - v[rd] = c[rs][i] (0=hue, 1=sat, 2=val)
-    StoreColorComp rd i rs  - c[rd][i] = v[rs] (0=hue, 1=sat, 2=val)
-    
-    MinInt                  - v[0] = min(v[0], v[1]) (values are int32_t)
-    MinFloat                - v[0] = min(v[0], v[1]) (values are float)
-    MaxInt                  - v[0] = max(v[0], v[1]) (values are int32_t)
-    MaxFloat                - v[0] = max(v[0], v[1]) (values are float)
-    
-    Exit r                  - exit interpreter and return value in v[r] (assumes v[r] is int32_t)
-    ToFloat r               - v[r] = float(v[r])
-    ToInt r                 - v[r] = int32_t(v[r])
-    
-    Init id                 - Init mem at id with value in r[0] for r[1] values
-    RandomInt               - random(v[0], v[1]), integer params, integer return
-    RandomFloat             - random(v[0], v[1]), float params, float return
+    Dup                     - stack[sp++] = stack[sp]
+    Drop                    - --sp
+    Swap                    - t = stack[sp]; stack[sp] = stack[sp-1]; stack[sp-1[ = t;
 
-    If sz                   - If v[0] is non-zero execute statements in first clause. 
+    MinInt                  - stack[sp++] = min(stack[--sp], stack[--sp]) (values are int32_t)
+    MinFloat                - stack[sp++] = min(stack[--sp], stack[--sp]) (values are float)
+    MaxInt                  - stack[sp++] = max(stack[--sp], stack[--sp]) (values are int32_t)
+    MaxFloat                - stack[sp++] = max(stack[--sp], stack[--sp]) (values are float)
+    
+    Exit                    - exit interpreter and return value in stack[--sp] (assumes stack[--sp] is int32_t)
+    ToFloat                 - stack[sp] = float(stack[sp])
+    ToInt                   - stack[sp] = int32_t(stack[sp])
+    
+    Init id                 - Init mem at id with value in stack[--sp] for stack[--sp] values
+    RandomInt               - stack[sp++] = random(stack[--sp], stack[--sp]), integer params, integer return
+    RandomFloat             - stack[sp++] = random(stack[--sp], stack[--sp]), float params, float return
+
+    If sz                   - If stack[--sp] is non-zero execute statements in first clause. 
                               If zero skip the statements. Number of bytes to skip is 
                               in sz.
     Else sz                 - If the previously executed statement was a failed if
@@ -200,27 +193,27 @@ Opcodes:
                               number of instructions to skip is in sz.
     Endif                   - Signals the end of an if or else statement
     
-    ForEach r sz            - v[r] is i, v[0] is count, iterate i until it hits count
+    ForEach id sz           - id is i, stack[--sp] is count, iterate i until it hits count
                               sz is number of bytes in loop
-    EndFor                  - End of for loop
+    EndForEach              - End of for loop
     
-    Call target             - Call function [target]
-    CallNative              - Call native function [enum NativeFunction] (0..255)
-    Return                  - Return from effect
+    Call target             - Call function [target], params on stack
+    CallNative Const        - Call native function [enum NativeFunction] (0..255)
+    Return                  - Return from function
     SetFrame p l            - Set the local frame with number of formal
                               params (p) and locals (l). This must be
                               the first instruction of every function
     
     21 ops always use r0 and r1 leaving result in r0
     
-    BOr                     - v[0] = v[0] | v[1] (assumes int32_t)
-    BXOr                    - v[0] = v[0] ^ v[1] (assumes int32_t)
-    BAnd                    - v[0] = v[0] & v[1] (assumes int32_t)
-    BNot                    - v[0] = ~v[0] (assumes int32_t)
+    Or                     - v[0] = v[0] | v[1] (assumes int32_t)
+    XOr                    - v[0] = v[0] ^ v[1] (assumes int32_t)
+    And                    - v[0] = v[0] & v[1] (assumes int32_t)
+    Not                    - v[0] = ~v[0] (assumes int32_t)
     
-    Or                      - v[0] = v[0] || v[1] (assumes int32_t)
-    And                     - v[0] = v[0] && v[1] (assumes int32_t)
-    Not                     - v[0] = !v[0] (assumes int32_t)
+    LOr                     - v[0] = v[0] || v[1] (assumes int32_t)
+    LAnd                    - v[0] = v[0] && v[1] (assumes int32_t)
+    LNot                    - v[0] = !v[0] (assumes int32_t)
     LTInt                   - v[0] = v[0] < v[1] (assumes int32_t, result is int32_t)
     LTFloat                 - v[0] = v[0] < v[1] (assumes float, result is int32_t)
     LEInt                   - v[0] = v[0] <= v[1] (assumes int32_t, result is int32_t)
@@ -245,9 +238,10 @@ Opcodes:
 
     NegInt                  - v[0] = -v[0] (assumes int32_t, result is int32_t)
     NegFloat                - v[0] = -v[0] (assumes float, result is float)
-    
-    Push                    - stack[sp++] = v[0]
-    Pop                     - v[0] = stack[--sp]
+
+    Log i                   - Print value of TOS-i as int
+    LogFloat i              - Print value of TOS-i as float
+    LogColor i              - Print value of c[i] as color
     
     Executable format
     
@@ -284,111 +278,90 @@ enum class Op: uint8_t {
 
 // 15 unused opcodes
 
-    MoveColor       = 0x10,
-    Move            = 0x11,
+    Push            = 0x10,
+    Pop             = 0x11,
 
-    LoadColorComp   = 0x12,
-    StoreColorComp  = 0x13,
-    MinInt          = 0x14,
-    MinFloat        = 0x15,
-    MaxInt          = 0x16,
-    MaxFloat        = 0x17,
-
-    SetLight        = 0x18,
-
-    Init            = 0x19,
-    RandomInt       = 0x1a,
-    RandomFloat     = 0x1b,
-    Animate         = 0x1c,
-
-//  3 unused opcodes
-
-    If              = 0x20,
-    Else            = 0x21,
-    EndIf           = 0x22, // At the end of if
-    EndForEach      = 0x23, // At the end of foreach
-    End             = 0x24, // Indicates the end of init or loop
-    Call            = 0x25,
-    CallNative      = 0x26,
-
-// 9 unused opcodes
-
-    Or              = 0x30,
-    Xor             = 0x31,
-    And             = 0x32,
-    Not             = 0x33,
-
-    LOr             = 0x34,
-    LAnd            = 0x35,
-    LNot            = 0x36,
-
-    LTInt           = 0x37,
-    LTFloat         = 0x38,
-    LEInt           = 0x39,
-    LEFloat         = 0x3a,
-    EQInt           = 0x3b,
-    EQFloat         = 0x3c,
-    NEInt           = 0x3d,
-    NEFloat         = 0x3e,
-    GEInt           = 0x3f,
-    GEFloat         = 0x40,
-    GTInt           = 0x41,
-    GTFloat         = 0x42,
-
-    AddInt          = 0x43,
-    AddFloat        = 0x44,
-    SubInt          = 0x45,
-    SubFloat        = 0x46,
-    MulInt          = 0x47,
-    MulFloat        = 0x48,
-    DivInt          = 0x49,
-    DivFloat        = 0x4a,
-
-    NegInt          = 0x4b,
-    NegFloat        = 0x4c,
+    PushZero        = 0x12,
+    PushIntConst    = 0x13,
     
-    IncInt          = 0x4d,
-    IncFloat        = 0x4e,
-    DecInt          = 0x4f,
-    DecFloat        = 0x50,
+    PushRef         = 0x14,
+    PushRefX        = 0x15,
+    PushDeref       = 0x16,
+    PopDeref        = 0x17,
     
-    Return          = 0x51,
-    SetFrame        = 0x52,
+    Dup             = 0x18,
+    Drop            = 0x19,
+    Swap            = 0x1a,
     
-    Push            = 0x53,
-    Pop             = 0x54,
+    MinInt          = 0x30,
+    MinFloat        = 0x31,
+    MaxInt          = 0x32,
+    MaxFloat        = 0x33,
     
-// 11 unused opcodes
+    Exit            = 0x34,
+    ToFloat         = 0x35,
+    ToInt           = 0x36,
+
+    Init            = 0x37,
+    RandomInt       = 0x38,
+    RandomFloat     = 0x39,
+
+    If              = 0x3a,
+    Else            = 0x3b,
+    EndIf           = 0x3c, // At the end of if
+    ForEach         = 0x3d,
+    EndForEach      = 0x3e, // At the end of foreach
+
+// Call needs 2 extra bits for its
+// target addr, use lower 2 bits of
+// op, so skip 4 here.
+    Call            = 0x3f,
     
-    LoadColorParam  = 0x60,
-    LoadIntParam    = 0x61,
-    LoadFloatParam  = 0x62,
-
-    LoadRefX        = 0x63,
-    LoadDeref       = 0x64,
-    StoreDeref      = 0x65,
+    CallNative      = 0x40,
+    Return          = 0x41,
+    SetFrame        = 0x42,
     
-// 27 unused opcodes
+// 5 unused opcodes
+    
+    Or              = 0x50,
+    Xor             = 0x51,
+    And             = 0x52,
+    Not             = 0x53,
 
-    LoadRef         = 0x80,
-    Load            = 0x84,
-    Store           = 0x88,
+    LOr             = 0x54,
+    LAnd            = 0x55,
+    LNot            = 0x56,
 
-    LoadBlack       = 0x8c,
-    LoadZero        = 0x90,
-    LoadIntConst    = 0x94,
+    LTInt           = 0x57,
+    LTFloat         = 0x58,
+    LEInt           = 0x59,
+    LEFloat         = 0x5a,
+    EQInt           = 0x5b,
+    EQFloat         = 0x5c,
+    NEInt           = 0x5d,
+    NEFloat         = 0x5e,
+    GEInt           = 0x5f,
+    GEFloat         = 0x60,
+    GTInt           = 0x61,
+    GTFloat         = 0x62,
 
-    Exit            = 0x98,
-    ToFloat         = 0x9c,
-    ToInt           = 0xa0,
+    AddInt          = 0x63,
+    AddFloat        = 0x64,
+    SubInt          = 0x65,
+    SubFloat        = 0x66,
+    MulInt          = 0x67,
+    MulFloat        = 0x68,
+    DivInt          = 0x69,
+    DivFloat        = 0x6a,
 
-    ForEach         = 0xa8,
-
-// 10 unused opcode sets (of 4 each)
-
+    NegInt          = 0x6b,
+    NegFloat        = 0x6c,
+    
     Log             = 0xe0, // Print r as int32_t with addr - For debugging
-    LogFloat        = 0xe4, // Print r as float with addr - For debugging
-    LogColor        = 0xe8, // Print c with addr - For debugging
+    LogFloat        = 0xe1, // Print r as float with addr - For debugging
+    LogColor        = 0xe2, // Print c with addr - For debugging
+    
+    End             = 0xff,
     
 // 6 unused opcodes
 
@@ -396,29 +369,14 @@ enum class Op: uint8_t {
 
 enum class OpParams : uint8_t {
     None,       // No params
-    R,          // b[1:0] = 'r0'-'r3'
-    C,          // b[1:0] = 'c0'-'c3'
-    Rd_I,       // b+1[7:6] = 'r0'-'r3', b+1[3:0] = <int>
-    I_Rs,       // b+1[3:0] = <int>, b+2[5:4] = 'r0'-'r3'
-    Cd_I,       // b+1[7:6] = 'c0'-'c3', b+1 = <int>
-    R_Id,       // b[1:0] = 'r0'-'r3', b+1 = <id>
-    Id_R,       // b+1 = <id>, b[1:0] = 'r0'-'r3'
-    Rd_Id_Rs_I, // b+2[7:6] = 'r0'-'r3' b+1 = <id>, b+2[5:4] = 'r0'-'r3', b+2[3:0] = <int>
-    Rd_Rs_I,    // b+1[7:6] = 'r0'-'r3', b+1[3:0] = <int>, b+1[5:4] = 'r0'-'r3'
-    Rd_I_Rs,    // b+1[7:6] = 'r0'-'r3', b+1[3:0] = <int>, b+1[5:4] = 'r0'-'r3'
-    Rd_Cs_I,    // b+1[7:6] = 'r0'-'r3', b+1[5:4] = 'c0'-'c3', b+2[3:0] = <int>
-    Cd_I_Rs,    // b+1[7:6] = 'c0'-'c3', b+2[3:0] = <int>, b+1[5:4] = 'r0'-'r3'
-    Rd_Rs,      // b+1[7:6] = 'r0'-'r3', b+1[5:4] = 'r0'-'r3'
-    Rd_Cs,      // b+1[7:6] = 'r0'-'r3', b+1[5:4] = 'c0'-'c3'
-    Cd_Cs,      // b+1[7:6] = 'c0'-'c3', b+1[5:4] = 'c0'-'c3'
     Id,         // b+1 = <id>
-    R_Const,    // b[1:0] = 'r0'-'r3', b+1 = 0-255
+    Id_I,       // b+1 = <id>, b+2[3:0] = <int>
+    I,          // b+1[3:0] = <int>
     Const,      // b+1 = 0-255
-    Target,     // b+1 = call target bits 7:2, b[2:0] = call target bits 1:0
-    R_Sz,       // foreach case
-    Sz,         // If, Else case
-    P_L,         // b+1[7:4] = num params, b+1[3:0] = num locals
+    Target,     // b+1 = call target bits 7:2, b[2:0] = call target bits 1:0};
+    P_L,        // b+1[7:4] = num params, b+1[3:0] = num locals
+    Sz,         // b+1 = <int>
+    Id_Sz,      // b+1 = <id>, b+2 = <int>
 };
-
 
 }

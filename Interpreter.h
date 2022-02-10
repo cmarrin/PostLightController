@@ -153,10 +153,10 @@ private:
         l = pl & 0x0f;
     }
 
-    void getI(uint8_t& i)
+    uint8_t getI()
     {
         uint8_t b = getUInt8ROM(_pc++);
-        i = b & 0x0f;
+        return b & 0x0f;
     }
 
     void getRdRs(uint8_t& rd, uint8_t& rs)
@@ -237,7 +237,7 @@ private:
     }
     
     bool setFrame(uint8_t params, uint8_t locals);
-    bool restoreFrame();
+    bool restoreFrame(uint32_t returnValue);
     void setAllLights(uint8_t c);
 
     int32_t animate(uint32_t index);
@@ -267,7 +267,7 @@ private:
     uint16_t _codeOffset = 0; // Used by Call to go to the correct absolute address
     
     int16_t _foreachSz = -1; // -1 means no foreach is active
-    uint8_t _foreachIReg = 0;
+    uint8_t _foreachId = 0;
     uint32_t _foreachCount = 0;
     uint16_t _foreachLoopAddr = 0;
 };

@@ -18,7 +18,7 @@ bool
 CloverCompileEngine::operatorInfo(Token token, OperatorInfo& op) const
 {
     static std::vector<OperatorInfo> opInfo = {
-        { Token::Equal,       1, OperatorInfo::Assoc::Right, false, Op::Store },
+        { Token::Equal,     1, OperatorInfo::Assoc::Right, false, Op::Pop },
         { Token::AddSto,    1, OperatorInfo::Assoc::Right, true,  Op::AddInt  },
         { Token::SubSto,    1, OperatorInfo::Assoc::Right, true,  Op::SubInt  },
         { Token::MulSto,    1, OperatorInfo::Assoc::Right, true,  Op::MulInt  },
@@ -230,7 +230,7 @@ CloverCompileEngine::function()
     }
     
     // Emit Return at the end, just in case
-    addOpR(Op::LoadZero, 0);
+    addOp(Op::PushZero);
     addOp(Op::Return);
     
     return true;
@@ -354,7 +354,7 @@ CloverCompileEngine::forStatement()
     // of the expression, which is the end value. Save the end
     // value in a temp
     uint8_t temp = allocTemp();
-    addOpRdI(Op::Store, 0, temp);
+    addOpRdI(Op::Pop, 0, temp);
     
     expect(Token::CloseParen);
     
@@ -415,14 +415,14 @@ CloverCompileEngine::arithmeticExpression(uint8_t minPrec)
         expect(arithmeticExpression(nextMinPrec), Compiler::Error::ExpectedExpr);
     
         switch(opInfo.op()) {
-            case Op::Store: {
+            case Op::Pop: {
                 // Put RHS in r0
                 bakeExpr(ExprAction::Right);
                 
                 // FIXME: For now we only handle simple Store case so _exprStack must have id
                 Symbol sym;
                 expect(findSymbol(_exprStack.back(), sym), Compiler::Error::ExpectedIdentifier);
-                addOpRId(Op::Store, 0, sym.addr());
+                addOpRId(Op::Pop, 0, sym.addr());
                 break;
             }
             default: break;
@@ -447,11 +447,7 @@ CloverCompileEngine::unaryExpression()
 
     Op op = Op::None;
     
-    if (match(Token::Inc)) {
-        op = Op::IncInt;
-    } else if (match(Token::Dec)) {
-        op = Op::DecInt;
-    } else if (match(Token::Minus)) {
+    if (match(Token::Minus)) {
         op = Op::NegInt;
     } else if (match(Token::Twiddle)) {
         op = Op::Not;
@@ -459,7 +455,7 @@ CloverCompileEngine::unaryExpression()
         op = Op::LNot;
     } else if (match(Token::And)) {
         // This is just a placeholder to indicate that this is a ref
-        op = Op::LoadRef;
+        op = Op::PushRef;
     }
 
     if (op == Op::None) {
@@ -469,7 +465,7 @@ CloverCompileEngine::unaryExpression()
     expect(unaryExpression(), Compiler::Error::ExpectedExpr);
     
     // FIXME: Handle all cases
-    if (op == Op::LoadRef) {
+    if (op == Op::PushRef) {
         expect(bakeExpr(ExprAction::Ref) == Type::Ref, Compiler::Error::ExpectedRef);
         _exprStack.emplace_back(ExprEntry::Ref());
     }
@@ -686,11 +682,11 @@ CloverCompileEngine::bakeExpr(ExprAction action)
             switch(action) {
                 case ExprAction::Right:
                     // Emit Load id
-                    addOpRId(Op::Load, 0, sym.addr());
+                    addOpRId(Op::Push, 0, sym.addr());
                     break;
                 case ExprAction::Left:
                     // Emit Store id
-                    addOpRId(Op::Store, 0, sym.addr());
+                    addOpRId(Op::Pop, 0, sym.addr());
                     break;
                 case ExprAction::Function:
                     // FIXME: Do something?
@@ -704,7 +700,7 @@ CloverCompileEngine::bakeExpr(ExprAction action)
                     }
                     
                     // Emit LoadRefX. r0 has index, type determines i
-                    addOpRdIdRsI(Op::LoadRefX, 0, sym.addr(), 0, elementSize);
+                    addOpRdIdRsI(Op::PushRefX, 0, sym.addr(), 0, elementSize);
                     type = Type::Ref;
                     break;
                 }
@@ -720,7 +716,7 @@ CloverCompileEngine::bakeExpr(ExprAction action)
                     uint8_t index = findStructEntry(prevEntry, entry);
                     
                     // Emit a deref
-                    addOpRdRsI(Op::LoadDeref, 0, 0, index);
+                    addOpRdRsI(Op::PushDeref, 0, 0, index);
                 }
             }
             break;
@@ -729,7 +725,7 @@ CloverCompileEngine::bakeExpr(ExprAction action)
             expect(action != ExprAction::Left, Compiler::Error::ExpectedLHSExpr);
             
             // Use an fp constant
-            addOpRInt(Op::Load, 0, findFloat(entry));
+            addOpRInt(Op::Push, 0, findFloat(entry));
             type = Type::Float;
             break;
         case ExprEntry::Type::Int: // int32_t
@@ -742,14 +738,14 @@ CloverCompileEngine::bakeExpr(ExprAction action)
                 if (neg) {
                     i = -i;
                 }
-                addOpRInt(Op::LoadIntConst, 0, i);
+                addOpRInt(Op::PushIntConst, 0, i);
                 if (neg) {
                     addOp(Op::NegInt);
                 }
             } else {
                 // Add an int const
                 findInt(i);
-                addOpRInt(Op::Load, 0, findInt(i));
+                addOpRInt(Op::Push, 0, findInt(i));
             }
             type = Type::Int;
             break;

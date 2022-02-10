@@ -232,54 +232,6 @@ ArlyCompileEngine::statement()
 }
 
 uint8_t
-ArlyCompileEngine::handleR()
-{
-    uint8_t i = 0;
-    if (match(Reserved::R0)) {
-        i = 0x00;
-    } else if (match(Reserved::R1)) {
-        i = 0x01;
-    } else if (match(Reserved::R2)) {
-        i = 0x02;
-    } else if (match(Reserved::R3)) {
-        i = 0x03;
-    } else {
-        expect(false, Compiler::Error::ExpectedRegister);
-    }
-    return i;
-}
-
-uint8_t
-ArlyCompileEngine::handleR(Op op)
-{
-    return uint8_t(op) | handleR();
-}
-
-uint8_t
-ArlyCompileEngine::handleC()
-{
-    uint8_t i = 0;
-    if (match(Reserved::C0)) {
-        i = 0x00;
-    } else if (match(Reserved::C1)) {
-        i = 0x01;
-    } else if (match(Reserved::C2)) {
-        i = 0x02;
-    } else if (match(Reserved::C3)) {
-        i = 0x03;
-    } else {
-        expect(false, Compiler::Error::ExpectedRegister);
-    }
-    return i;
-}
-
-uint8_t
-ArlyCompileEngine::handleC(Op op)
-{
-    return uint8_t(op) | handleC();
-}
-
-uint8_t
 ArlyCompileEngine::handleI()
 {
     uint8_t i = handleConst();
@@ -398,64 +350,28 @@ ArlyCompileEngine::opStatement()
     
     // Get the params in the sequence specified in OpParams
     switch(par) {
-        case OpParams::None: handleOpParams(uint8_t(op)); break;
-        case OpParams::R: handleOpParams(handleR(op)); break;
-        case OpParams::C: handleOpParams(handleC(op)); break;
-        case OpParams::Rd_I: handleOpParamsRdRsI(op, handleR(), 0, handleI()); break;
-        case OpParams::I_Rs: handleOpParamsRdIRs(op, 0, handleI(), handleR()); break;
-        case OpParams::Cd_I: handleOpParamsRdRsI(op, handleC(), 0, handleI()); break;
-        case OpParams::R_Id: handleOpParams(handleR(op), handleId()); break;
-        
-        case OpParams::Id_R: handleOpParamsReverse(handleId(), handleR(op)); break;
-
-        case OpParams::Rd_Rs: handleOpParamsRdRs(op, handleR(), handleR()); break;
-        case OpParams::Rd_Cs: handleOpParamsRdRs(op, handleR(), handleC()); break;
-        case OpParams::Cd_Cs: handleOpParamsRdRs(op, handleC(), handleC()); break;
-
-        case OpParams::Rd_Id_Rs_I:
-            addOpRdIdRsI(op, handleR(), handleId(), handleR(), handleI());
-            expectWithoutRetire(Token::NewLine);
-            break;
-        case OpParams::Rd_Rs_I:
-            handleOpParamsRdRsI(op, handleR(), handleR(), handleI());
-            break;
-        case OpParams::Rd_Cs_I:
-            handleOpParamsRdRsI(op, handleR(), handleC(), handleI());
-            break;
-        case OpParams::Rd_I_Rs:
-            handleOpParamsRdIRs(op, handleR(), handleI(), handleR());
-            break;
-        case OpParams::Cd_I_Rs:
-            handleOpParamsRdIRs(op, handleC(), handleI(), handleR());
-            break;
-        case OpParams::Id:
-            _rom8.push_back(uint8_t(op));
-            _rom8.push_back(handleId());
-            expectWithoutRetire(Token::NewLine);
-            break;
+        case OpParams::None: addOp(op); break;
+        case OpParams::Id:   addOpId(op, handleId()); break;
+        case OpParams::Id_I: addOpIdI(op, handleId(), handleI()); break;
+        case OpParams::I:    addOpI(op, handleI()); break;
+        case OpParams::Const: addOpConst(op, handleConst()); break;
         case OpParams::Target: {
             uint16_t targ = handleFunctionName();
             _rom8.push_back(uint8_t(op) | uint8_t(targ & 0x03));
             _rom8.push_back(uint8_t(targ >> 2));
             break;
         }
-        case OpParams::R_Const:
-            handleOpParams(handleR(op), handleConst()); break;
-            break;
-        case OpParams::Const:
-            _rom8.push_back(uint8_t(op));
-            _rom8.push_back(handleConst());
-            expectWithoutRetire(Token::NewLine);
-            break;
         case OpParams::P_L:
             _rom8.push_back(uint8_t(op));
             _rom8.push_back((handleI() << 4) | handleI());
             break;
-        case OpParams::R_Sz:
+        case OpParams::Id_Sz:
         case OpParams::Sz:
             // Should never get here
             break;
     }
+
+    expectWithoutRetire(Token::NewLine);
     return true;
 }
 
@@ -466,25 +382,11 @@ ArlyCompileEngine::forStatement()
         return false;
     }
     
-    Reserved reg;
-    expect(reserved(reg), Compiler::Error::ExpectedRegister);
-    _scanner.retireToken();
+    uint8_t idAddr = handleId();
     expect(Token::NewLine);
     
-    // Generate ForEach and add in reg
-    uint8_t i = 0;
-    if (reg == Reserved::R0) {
-    } else if (reg == Reserved::R1) {
-        i = 0x01;
-    } else if (reg == Reserved::R2) {
-        i = 0x02;
-    } else if (reg == Reserved::R3) {
-        i = 0x03;
-    } else {
-        expect(false, Compiler::Error::ExpectedRegister);
-    }
-    
-    _rom8.push_back(uint8_t(Op::ForEach) | i);
+    _rom8.push_back(uint8_t(Op::ForEach));
+    _rom8.push_back(idAddr);
     
     // Output a placeholder for sz and rember where it is
     auto szIndex = _rom8.size();

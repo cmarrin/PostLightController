@@ -78,10 +78,6 @@ private:
 
     bool var();
         
-    uint8_t handleR();
-    uint8_t handleR(Op op);
-    uint8_t handleC();
-    uint8_t handleC(Op op);
     uint8_t handleI();
     uint8_t handleId() { Symbol::Storage s; return handleId(s); }
     uint8_t handleId(Symbol::Storage&);

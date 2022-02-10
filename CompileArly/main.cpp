@@ -99,7 +99,6 @@ static void showError(arly::Compiler::Error error, arly::Token token, const std:
         case arly::Compiler::Error::ExpectedOpcode: err = "expected opcode"; break;
         case arly::Compiler::Error::ExpectedEnd: err = "expected 'end'"; break;
         case arly::Compiler::Error::ExpectedIdentifier: err = "expected identifier"; break;
-        case arly::Compiler::Error::ExpectedRegister: err = "expected register"; break;
         case arly::Compiler::Error::ExpectedCommandId: err = "expected command"; break;
         case arly::Compiler::Error::ExpectedExpr: err = "expected expression"; break;
         case arly::Compiler::Error::ExpectedLHSExpr: err = "expected left-hand side expression"; break;

@@ -43,7 +43,6 @@ public:
         ExpectedEnd,
         ExpectedIdentifier,
         ExpectedCommandId,
-        ExpectedRegister,
         ExpectedExpr,
         ExpectedArgList,
         ExpectedFormalParams,
