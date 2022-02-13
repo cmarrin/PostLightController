@@ -163,9 +163,9 @@ CloverCompileEngine::var()
 
     // Put the var in _globals unless we're in a function, then put it in _locals
     if (inFunction) {
-        currentLocals().emplace_back(id, currentLocals().size(), t, Symbol::Storage::Local);
+        currentLocals().emplace_back(id, currentLocals().size(), t, Symbol::Storage::Local, isPointer);
     } else {
-        _globals.emplace_back(id, _nextMem, t, Symbol::Storage::Global);
+        _globals.emplace_back(id, _nextMem, t, Symbol::Storage::Global, isPointer);
 
         // There is only enough room for GlobalSize values
         expect(_nextMem + size <= GlobalSize, Compiler::Error::TooManyVars);
@@ -455,34 +455,36 @@ CloverCompileEngine::arithmeticExpression(uint8_t minPrec, ArithType arithType)
                 
         expect(!(arithType != ArithType::Assign && info.assign() != OpInfo::Assign::None), Compiler::Error::AssignmentNotAllowedHere);
         
+        Type leftType = Type::None;
+        Type rightType = Type::None;
+        
         if (info.assign() != OpInfo::Assign::None) {
             // Turn TOS into Ref
-            bakeExpr(ExprAction::Ref);
+            leftType = bakeExpr(ExprAction::Ref);
         } else {
-            bakeExpr(ExprAction::Right);
+            leftType = bakeExpr(ExprAction::Right);
         }
         
         expect(arithmeticExpression(nextMinPrec), Compiler::Error::ExpectedExpr);
-    
-        Type t = Type::None;
-        
+            
         switch(info.intOp()) {
             case Op::Pop: {
                 // Bake RHS
-                t = bakeExpr(ExprAction::Right);
+                rightType = bakeExpr(ExprAction::Right);
                 break;
             }
             case Op::AddInt:
                 // FIXME: Use AddInt or AddFloat, depending on type
-                bakeExpr(ExprAction::Right);
-                addOp(Op::AddInt);
-                _exprStack.push_back(ExprEntry::Value(Type::Int));
+                rightType = bakeExpr(ExprAction::Right);
+                expect(leftType == rightType, Compiler::Error::MismatchedType);
+                addOp((leftType == Type::Int) ? info.intOp() : info.floatOp());
+                _exprStack.push_back(ExprEntry::Value(leftType));
                 break;
             default: break;
         }
         
         if (info.assign() != OpInfo::Assign::None) {
-            expect(bakeExpr(ExprAction::Left) == t, Compiler::Error::MismatchedType);
+            expect(bakeExpr(ExprAction::Left) == rightType, Compiler::Error::MismatchedType);
         }
     }
     
@@ -755,10 +757,13 @@ CloverCompileEngine::bakeExpr(ExprAction action)
                     addOpId(Op::Push, sym.addr());
                     type = sym.type();
                     break;
-                case ExprEntry::Type::Ref:
+                case ExprEntry::Type::Ref: {
                     // Deref
+                    const ExprEntry::Ref& ref = entry;
+                    type = ref._type;
                     addOp(Op::PushDeref);
                     break;
+                }
                 case ExprEntry::Type::Value: {
                     // Nothing to do, this just indicates that TOS is a value
                     const ExprEntry::Value& value = entry;
@@ -797,10 +802,14 @@ CloverCompileEngine::bakeExpr(ExprAction action)
             const ExprEntry& prevEntry = _exprStack.end()[-2];            
             expect(prevEntry.type() == ExprEntry::Type::Ref, Compiler::Error::InternalError);
             const ExprEntry::Ref& ref = prevEntry;
-            uint8_t index = findStructElementId(ref._type, entry);
+            uint8_t index;
+            Type elementType;
+            findStructElement(ref._type, entry, index, elementType);
             _exprStack.pop_back();
+            _exprStack.pop_back();
+            _exprStack.push_back(ExprEntry::Ref(elementType));
             addOpIndex(Op::Offset, index);
-            return Type::Ref;
+            return elementType;
         }
         case ExprAction::Ref:
             if (entry.type() == ExprEntry::Type::Ref) {
@@ -814,7 +823,9 @@ CloverCompileEngine::bakeExpr(ExprAction action)
             expect(findSymbol(entry, sym), Compiler::Error::UndefinedIdentifier);
             _exprStack.pop_back();
             _exprStack.push_back(ExprEntry::Ref(sym.type()));
-            addOpId(Op::PushRef, sym.addr());
+            
+            // If this is a pointer, just push it, otherwise push the ref
+            addOpId(sym.isPointer() ? Op::Push : Op::PushRef, sym.addr());
             return sym.type();
     }
     
@@ -841,8 +852,8 @@ CloverCompileEngine::structFromType(Type type)
     return _structs[index];
 }
 
-uint8_t
-CloverCompileEngine::findStructElementId(Type type, const std::string& id)
+void
+CloverCompileEngine::findStructElement(Type type, const std::string& id, uint8_t& index, Type& elementType)
 {
     const Struct& s = structFromType(type);
     const std::vector<ParamEntry>& entries = s.entries();
@@ -852,7 +863,8 @@ CloverCompileEngine::findStructElementId(Type type, const std::string& id)
     expect(it != entries.end(), Compiler::Error::InvalidStructId);
     
     // FIXME: For now assume structs can only have 1 word entries. If we ever support Structs with Structs this is not true
-    return it - entries.begin();
+    index = it - entries.begin();
+    elementType = it->_type;
 }
 
 uint8_t

@@ -48,8 +48,7 @@ function constantInit(float a)
     var int i;
     var float j;
 
-    constantInit(j);
-    //led.max = leds[i].min + a;
+    led.max = leds[i].min + a;
 
     //led.min = led.max - (Float(depth + 1) / 8 * (led.max - BrightnessMin));
 	//LoadColorParam(0, 0);

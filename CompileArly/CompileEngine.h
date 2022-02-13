@@ -180,19 +180,21 @@ protected:
         
         Symbol() { }
         
-        Symbol(const std::string& name, uint8_t addr, Type type, Storage storage, uint8_t size = 1)
+        Symbol(const std::string& name, uint8_t addr, Type type, Storage storage, bool ptr = false, uint8_t size = 1)
             : _name(name)
             , _addr(addr)
             , _type(type)
+            , _ptr(ptr)
             , _storage(storage)
             , _size(size)
         { }
         
         // Used to add locals to function
-        Symbol(const char* name, uint8_t addr, Type type)
+        Symbol(const char* name, uint8_t addr, Type type, bool ptr = false)
             : _name(name)
             , _addr(addr)
             , _type(type)
+            , _ptr(ptr)
             , _storage(Storage::Local)
             , _size(1)
         { }
@@ -200,6 +202,7 @@ protected:
         const std::string& name() const { return _name; }
         uint8_t addr() const;
         Type type() const { return _type; }
+        bool isPointer() const { return _ptr; }
         Storage storage() const { return _storage; }
         uint8_t size() const { return _size; }
         bool isCustomType() const { return uint8_t(_type) >= 0x80; }
@@ -214,6 +217,7 @@ protected:
         std::string _name;
         uint8_t _addr = 0;
         Type _type = Type::None;
+        bool _ptr = false;
         Storage _storage = Storage::None;
         uint8_t _size = 0;
     };

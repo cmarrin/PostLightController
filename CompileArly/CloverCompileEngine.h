@@ -373,7 +373,7 @@ private:
     };
 
     const Struct& structFromType(Type);
-    uint8_t findStructElementId(Type, const std::string& id);
+    void findStructElement(Type, const std::string& id, uint8_t& index, Type&);
 
     std::vector<Struct> _structs;
     std::vector<ExprEntry> _exprStack;
