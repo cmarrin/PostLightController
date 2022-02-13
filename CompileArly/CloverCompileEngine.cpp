@@ -428,7 +428,8 @@ CloverCompileEngine::arithmeticExpression(uint8_t minPrec, ArithType arithType)
         expect(!(arithType != ArithType::Assign && info.assign() != OpInfo::Assign::None), Compiler::Error::AssignmentNotAllowedHere);
         
         if (info.assign() != OpInfo::Assign::None) {
-            // Nothing to do before
+            // Turn TOS into Ref
+            bakeExpr(ExprAction::Ref);
         } else {
             bakeExpr(ExprAction::Right);
         }
@@ -437,7 +438,7 @@ CloverCompileEngine::arithmeticExpression(uint8_t minPrec, ArithType arithType)
     
         switch(info.intOp()) {
             case Op::Pop: {
-                // Put RHS in r0
+                // Bake RHS
                 bakeExpr(ExprAction::Right);
                 break;
             }
@@ -508,9 +509,11 @@ CloverCompileEngine::postfixExpression()
             expect(argumentList(fun), Compiler::Error::ExpectedArgList);
             expect(Token::CloseParen);
             
-            // Replace the top of the exprStack with the Function
+            // Replace the top of the exprStack with the function return value
             _exprStack.pop_back();
-            _exprStack.emplace_back(ExprEntry::Function(fun.name()));
+            
+            // FIXME: We don't know the type of a function return value
+            _exprStack.push_back(ExprEntry::Value(Type::Int));
             
             if (fun.isNative()) {
                 addOpId(Op::CallNative, uint8_t(fun.native()));
