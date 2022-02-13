@@ -241,9 +241,11 @@ CloverCompileEngine::function()
         _localHighWaterMark = _nextMem;
     }
     
-    // Emit Return at the end, just in case
-    addOp(Op::PushZero);
-    addOp(Op::Return);
+    // Emit Return at the end if there's not already one
+    if (lastOp() != Op::Return) {
+        addOp(Op::PushZero);
+        addOp(Op::Return);
+    }
     
     inFunction = false;
     return true;
@@ -273,6 +275,7 @@ CloverCompileEngine::statement()
     if (compoundStatement()) return true;
     if (ifStatement()) return true;
     if (forStatement()) return true;
+    if (returnStatement()) return true;
     if (expressionStatement()) return true;
     return false;
 }
@@ -386,6 +389,26 @@ CloverCompileEngine::forStatement()
     // Push a dummy end, mostly for the decompiler
     _rom8.push_back(uint8_t(Op::EndForEach));
 
+    return true;
+}
+
+bool
+CloverCompileEngine::returnStatement()
+{
+    if (!match(Reserved::Return)) {
+        return false;
+    }
+    
+    if (arithmeticExpression()) {
+        // Push the return value
+        expect(bakeExpr(ExprAction::Right) == currentFunction().type(), Compiler::Error::MismatchedType);
+    } else {
+        // No return value, push a zero
+        addOp(Op::PushZero);
+    }
+    
+    addOp(Op::Return);
+    expect(Token::Semicolon);
     return true;
 }
 
@@ -638,6 +661,7 @@ CloverCompileEngine::isReserved(Token token, const std::string str, Reserved& r)
 {
     static std::map<std::string, Reserved> reserved = {
         { "struct",        Reserved::Struct },
+        { "return",        Reserved::Return },
     };
 
     if (CompileEngine::isReserved(token, str, r)) {

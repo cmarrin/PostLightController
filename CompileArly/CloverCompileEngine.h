@@ -74,6 +74,7 @@ statement:
       compoundStatement
     | ifStatement
     | forStatement
+    | returnStatement
     | expressionStatement
     ;
   
@@ -86,6 +87,9 @@ ifStatement:
 forStatement:
     'foreach' '(' identifier ':' arithmeticExpression ')' statement ;
     
+returnStatement:
+      'return' [ arithmeticExpression ] ';' ;
+      
 expressionStatement:
     arithmeticExpression ';' ;
     
@@ -213,6 +217,7 @@ private:
     bool compoundStatement();
     bool ifStatement();
     bool forStatement();
+    bool returnStatement();
     bool expressionStatement();
     
     enum class ArithType { Assign, Op };

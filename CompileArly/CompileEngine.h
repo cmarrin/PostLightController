@@ -44,6 +44,7 @@ protected:
         Table,
         Var,
         Function,
+        Return,
         Effect,
         End,
         Init,
@@ -110,6 +111,9 @@ protected:
     bool floatValue(float& f);
     bool reserved();
     bool reserved(Reserved &r);
+    
+    // This assumes the last op is a single byte op
+    Op lastOp() const { return _rom8.size() ? Op(_rom8.back()) : Op::None; }
     
     void addOp(Op op) { _rom8.push_back(uint8_t(op)); }
     void addOpR(Op op, uint8_t r) { _rom8.push_back(uint8_t(op) | (r & 0x03)); }
