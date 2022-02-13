@@ -438,7 +438,7 @@ CompileEngine::match(Token t)
 }
 
 bool
-CompileEngine::identifier(std::string& id)
+CompileEngine::identifier(std::string& id, bool retire)
 {
     if (_scanner.getToken() != Token::Identifier) {
         return false;
@@ -449,7 +449,10 @@ CompileEngine::identifier(std::string& id)
     }
     
     id = _scanner.getTokenString();
-    _scanner.retireToken();
+    
+    if (retire) {
+        _scanner.retireToken();
+    }
     return true;
 }
 

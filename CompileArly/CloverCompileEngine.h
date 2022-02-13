@@ -55,7 +55,7 @@ var:
     'var' type [ '*' ] <id> [ <integer> ] ';' ;
 
 function:
-    'function' <id> '( formalParameterList ')' '{' { var } { statement } '}' ;
+    'function' [ <type> ] <id> '( formalParameterList ')' '{' { var } { statement } '}' ;
 
 effect:
     'effect' <id> <integer> <id> <id> ';' ;

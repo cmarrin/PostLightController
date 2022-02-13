@@ -185,7 +185,7 @@ CloverCompileEngine::type(Type& t)
     
     // See if it's a struct
     std::string id;
-    if (!identifier(id)) {
+    if (!identifier(id, false)) {
         return false;
     }
     
@@ -195,6 +195,7 @@ CloverCompileEngine::type(Type& t)
         // Types from 0x80 - 0xff are structs. Make the enum the struct
         // index + 0x80
         t = Type(0x80 + (it - _structs.begin()));
+        _scanner.retireToken();
         return true;
     }
     return false;
@@ -209,11 +210,15 @@ CloverCompileEngine::function()
     
     _nextMem = 0;
     
+    // Type is optional
+    Type t = Type::None;
+    type(t);
+    
     std::string id;
     expect(identifier(id), Compiler::Error::ExpectedIdentifier);
 
     // Remember the function
-    _functions.emplace_back(id, uint16_t(_rom8.size()));
+    _functions.emplace_back(id, uint16_t(_rom8.size()), t);
     inFunction = true;
     
     expect(Token::OpenParen);
@@ -436,10 +441,12 @@ CloverCompileEngine::arithmeticExpression(uint8_t minPrec, ArithType arithType)
         
         expect(arithmeticExpression(nextMinPrec), Compiler::Error::ExpectedExpr);
     
+        Type t = Type::None;
+        
         switch(info.intOp()) {
             case Op::Pop: {
                 // Bake RHS
-                bakeExpr(ExprAction::Right);
+                t = bakeExpr(ExprAction::Right);
                 break;
             }
             case Op::AddInt:
@@ -452,7 +459,7 @@ CloverCompileEngine::arithmeticExpression(uint8_t minPrec, ArithType arithType)
         }
         
         if (info.assign() != OpInfo::Assign::None) {
-            bakeExpr(ExprAction::Left);
+            expect(bakeExpr(ExprAction::Left) == t, Compiler::Error::MismatchedType);
         }
     }
     
@@ -512,8 +519,7 @@ CloverCompileEngine::postfixExpression()
             // Replace the top of the exprStack with the function return value
             _exprStack.pop_back();
             
-            // FIXME: We don't know the type of a function return value
-            _exprStack.push_back(ExprEntry::Value(Type::Int));
+            _exprStack.push_back(ExprEntry::Value(fun.type()));
             
             if (fun.isNative()) {
                 addOpId(Op::CallNative, uint8_t(fun.native()));
@@ -729,16 +735,22 @@ CloverCompileEngine::bakeExpr(ExprAction action)
                     // Deref
                     addOp(Op::PushDeref);
                     break;
-                case ExprEntry::Type::Value:
+                case ExprEntry::Type::Value: {
                     // Nothing to do, this just indicates that TOS is a value
+                    const ExprEntry::Value& value = entry;
+                    type = value._type;
                     break;
+                }
             }
             break;
-        case ExprAction::Left:
+        case ExprAction::Left: {
             // The stack contains a ref      
             expect(entry.type() == ExprEntry::Type::Ref, Compiler::Error::InternalError);
             addOp(Op::PopDeref);
+            const ExprEntry::Ref& ref = entry;
+            type = ref._type;
             break;
+        }
         case ExprAction::Index:
             // TOS has an index, get the sym for the var so 
             // we know the size of each element

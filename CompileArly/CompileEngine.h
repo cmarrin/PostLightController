@@ -105,7 +105,7 @@ protected:
     // These methods check to see if the next token is of the
     // appropriate type. Some versions just return true or
     // false, others also return details about the token
-    bool identifier(std::string& id);
+    bool identifier(std::string& id, bool retire = true);
     bool integerValue(int32_t& i);
     bool floatValue(float& f);
     bool reserved();
@@ -221,9 +221,10 @@ protected:
     public:
         Function() { }
         
-        Function(const std::string& name, uint16_t addr)
+        Function(const std::string& name, uint16_t addr, Type type = Type::None)
             : _name(name)
             , _addr(addr)
+            , _type(type)
         { }
 
         // Used to create built-in native functions
@@ -240,6 +241,7 @@ protected:
         const std::vector<Symbol>& locals() const { return _locals; }
         uint8_t& args() { return _args; }
         const uint8_t& args() const { return _args; }
+        Type type() const { return _type; }
         
         bool isNative() const { return _native != Interpreter::NativeFunction::None; }
         
@@ -249,6 +251,7 @@ protected:
         Interpreter::NativeFunction _native = Interpreter::NativeFunction::None;
         std::vector<Symbol> _locals;
         uint8_t _args = 0;
+        Type _type;
     };
     
     struct Effect
