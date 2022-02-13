@@ -307,6 +307,7 @@ protected:
     uint32_t _tempAllocationMap = 0;
     uint8_t _tempSize = 0;
     uint16_t _globalSize = 0;
+    bool inFunction = false;
 };
 
 }

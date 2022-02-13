@@ -105,11 +105,11 @@ unaryExpression:
 
 postfixExpression:
       primaryExpression
-    | primaryExpression '++'
-    | primaryExpression '--'
-    | primaryExpression '(' argumentList ')'
-    | primaryExpression '[' arithmeticExpression ']'
-    | primaryExpression '.' identifier
+    | postfixExpression '++'
+    | postfixExpression '--'
+    | postfixExpression '(' argumentList ')'
+    | postfixExpression '[' arithmeticExpression ']'
+    | postfixExpression '.' identifier
     ;
 
 primaryExpression:
@@ -254,12 +254,11 @@ private:
     //                    a type. Struct id must be a member of the type of the ref.
     //                    pop the two 
     //
-    enum class ExprAction { Left, Right, Function, Ref, Deref };
+    enum class ExprAction { Left, Right, Ref, Index, Offset };
     Type bakeExpr(ExprAction);
     bool isExprFunction();
+    uint8_t elementSize(const Symbol&);
     
-    uint8_t findStructEntry(const std::string& id, const std::string& structId);
-
     struct ParamEntry
     {
         ParamEntry(const std::string& name, Type type)
@@ -294,7 +293,7 @@ private:
     private:
         std::string _name;
         std::vector<ParamEntry> _entries;
-        uint8_t _size;
+        uint8_t _size = 0;
     };
 
     class ExprEntry
@@ -302,6 +301,9 @@ private:
     public:
         struct Ref
         {
+            Ref(Type type) : _type(type) { }
+            
+            Type _type;
         };
         
         struct Function
@@ -310,18 +312,46 @@ private:
             std::string _name;
         };
         
-        enum class Type { None = 0, Id = 1, Float = 2, Int = 3, Ref = 4, Function = 5 };
+        struct Dot
+        {
+            Dot(uint8_t index) : _index(index) { }
+            
+            uint8_t _index;
+        };
+        
+        struct Value
+        {
+            Value(Type type) : _type(type) { }
+            
+            Type _type;
+        };
+        
+        enum class Type {
+            None = 0,
+            Id = 1,
+            Float = 2, 
+            Int = 3, 
+            Ref = 4, 
+            Function = 5, 
+            Dot = 6, 
+            Value = 7
+        };
         
         ExprEntry() { _variant = std::monostate(); }
         ExprEntry(const std::string& s) { _variant = s; }
         ExprEntry(float f) { _variant = f; }
         ExprEntry(int32_t i) { _variant = i; }
-        ExprEntry(const Function& fun) { _variant = fun; }
         ExprEntry(const Ref& ref) { _variant = ref; }
+        ExprEntry(const Function& fun) { _variant = fun; }
+        ExprEntry(const Dot& dot) { _variant = dot; }
+        ExprEntry(const Value& val) { _variant = val; }
                 
         operator const std::string&() const { return std::get<std::string>(_variant); }
         operator float() const { return std::get<float>(_variant); }
         operator int32_t() const { return std::get<int32_t>(_variant); }
+        operator const Ref&() const { return std::get<Ref>(_variant); }
+        operator const Dot&() const { return std::get<Dot>(_variant); }
+        operator const Value&() const { return std::get<Value>(_variant); }
         
         Type type() const { return Type(_variant.index()); }
 
@@ -332,8 +362,13 @@ private:
                      , int32_t
                      , Ref
                      , Function
+                     , Dot
+                     , Value
                      > _variant;
     };
+
+    const Struct& structFromType(Type);
+    uint8_t findStructElementId(Type, const std::string& id);
 
     std::vector<Struct> _structs;
     std::vector<ExprEntry> _exprStack;

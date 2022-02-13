@@ -161,15 +161,18 @@ CloverCompileEngine::var()
 
     expect(Token::Semicolon);
 
-    // FIXME: Deal with locals, _nextMem and _globalSize
-    _globals.emplace_back(id, _nextMem, t, Symbol::Storage::Global);
-    _nextMem += size;
+    // Put the var in _globals unless we're in a function, then put it in _locals
+    if (inFunction) {
+        currentLocals().emplace_back(id, currentLocals().size(), t, Symbol::Storage::Local);
+    } else {
+        _globals.emplace_back(id, _nextMem, t, Symbol::Storage::Global);
 
-    // There is only enough room for GlobalSize values
-    expect(_nextMem <= GlobalSize, Compiler::Error::TooManyVars);
+        // There is only enough room for GlobalSize values
+        expect(_nextMem + size <= GlobalSize, Compiler::Error::TooManyVars);
+        _globalSize = _nextMem;
+    }
     
-    _globalSize = _nextMem;
-
+    _nextMem += size;
     return true;
 }
 
@@ -211,6 +214,7 @@ CloverCompileEngine::function()
 
     // Remember the function
     _functions.emplace_back(id, uint16_t(_rom8.size()));
+    inFunction = true;
     
     expect(Token::OpenParen);
     
@@ -233,6 +237,7 @@ CloverCompileEngine::function()
     addOp(Op::PushZero);
     addOp(Op::Return);
     
+    inFunction = false;
     return true;
 }
 
@@ -414,8 +419,12 @@ CloverCompileEngine::arithmeticExpression(uint8_t minPrec)
 
         uint8_t nextMinPrec = (opInfo.assoc() == OperatorInfo::Assoc::Left) ? (opInfo.prec() + 1) : opInfo.prec();
         _scanner.retireToken();
-        if (opInfo.sto()) {
-            // FIXME: Do something
+        
+        // FIXNE: Eventually, we'll handle STO ops separately
+        if (opInfo.sto() || opInfo.op() == Op::Pop) {
+            // Nothing to do before
+        } else {
+            bakeExpr(ExprAction::Right);
         }
         
         expect(arithmeticExpression(nextMinPrec), Compiler::Error::ExpectedExpr);
@@ -424,21 +433,19 @@ CloverCompileEngine::arithmeticExpression(uint8_t minPrec)
             case Op::Pop: {
                 // Put RHS in r0
                 bakeExpr(ExprAction::Right);
-                
-                // FIXME: For now we only handle simple Store case so _exprStack must have id
-                Symbol sym;
-                expect(findSymbol(_exprStack.back(), sym), Compiler::Error::ExpectedIdentifier);
-                addOpRId(Op::Pop, 0, sym.addr());
                 break;
             }
+            case Op::AddInt:
+                // FIXME: Use AddInt or AddFloat, depending on type
+                bakeExpr(ExprAction::Right);
+                addOp(Op::AddInt);
+                _exprStack.push_back(ExprEntry::Value(Type::Int));
+                break;
             default: break;
         }
         
-        // FIXME: Emit a binary op here with two operands (from a stack?)
-        // and the opcode in it->op(). How do we deal with Int vs Float ops?
-        
-        if (opInfo.sto()) {
-            // FIXME: Do something
+        if (opInfo.sto() || opInfo.op() == Op::Pop) {
+            bakeExpr(ExprAction::Left);
         }
     }
     return true;
@@ -472,8 +479,8 @@ CloverCompileEngine::unaryExpression()
     
     // FIXME: Handle all cases
     if (op == Op::PushRef) {
-        expect(bakeExpr(ExprAction::Ref) == Type::Ref, Compiler::Error::ExpectedRef);
-        _exprStack.emplace_back(ExprEntry::Ref());
+        expect(bakeExpr(ExprAction::Left) == Type::Ref, Compiler::Error::ExpectedRef);
+        //_exprStack.emplace_back(ExprEntry::Ref());
     }
     
     return true;
@@ -486,47 +493,52 @@ CloverCompileEngine::postfixExpression()
         return false;
     }
     
-    if (match(Token::Inc)) {
-        // FIXME: increment result of primaryExpression above
-    } else if (match(Token::Dec)) {
-        // FIXME: decrement result of primaryExpression above
-    } else if (match(Token::OpenParen)) {
-        // Top of exprStack must be a function id
-        Function fun;
-        expect(findFunction(_exprStack.back(), fun), Compiler::Error::ExpectedFunction);
-        expect(argumentList(fun), Compiler::Error::ExpectedArgList);
-        expect(Token::CloseParen);
-        
-        // Replace the top of the exprStack with the Function
-        _exprStack.pop_back();
-        _exprStack.emplace_back(ExprEntry::Function(fun.name()));
-        
-        if (fun.isNative()) {
-            addOpId(Op::CallNative, uint8_t(fun.native()));
-        } else { 
-            addOpTarg(Op::Call, fun.addr());
+    while (true) {
+        if (match(Token::Inc)) {
+            // FIXME: increment result of primaryExpression above
+        } else if (match(Token::Dec)) {
+            // FIXME: decrement result of primaryExpression above
+        } else if (match(Token::OpenParen)) {
+            // Top of exprStack must be a function id
+            Function fun;
+            expect(findFunction(_exprStack.back(), fun), Compiler::Error::ExpectedFunction);
+            expect(argumentList(fun), Compiler::Error::ExpectedArgList);
+            expect(Token::CloseParen);
+            
+            // Replace the top of the exprStack with the Function
+            _exprStack.pop_back();
+            _exprStack.emplace_back(ExprEntry::Function(fun.name()));
+            
+            if (fun.isNative()) {
+                addOpId(Op::CallNative, uint8_t(fun.native()));
+            } else { 
+                addOpTarg(Op::Call, fun.addr());
+            }
+        } else if (match(Token::OpenBracket)) {
+            expect(arithmeticExpression(), Compiler::Error::ExpectedExpr);
+            expect(Token::CloseBracket);
+            
+            // Bake the contents of the brackets, leaving the result in r0
+            expect(bakeExpr(ExprAction::Right) == Type::Int, Compiler::Error::ExpectedInt);
+
+            // TOS now has the index.
+            // Now Create a Ref using LoadRefX. The type of the TOS determines i. Result is in r0
+            _exprStack.emplace_back(ExprEntry::Ref(bakeExpr(ExprAction::Index)));
+        } else if (match(Token::Dot)) {
+            // The 
+            std::string id;
+            expect(identifier(id), Compiler::Error::ExpectedIdentifier);
+            bakeExpr(ExprAction::Ref);
+            
+            _exprStack.emplace_back(id);
+            bakeExpr(ExprAction::Offset);
+            
+            // FIXME: The primaryExpression is an address. The identifier is
+            // a struct member. Use its offset in a deref op (load or store?)
+        } else {
+            return true;
         }
-    } else if (match(Token::OpenBracket)) {
-        expect(arithmeticExpression(), Compiler::Error::ExpectedExpr);
-        expect(Token::CloseBracket);
-        
-        // Bake the contents of the brackets, leaving the result in r0
-        expect(bakeExpr(ExprAction::Right) == Type::Int, Compiler::Error::ExpectedInt);
-        
-        // Now Create a Ref using LoadRefX. The type of the TOS determines i. Result is in r0
-        expect(bakeExpr(ExprAction::Ref) == Type::Ref, Compiler::Error::ExpectedRef);
-        _exprStack.emplace_back(ExprEntry::Ref());
-    } else if (match(Token::Dot)) {
-        std::string id;
-        expect(identifier(id), Compiler::Error::ExpectedIdentifier);
-        
-        _exprStack.emplace_back(id);
-        bakeExpr(ExprAction::Ref);
-        
-        // FIXME: The primaryExpression is an address. The identifier is
-        // a struct member. Use its offset in a deref op (load or store?)
     }
-    return true;
 }
 
 bool
@@ -668,99 +680,94 @@ CloverCompileEngine::findFloat(float f)
 CompileEngine::Type
 CloverCompileEngine::bakeExpr(ExprAction action)
 {
-    // Emit code for the top of the exprStack and leave the result in r0.
-    // Pop stack.
-    // FIXME: Lots more to do here. Need to deal with Refs, etc.
-    expect(!_exprStack.empty(), Compiler::Error::InternalError);
-    const ExprEntry& entry = _exprStack.back();
-    
     Type type = Type::None;
-    
-    switch(entry.type()) {
-        case ExprEntry::Type::None:
-            _error = Compiler::Error::InternalError;
-            throw true;
-        case ExprEntry::Type::Id: {
-            Symbol sym;
-            expect(findSymbol(entry, sym), Compiler::Error::UndefinedIdentifier);
-            type = sym.type();
-            
-            switch(action) {
-                case ExprAction::Right:
-                    // Emit Load id
-                    addOpRId(Op::Push, 0, sym.addr());
-                    break;
-                case ExprAction::Left:
-                    // Emit Store id
-                    addOpRId(Op::Pop, 0, sym.addr());
-                    break;
-                case ExprAction::Function:
-                    // FIXME: Do something?
-                    break;
-                case ExprAction::Ref: {
-                    uint8_t elementSize = 1;
-                    if (sym.isCustomType()) {
-                        uint8_t index = sym.customTypeIndex();
-                        expect(index < _structs.size(), Compiler::Error::InternalError);
-                        elementSize = _structs[index].size();
+    ExprEntry entry = _exprStack.back();   
+    Symbol sym;
+     
+    switch(action) {
+        default: break;
+        case ExprAction::Right:
+            switch(entry.type()) {
+                default:
+                    // FIXME: Handle all the other types
+                case ExprEntry::Type::Int: {
+                    int32_t i = int32_t(entry);
+                    if (i >= -256 && i < 256) {
+                        bool neg = i < 0;
+                        if (neg) {
+                            i = -i;
+                        }
+                        addOpRInt(Op::PushIntConst, 0, i);
+                        if (neg) {
+                            addOp(Op::NegInt);
+                        }
+                    } else {
+                        // Add an int const
+                        addOpRInt(Op::Push, 0, findInt(i));
                     }
-                    
-                    // Emit LoadRefX. r0 has index, type determines i
-                    addOpRdIdRsI(Op::PushRefX, 0, sym.addr(), 0, elementSize);
-                    type = Type::Ref;
+                    type = Type::Int;
                     break;
                 }
-                case ExprAction::Deref: {
-                    // id must be a Struct entry. There must be an exprStack - 1 entry
-                    // and it must be a reference to a var with the Struct type
-                    expect(_exprStack.size() >= 2, Compiler::Error::InternalError);
-                    
-                    // FIXME: For now only deal with ids. If a ref need to know its type
-                    const ExprEntry& prevEntry = _exprStack.end()[-2];
-                    expect(prevEntry.type() != ExprEntry::Type::Id, Compiler::Error::InternalError);
-                    
-                    uint8_t index = findStructEntry(prevEntry, entry);
-                    
-                    // Emit a deref
-                    addOpRdRsI(Op::PushDeref, 0, 0, index);
-                }
+                case ExprEntry::Type::Float:
+                    // Use an fp constant
+                    addOpRInt(Op::Push, 0, findFloat(entry));
+                    type = Type::Float;
+                    break;
+                case ExprEntry::Type::Id:
+                    // Push the value of the id
+                    expect(findSymbol(entry, sym), Compiler::Error::UndefinedIdentifier);
+                    addOpId(Op::Push, sym.addr());
+                    type = sym.type();
+                    break;
+                case ExprEntry::Type::Ref:
+                    // Deref
+                    addOp(Op::PushDeref);
+                    break;
+                case ExprEntry::Type::Value:
+                    // Nothing to do, this just indicates that TOS is a value
+                    break;
             }
             break;
-        }
-        case ExprEntry::Type::Float:
-            expect(action != ExprAction::Left, Compiler::Error::ExpectedLHSExpr);
+        case ExprAction::Left:
+            // The stack contains a ref      
+            expect(entry.type() == ExprEntry::Type::Ref, Compiler::Error::InternalError);
+            addOp(Op::PopDeref);
+            break;
+        case ExprAction::Index:
+            // FIXME: For now only handle ids
+            // TOS has an index, get the sym for the var so 
+            // we know the size of each element
+            expect(findSymbol(entry, sym), Compiler::Error::UndefinedIdentifier);
             
-            // Use an fp constant
-            addOpRInt(Op::Push, 0, findFloat(entry));
-            type = Type::Float;
+            addOpIdI(Op::PushRefX, sym.addr(), elementSize(sym));
+            type = sym.type();
             break;
-        case ExprEntry::Type::Int: // int32_t
-        {
-            expect(action != ExprAction::Left, Compiler::Error::ExpectedLHSExpr);
-
-            int32_t i = int32_t(entry);
-            if (i >= -256 && i < 256) {
-                bool neg = i < 0;
-                if (neg) {
-                    i = -i;
-                }
-                addOpRInt(Op::PushIntConst, 0, i);
-                if (neg) {
-                    addOp(Op::NegInt);
-                }
-            } else {
-                // Add an int const
-                findInt(i);
-                addOpRInt(Op::Push, 0, findInt(i));
-            }
-            type = Type::Int;
-            break;
+        case ExprAction::Offset: {
+            // Prev entry has a Ref. Get the type so we can get an element index
+            // we know the size of each element
+            expect(_exprStack.size() >= 2, Compiler::Error::InternalError);
+            const ExprEntry& prevEntry = _exprStack.end()[-2];            
+            expect(prevEntry.type() == ExprEntry::Type::Ref, Compiler::Error::InternalError);
+            const ExprEntry::Ref& ref = prevEntry;
+            uint8_t index = findStructElementId(ref._type, entry);
+            _exprStack.pop_back();
+            addOpIndex(Op::Offset, index);
+            return Type::Ref;
         }
-        case ExprEntry::Type::Ref:
-            type = Type::Ref;
-            break;
-        case ExprEntry::Type::Function:
-            break;
+        case ExprAction::Ref:
+            if (entry.type() == ExprEntry::Type::Ref) {
+                // Already have a ref
+                const ExprEntry::Ref& ref = entry;
+                return ref._type;
+            }
+            expect(entry.type() == ExprEntry::Type::Id, Compiler::Error::InternalError);
+
+            // Turn this into a Ref
+            expect(findSymbol(entry, sym), Compiler::Error::UndefinedIdentifier);
+            _exprStack.pop_back();
+            _exprStack.push_back(ExprEntry::Ref(sym.type()));
+            addOpId(Op::PushRef, sym.addr());
+            return sym.type();
     }
     
     _exprStack.pop_back();
@@ -776,24 +783,38 @@ CloverCompileEngine::isExprFunction()
     return findFunction(_exprStack.back(), fun);
 }
 
-uint8_t
-CloverCompileEngine::findStructEntry(const std::string& id, const std::string& structId)
-{    
-    Symbol sym;
-    expect(findSymbol(id, sym), Compiler::Error::UndefinedIdentifier);
-    expect(sym.isCustomType(), Compiler::Error::ExpectedStructType);
+const CloverCompileEngine::Struct&
+CloverCompileEngine::structFromType(Type type)
+{
+    expect(uint8_t(type) >= 0x80, Compiler::Error::InternalError);
+    uint8_t index = uint8_t(type) - 0x80;
+    expect(index < _structs.size(), Compiler::Error::InternalError);
     
-    // Make sure the entry id is in the Struct for the prev entry
-    uint8_t structIndex = sym.customTypeIndex();
-    expect(structIndex < _structs.size(), Compiler::Error::InternalError);
-    
-    const std::vector<ParamEntry>& entries = _structs[structIndex].entries();
+    return _structs[index];
+}
 
+uint8_t
+CloverCompileEngine::findStructElementId(Type type, const std::string& id)
+{
+    const Struct& s = structFromType(type);
+    const std::vector<ParamEntry>& entries = s.entries();
 
     auto it = find_if(entries.begin(), entries.end(),
-                    [structId](const ParamEntry& ent) { return ent._name == structId; });
+                    [id](const ParamEntry& ent) { return ent._name == id; });
     expect(it != entries.end(), Compiler::Error::InvalidStructId);
     
     // FIXME: For now assume structs can only have 1 word entries. If we ever support Structs with Structs this is not true
     return it - entries.begin();
+}
+
+uint8_t
+CloverCompileEngine::elementSize(const Symbol& sym)
+{
+    if (!sym.isCustomType()) {
+        return 1;
+    }
+    
+    uint8_t structIndex = sym.customTypeIndex();
+    expect(structIndex < _structs.size(), Compiler::Error::InternalError);
+    return _structs[structIndex].size();
 }
