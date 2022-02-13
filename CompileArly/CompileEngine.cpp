@@ -20,7 +20,6 @@ static std::vector<OpData> _opcodes = {
     { "PushIntConst",   Op::PushIntConst    , OpParams::Const },
 
     { "PushRef",        Op::PushRef         , OpParams::Id },
-    { "PushRefX",       Op::PushRefX        , OpParams::Id_I },
     { "PushDeref",      Op::PushDeref       , OpParams::None },
     { "PopDeref",       Op::PopDeref        , OpParams::None },
 
@@ -80,7 +79,8 @@ static std::vector<OpData> _opcodes = {
     { "NegInt",         Op::NegInt          , OpParams::None },
     { "NegFloat",       Op::NegFloat        , OpParams::None },
     
-    { "Offset",       Op::Offset            , OpParams::Index },
+    { "Offset",         Op::Offset          , OpParams::Index },
+    { "Index",          Op::Index           , OpParams::Index },
     
     { "Log",            Op::Log             , OpParams::I },
     { "LogFloat",       Op::LogFloat        , OpParams::I },

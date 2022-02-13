@@ -66,9 +66,10 @@ function flickerInit
     Init flickerLeds
     
     // Init min, max and delay from SpeedTable
+    PushRef FlickerSpeedTable
 	PushIntConst 3
 	CallNative Param
-    PushRefX FlickerSpeedTable SpeedTableEntrySize
+    Index SpeedTableEntrySize
 	Dup
 	Dup
     PushDeref
@@ -90,8 +91,9 @@ function flickerLoop
     // for (i = 0; i < NumPixels; ++i)
     foreach i
         // Set r0 to point at the current LED
+        PushRef flickerLeds
 		Push i
-        PushRefX flickerLeds 4
+        Index 4
 		Dup
         Pop led
 		CallNative Animate

@@ -163,13 +163,11 @@ Opcodes:
     // stored at the address.
     
     PushRef id              - stack[sp++] = id
-    PushRefX id i           - t = stack[--sp], stack[sp++] = id + t * i
     PushDeref               - t = stack[--sp], stack[sp++] = mem[t]
     PopDeref                - v = stack[--sp], mem[stack[--sp]] = v
     
     Offset i                - stack[sp-1] += i
-    Index n                 - i = stack[--sp], stack[--sp] += i * n
-    PushD                   - 
+    Index n                 - i = stack[--sp], stack[sp-1] += i * n
     
     Dup                     - stack[sp++] = stack[sp]
     Drop                    - --sp
@@ -289,9 +287,8 @@ enum class Op: uint8_t {
     PushIntConst    = 0x13,
     
     PushRef         = 0x14,
-    PushRefX        = 0x15,
-    PushDeref       = 0x16,
-    PopDeref        = 0x17,
+    PushDeref       = 0x15,
+    PopDeref        = 0x16,
     
     Dup             = 0x20,
     Drop            = 0x21,
@@ -363,6 +360,7 @@ enum class Op: uint8_t {
     Call            = 0x80,
     
     Offset          = 0x90,
+    Index           = 0xa0,
     
     Log             = 0xf0, // Print r as int32_t with addr - For debugging
     LogFloat        = 0xf1, // Print r as float with addr - For debugging
@@ -377,7 +375,6 @@ enum class Op: uint8_t {
 enum class OpParams : uint8_t {
     None,       // No params
     Id,         // b+1 = <id>
-    Id_I,       // b+1 = <id>, b+2[3:0] = <int>
     I,          // b+1[3:0] = <int> (0-3)
     Index,      // b[3:0] = <int> (0-15)
     Const,      // b+1 = 0-255

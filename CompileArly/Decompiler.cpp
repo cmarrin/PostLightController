@@ -230,14 +230,6 @@ Decompiler::statement()
             _out->append(std::to_string(getUInt8()));
             _out->append("]");
             break;
-        case OpParams::Id_I:
-            id = getUInt8();
-            rdrsi = getUInt8();
-            _out->append("[");
-            _out->append(std::to_string(id));
-            _out->append("] ");
-            _out->append(std::to_string(rdrsi & 0x0f));
-            break;
         case OpParams::I:
             rdrsi = getUInt8();
             _out->append(std::to_string(rdrsi & 0x0f));

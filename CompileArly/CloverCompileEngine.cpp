@@ -521,6 +521,7 @@ CloverCompileEngine::postfixExpression()
                 addOpTarg(Op::Call, fun.addr());
             }
         } else if (match(Token::OpenBracket)) {
+            bakeExpr(ExprAction::Ref);
             expect(arithmeticExpression(), Compiler::Error::ExpectedExpr);
             expect(Token::CloseBracket);
             
@@ -528,8 +529,8 @@ CloverCompileEngine::postfixExpression()
             expect(bakeExpr(ExprAction::Right) == Type::Int, Compiler::Error::ExpectedInt);
 
             // TOS now has the index.
-            // Now Create a Ref using LoadRefX. The type of the TOS determines i. Result is in r0
-            _exprStack.emplace_back(ExprEntry::Ref(bakeExpr(ExprAction::Index)));
+            // Index the Ref
+            bakeExpr(ExprAction::Index);
         } else if (match(Token::Dot)) {
             // The 
             std::string id;
@@ -739,14 +740,20 @@ CloverCompileEngine::bakeExpr(ExprAction action)
             addOp(Op::PopDeref);
             break;
         case ExprAction::Index:
-            // FIXME: For now only handle ids
             // TOS has an index, get the sym for the var so 
             // we know the size of each element
-            expect(findSymbol(entry, sym), Compiler::Error::UndefinedIdentifier);
-            
-            addOpIdI(Op::PushRefX, sym.addr(), elementSize(sym));
-            type = sym.type();
-            break;
+            if (entry.type() == ExprEntry::Type::Ref) {
+                // This is a ref, get the size from the type
+                const ExprEntry::Ref& ref = entry;
+                type = ref._type;
+            } else {
+                expect(findSymbol(entry, sym), Compiler::Error::UndefinedIdentifier);
+                type = sym.type();
+                _exprStack.pop_back();
+                _exprStack.push_back(ExprEntry::Ref(type));
+            }
+            addOpIndex(Op::Index, structFromType(type).size());
+            return type;
         case ExprAction::Offset: {
             // Prev entry has a Ref. Get the type so we can get an element index
             // we know the size of each element

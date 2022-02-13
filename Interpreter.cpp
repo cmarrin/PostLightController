@@ -136,12 +136,6 @@ Interpreter::execute(uint16_t addr)
             case Op::PushRef:
                 _stack.push(getId());
                 break;
-            case Op::PushRefX:
-                id = getId();
-                i = getI();
-                value = _stack.pop();
-                _stack.push(id + value * i);
-                break;
             case Op::PushDeref:
                 value = _stack.pop();
                 _stack.push(loadInt(value));
@@ -154,6 +148,10 @@ Interpreter::execute(uint16_t addr)
 
             case Op::Offset:
                 _stack.top() += index;
+                break;
+            case Op::Index:
+                value = _stack.pop();
+                _stack.top() += value * index;
                 break;
 
             case Op::Dup:
