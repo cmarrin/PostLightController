@@ -220,6 +220,9 @@ CloverCompileEngine::function()
     
     expect(formalParameterList(), Compiler::Error::ExpectedFormalParams);
     
+    // Remember how many formal params we have
+    currentFunction().args() = currentFunction().locals().size();
+    
     expect(Token::CloseParen);
     expect(Token::OpenBrace);
 
@@ -421,8 +424,8 @@ CloverCompileEngine::arithmeticExpression(uint8_t minPrec, ArithType arithType)
 
         uint8_t nextMinPrec = info.prec() + 1;
         _scanner.retireToken();
-        
-        expect(arithType == ArithType::Op || info.assign() != OpInfo::Assign::None, Compiler::Error::AssignmentNotAllowedHere);
+                
+        expect(!(arithType != ArithType::Assign && info.assign() != OpInfo::Assign::None), Compiler::Error::AssignmentNotAllowedHere);
         
         if (info.assign() != OpInfo::Assign::None) {
             // Nothing to do before
@@ -605,19 +608,18 @@ CloverCompileEngine::argumentList(const Function& fun)
         
         i++;
         
-        expect(fun.locals().size() >= i, Compiler::Error::WrongNumberOfArgs);
+        expect(fun.args() >= i, Compiler::Error::WrongNumberOfArgs);
     
         // Bake the arithmeticExpression, leaving the result in r0.
         // Make sure the type matches the formal argument and push r0
         expect(bakeExpr(ExprAction::Right) == fun.locals()[0].type(), Compiler::Error::MismatchedType);
-        addOp(Op::Push);
 
         if (!match(Token::Comma)) {
             break;
         }
     }
 
-    expect(fun.locals().size() == i, Compiler::Error::WrongNumberOfArgs);
+    expect(fun.args() == i, Compiler::Error::WrongNumberOfArgs);
     return true;
 }
 

@@ -238,6 +238,8 @@ protected:
         Interpreter::NativeFunction native() const { return _native; }
         std::vector<Symbol>& locals() { return _locals; }
         const std::vector<Symbol>& locals() const { return _locals; }
+        uint8_t& args() { return _args; }
+        const uint8_t& args() const { return _args; }
         
         bool isNative() const { return _native != Interpreter::NativeFunction::None; }
         
@@ -245,7 +247,8 @@ protected:
         std::string _name;
         uint16_t _addr = 0;
         Interpreter::NativeFunction _native = Interpreter::NativeFunction::None;
-        std::vector<Symbol> _locals;        
+        std::vector<Symbol> _locals;
+        uint8_t _args = 0;
     };
     
     struct Effect
