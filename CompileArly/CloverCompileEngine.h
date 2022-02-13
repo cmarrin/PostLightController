@@ -95,8 +95,6 @@ arithmeticExpression:
 
 unaryExpression:
       postfixExpression
-    | '++' unaryExpression
-    | '--' unaryExpression
     | '-' unaryExpression
     | '~' unaryExpression
     | '!' unaryExpression
@@ -105,8 +103,6 @@ unaryExpression:
 
 postfixExpression:
       primaryExpression
-    | postfixExpression '++'
-    | postfixExpression '--'
     | postfixExpression '(' argumentList ')'
     | postfixExpression '[' arithmeticExpression ']'
     | postfixExpression '.' identifier
