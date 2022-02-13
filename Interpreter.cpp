@@ -272,7 +272,7 @@ Interpreter::execute(uint16_t addr)
             }
             
             case Op::Call:
-                targ = (uint16_t(getId()) << 2) | (cmd & 0x03);
+                targ = uint16_t(getId()) | (uint16_t(index)  << 8);
                 _stack.push(_pc);
                 _pc = targ + _codeOffset;
                 

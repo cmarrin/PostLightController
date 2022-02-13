@@ -312,14 +312,9 @@ enum class Op: uint8_t {
     ForEach         = 0x3d,
     EndForEach      = 0x3e, // At the end of foreach
 
-// Call needs 2 extra bits for its
-// target addr, use lower 2 bits of
-// op, so skip 4 here.
-    Call            = 0x3f,
-    
-    CallNative      = 0x40,
-    Return          = 0x41,
-    SetFrame        = 0x42,
+    CallNative      = 0x3f,
+    Return          = 0x40,
+    SetFrame        = 0x41,
     
 // 5 unused opcodes
     
@@ -357,9 +352,15 @@ enum class Op: uint8_t {
     NegInt          = 0x6b,
     NegFloat        = 0x6c,
     
-    Log             = 0xe0, // Print r as int32_t with addr - For debugging
-    LogFloat        = 0xe1, // Print r as float with addr - For debugging
-    LogColor        = 0xe2, // Print c with addr - For debugging
+    // 0x80 - 0xe0 (7 ops have an index (0-15) in b[3:0]
+    
+    // Call only needs 2 extra bits for target addr, but
+    // for simplicity allow it to have 4 bits
+    Call            = 0x80,
+    
+    Log             = 0xf0, // Print r as int32_t with addr - For debugging
+    LogFloat        = 0xf1, // Print r as float with addr - For debugging
+    LogColor        = 0xf2, // Print c with addr - For debugging
     
     End             = 0xff,
     

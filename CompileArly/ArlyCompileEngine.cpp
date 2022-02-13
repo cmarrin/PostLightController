@@ -357,8 +357,8 @@ ArlyCompileEngine::opStatement()
         case OpParams::Const: addOpConst(op, handleConst()); break;
         case OpParams::Target: {
             uint16_t targ = handleFunctionName();
-            _rom8.push_back(uint8_t(op) | uint8_t(targ & 0x03));
-            _rom8.push_back(uint8_t(targ >> 2));
+            _rom8.push_back(uint8_t(op) | uint8_t((targ >> 8) & 0x0f));
+            _rom8.push_back(uint8_t(targ));
             break;
         }
         case OpParams::P_L:
