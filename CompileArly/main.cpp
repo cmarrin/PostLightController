@@ -106,6 +106,7 @@ static void showError(arly::Compiler::Error error, arly::Token token, const std:
         case arly::Compiler::Error::ExpectedFormalParams: err = "expected formal params"; break;
         case arly::Compiler::Error::ExpectedFunction: err = "expected function name"; break;
         case arly::Compiler::Error::ExpectedStructType: err = "expected Struct type"; break;
+        case arly::Compiler::Error::AssignmentNotAllowedHere: err = "assignment not allowed here"; break;
         case arly::Compiler::Error::InvalidStructId: err = "invalid Struct identifier"; break;
         case arly::Compiler::Error::InvalidParamCount: err = "invalid param count"; break;
         case arly::Compiler::Error::UndefinedIdentifier: err = "undefined identifier"; break;

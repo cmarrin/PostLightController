@@ -15,36 +15,36 @@
 using namespace arly;
 
 bool
-CloverCompileEngine::operatorInfo(Token token, OperatorInfo& op) const
+CloverCompileEngine::opInfo(Token token, OpInfo& op) const
 {
-    static std::vector<OperatorInfo> opInfo = {
-        { Token::Equal,     1, OperatorInfo::Assoc::Right, false, Op::Pop },
-        { Token::AddSto,    1, OperatorInfo::Assoc::Right, true,  Op::AddInt  },
-        { Token::SubSto,    1, OperatorInfo::Assoc::Right, true,  Op::SubInt  },
-        { Token::MulSto,    1, OperatorInfo::Assoc::Right, true,  Op::MulInt  },
-        { Token::DivSto,    1, OperatorInfo::Assoc::Right, true,  Op::DivInt  },
-        { Token::AndSto,    1, OperatorInfo::Assoc::Right, true,  Op::And  },
-        { Token::OrSto,     1, OperatorInfo::Assoc::Right, true,  Op::Or   },
-        { Token::XorSto,    1, OperatorInfo::Assoc::Right, true,  Op::Xor  },
-        { Token::LOr,       6, OperatorInfo::Assoc::Left,  false, Op::LOr  },
-        { Token::LAnd,      7, OperatorInfo::Assoc::Left,  false, Op::LAnd },
-        { Token::Or,        8, OperatorInfo::Assoc::Left,  false, Op::Or   },
-        { Token::Xor,       9, OperatorInfo::Assoc::Left,  false, Op::Xor  },
-        { Token::And,      10, OperatorInfo::Assoc::Left,  false, Op::And  },
-        { Token::EQ,       11, OperatorInfo::Assoc::Left,  false, Op::EQInt },
-        { Token::NE,       11, OperatorInfo::Assoc::Left,  false, Op::NEInt   },
-        { Token::LT,       12, OperatorInfo::Assoc::Left,  false, Op::LTInt   },
-        { Token::GT,       12, OperatorInfo::Assoc::Left,  false, Op::GTInt   },
-        { Token::GE,       12, OperatorInfo::Assoc::Left,  false, Op::GEInt   },
-        { Token::LE,       12, OperatorInfo::Assoc::Left,  false, Op::LEInt   },
-        { Token::Plus,     14, OperatorInfo::Assoc::Left,  false, Op::AddInt  },
-        { Token::Minus,    14, OperatorInfo::Assoc::Left,  false, Op::SubInt  },
-        { Token::Mul,      15, OperatorInfo::Assoc::Left,  false, Op::MulInt  },
-        { Token::Div,      15, OperatorInfo::Assoc::Left,  false, Op::DivInt  },
+    static std::vector<OpInfo> opInfo = {
+        { Token::Equal,     1, Op::Pop,     Op::Pop,      OpInfo::Assign::Only },
+        { Token::AddSto,    1, Op::AddInt,  Op::AddFloat, OpInfo::Assign::Op   },
+        { Token::SubSto,    1, Op::SubInt,  Op::SubFloat, OpInfo::Assign::Op   },
+        { Token::MulSto,    1, Op::MulInt,  Op::MulFloat, OpInfo::Assign::Op   },
+        { Token::DivSto,    1, Op::DivInt,  Op::DivFloat, OpInfo::Assign::Op   },
+        { Token::AndSto,    1, Op::And,     Op::And,      OpInfo::Assign::Op   },
+        { Token::OrSto,     1, Op::Or,      Op::Or,       OpInfo::Assign::Op   },
+        { Token::XorSto,    1, Op::Xor,     Op::Xor,      OpInfo::Assign::Op   },
+        { Token::LOr,       6, Op::LOr,     Op::LOr,      OpInfo::Assign::None },
+        { Token::LAnd,      7, Op::LAnd,    Op::LOr,      OpInfo::Assign::None },
+        { Token::Or,        8, Op::Or,      Op::LOr,      OpInfo::Assign::None },
+        { Token::Xor,       9, Op::Xor,     Op::LOr,      OpInfo::Assign::None },
+        { Token::And,      10, Op::And,     Op::LOr,      OpInfo::Assign::None },
+        { Token::EQ,       11, Op::EQInt,   Op::EQFloat,  OpInfo::Assign::None },
+        { Token::NE,       11, Op::NEInt,   Op::NEFloat,  OpInfo::Assign::None },
+        { Token::LT,       12, Op::LTInt,   Op::LTFloat,  OpInfo::Assign::None },
+        { Token::GT,       12, Op::GTInt,   Op::GTFloat,  OpInfo::Assign::None },
+        { Token::GE,       12, Op::GEInt,   Op::GEFloat,  OpInfo::Assign::None },
+        { Token::LE,       12, Op::LEInt,   Op::LEFloat,  OpInfo::Assign::None },
+        { Token::Plus,     14, Op::AddInt,  Op::AddFloat, OpInfo::Assign::None },
+        { Token::Minus,    14, Op::SubInt,  Op::SubFloat, OpInfo::Assign::None },
+        { Token::Mul,      15, Op::MulInt,  Op::MulFloat, OpInfo::Assign::None },
+        { Token::Div,      15, Op::DivInt,  Op::DivFloat, OpInfo::Assign::None },
     };
 
     auto it = find_if(opInfo.begin(), opInfo.end(),
-                    [token](const OperatorInfo& op) { return op.token() == token; });
+                    [token](const OpInfo& op) { return op.token() == token; });
     if (it != opInfo.end()) {
         op = *it;
         return true;
@@ -384,7 +384,7 @@ CloverCompileEngine::forStatement()
 bool
 CloverCompileEngine::expressionStatement()
 {
-    if (!arithmeticExpression()) {
+    if (!assignmentExpression()) {
         return false;
     }
     
@@ -405,23 +405,26 @@ CloverCompileEngine::expressionStatement()
 }
 
 bool
-CloverCompileEngine::arithmeticExpression(uint8_t minPrec)
+CloverCompileEngine::arithmeticExpression(uint8_t minPrec, ArithType arithType)
 {
     if (!unaryExpression()) {
         return false;
     }
     
     while(1) {
-        OperatorInfo opInfo;
-        if (!operatorInfo(_scanner.getToken(), opInfo)) {
-            break;
+        OpInfo info;
+        if (!opInfo(_scanner.getToken(), info)) {
+            return true;
         }
+        
+        // If this is an assignment operator, we only allow one so handle it separately
 
-        uint8_t nextMinPrec = (opInfo.assoc() == OperatorInfo::Assoc::Left) ? (opInfo.prec() + 1) : opInfo.prec();
+        uint8_t nextMinPrec = info.prec() + 1;
         _scanner.retireToken();
         
-        // FIXNE: Eventually, we'll handle STO ops separately
-        if (opInfo.sto() || opInfo.op() == Op::Pop) {
+        expect(arithType == ArithType::Op || info.assign() != OpInfo::Assign::None, Compiler::Error::AssignmentNotAllowedHere);
+        
+        if (info.assign() != OpInfo::Assign::None) {
             // Nothing to do before
         } else {
             bakeExpr(ExprAction::Right);
@@ -429,7 +432,7 @@ CloverCompileEngine::arithmeticExpression(uint8_t minPrec)
         
         expect(arithmeticExpression(nextMinPrec), Compiler::Error::ExpectedExpr);
     
-        switch(opInfo.op()) {
+        switch(info.intOp()) {
             case Op::Pop: {
                 // Put RHS in r0
                 bakeExpr(ExprAction::Right);
@@ -444,10 +447,11 @@ CloverCompileEngine::arithmeticExpression(uint8_t minPrec)
             default: break;
         }
         
-        if (opInfo.sto() || opInfo.op() == Op::Pop) {
+        if (info.assign() != OpInfo::Assign::None) {
             bakeExpr(ExprAction::Left);
         }
     }
+    
     return true;
 }
 
@@ -494,11 +498,7 @@ CloverCompileEngine::postfixExpression()
     }
     
     while (true) {
-        if (match(Token::Inc)) {
-            // FIXME: increment result of primaryExpression above
-        } else if (match(Token::Dec)) {
-            // FIXME: decrement result of primaryExpression above
-        } else if (match(Token::OpenParen)) {
+        if (match(Token::OpenParen)) {
             // Top of exprStack must be a function id
             Function fun;
             expect(findFunction(_exprStack.back(), fun), Compiler::Error::ExpectedFunction);

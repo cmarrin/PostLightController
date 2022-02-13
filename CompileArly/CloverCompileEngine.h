@@ -174,17 +174,19 @@ protected:
     bool var();
 
 private:
-    class OperatorInfo {
-    public:
-        enum class Assoc { Left = 0, Right = 1 };
+    class OpInfo {
+    public:        
+        OpInfo() { }
         
-        OperatorInfo() { }
-        OperatorInfo(Token token, uint8_t prec, Assoc assoc, bool sto, Op op)
+        enum class Assign { None, Only, Op };
+        
+        // assign says this is an assignmentOperator, opAssign says it also has a binary op
+        OpInfo(Token token, uint8_t prec, Op intOp, Op floatOp, Assign assign)
             : _token(token)
-            , _op(op)
+            , _intOp(intOp)
+            , _floatOp(floatOp)
             , _prec(prec)
-            , _assoc(assoc)
-            , _sto(sto)
+            , _assign(assign)
         {
         }
         
@@ -195,16 +197,16 @@ private:
         
         Token token() const { return _token; }
         uint8_t prec() const { return _prec; }
-        Op op() const { return _op; }
-        bool sto() const { return _sto; }
-        Assoc assoc() const { return _assoc; }
+        Op intOp() const { return _intOp; }
+        Op floatOp() const { return _floatOp; }
+        Assign assign() const { return _assign; }
 
     private:
         Token _token;
-        Op _op;
+        Op _intOp;
+        Op _floatOp;
         uint8_t _prec;
-        Assoc _assoc;
-        bool _sto;
+        Assign _assign;
     };
     
     bool element();
@@ -217,7 +219,9 @@ private:
     bool forStatement();
     bool expressionStatement();
     
-    bool arithmeticExpression(uint8_t minPrec = 1);
+    enum class ArithType { Assign, Op };
+    bool assignmentExpression() { return arithmeticExpression(1, ArithType::Assign); }
+    bool arithmeticExpression(uint8_t minPrec = 1, ArithType = ArithType::Op);
     bool unaryExpression();
     bool postfixExpression();
     bool primaryExpression();
@@ -225,7 +229,7 @@ private:
     bool formalParameterList();
     bool argumentList(const Function& fun);
     
-    bool operatorInfo(Token token, OperatorInfo&) const;
+    bool opInfo(Token token, OpInfo&) const;
 
     virtual bool isReserved(Token token, const std::string str, Reserved&) override;
 

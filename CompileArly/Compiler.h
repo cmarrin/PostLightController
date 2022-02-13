@@ -49,6 +49,7 @@ public:
         ExpectedFunction,
         ExpectedLHSExpr,
         ExpectedStructType,
+        AssignmentNotAllowedHere,
         InvalidStructId,
         InvalidParamCount,
         UndefinedIdentifier,
