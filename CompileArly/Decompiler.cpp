@@ -187,12 +187,12 @@ Decompiler::statement()
         return Op(opInt);
     }
     
-    uint8_t r = 0;
+    uint8_t index = 0;
     
     if (opInt >= 0x80) {
-        // Get r from lowest 2 bits
-        r = opInt & 0x03;
-        opInt &= 0xfc;
+        // Get index from lowest 4 bits
+        index = opInt & 0x0f;
+        opInt &= 0xf0;
     }
     
     OpData opData;
@@ -242,11 +242,14 @@ Decompiler::statement()
             rdrsi = getUInt8();
             _out->append(std::to_string(rdrsi & 0x0f));
             break;
+        case OpParams::Index:
+            _out->append(std::to_string(index));
+            break;
         case OpParams::Const:
             _out->append(std::to_string(getUInt8()));
             break;
         case OpParams::Target:
-            targ = (uint16_t(getUInt8()) << 2) | r;
+            targ = (uint16_t(index) << 8) | getUInt8();
             _out->append("[");
             _out->append(std::to_string(targ + _codeOffset));
             _out->append("]");

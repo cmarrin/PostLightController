@@ -136,6 +136,11 @@ protected:
         _rom8.push_back(i);
     }
     
+    void addOpIndex(Op op, uint8_t i)
+    {
+        _rom8.push_back(uint8_t(op) | (i & 0x0f));
+    }
+
     void addOpI(Op op, uint8_t i) { addOpRInt(op, 0, i); }
     void addOpId(Op op, uint8_t id) { addOpRInt(op, 0, id); }
     void addOpIdI(Op op, uint8_t id, uint8_t i) { addOpRdIdRsI(op, 0, id, 0, i); }

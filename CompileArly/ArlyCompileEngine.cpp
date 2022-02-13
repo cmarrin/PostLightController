@@ -350,10 +350,11 @@ ArlyCompileEngine::opStatement()
     
     // Get the params in the sequence specified in OpParams
     switch(par) {
-        case OpParams::None: addOp(op); break;
-        case OpParams::Id:   addOpId(op, handleId()); break;
-        case OpParams::Id_I: addOpIdI(op, handleId(), handleI()); break;
-        case OpParams::I:    addOpI(op, handleI()); break;
+        case OpParams::None:  addOp(op); break;
+        case OpParams::Id:    addOpId(op, handleId()); break;
+        case OpParams::Id_I:  addOpIdI(op, handleId(), handleI()); break;
+        case OpParams::I:     addOpI(op, handleI()); break;
+        case OpParams::Index: addOpIndex(op, handleI()); break;
         case OpParams::Const: addOpConst(op, handleConst()); break;
         case OpParams::Target: {
             uint16_t targ = handleFunctionName();

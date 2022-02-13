@@ -164,8 +164,12 @@ Opcodes:
     
     PushRef id              - stack[sp++] = id
     PushRefX id i           - t = stack[--sp], stack[sp++] = id + t * i
-    PushDeref i             - t = stack[--sp], stack[sp++] = mem[t + i]
-    PopDeref i              - v = stack[--sp], mem[stack[--sp] + i] = t
+    PushDeref               - t = stack[--sp], stack[sp++] = mem[t]
+    PopDeref                - v = stack[--sp], mem[stack[--sp]] = v
+    
+    Offset i                - stack[sp-1] += i
+    Index n                 - i = stack[--sp], stack[--sp] += i * n
+    PushD                   - 
     
     Dup                     - stack[sp++] = stack[sp]
     Drop                    - --sp
@@ -289,9 +293,9 @@ enum class Op: uint8_t {
     PushDeref       = 0x16,
     PopDeref        = 0x17,
     
-    Dup             = 0x18,
-    Drop            = 0x19,
-    Swap            = 0x1a,
+    Dup             = 0x20,
+    Drop            = 0x21,
+    Swap            = 0x22,
     
     MinInt          = 0x30,
     MinFloat        = 0x31,
@@ -358,6 +362,8 @@ enum class Op: uint8_t {
     // for simplicity allow it to have 4 bits
     Call            = 0x80,
     
+    Offset          = 0x90,
+    
     Log             = 0xf0, // Print r as int32_t with addr - For debugging
     LogFloat        = 0xf1, // Print r as float with addr - For debugging
     LogColor        = 0xf2, // Print c with addr - For debugging
@@ -372,7 +378,8 @@ enum class OpParams : uint8_t {
     None,       // No params
     Id,         // b+1 = <id>
     Id_I,       // b+1 = <id>, b+2[3:0] = <int>
-    I,          // b+1[3:0] = <int>
+    I,          // b+1[3:0] = <int> (0-3)
+    Index,      // b[3:0] = <int> (0-15)
     Const,      // b+1 = 0-255
     Target,     // b+1 = call target bits 7:2, b[2:0] = call target bits 1:0};
     P_L,        // b+1[7:4] = num params, b+1[3:0] = num locals

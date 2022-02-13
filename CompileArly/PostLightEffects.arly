@@ -71,11 +71,13 @@ function flickerInit
     PushRefX FlickerSpeedTable SpeedTableEntrySize
 	Dup
 	Dup
-    PushDeref 0
+    PushDeref
     Pop flickerStepsMin
-    PushDeref 1
+    Offset 1
+    PushDeref
     Pop flickerStepsMax
-    PushDeref 2
+    Offset 2
+    PushDeref
     ToInt
     Pop flickerSpeedDelay
 end
@@ -104,36 +106,43 @@ function flickerLoop
 			Dup
 			Dup
 			Dup
-			Dup
+            Offset LEDCur
             Push BrightnessMin
 
-            PopDeref LEDCur
+            PopDeref
                 
             // led.inc = Random(IncMin, IncMax)
+            Offset LEDInc
             Push IncMin
             Push IncMax
             RandomFloat
-            PopDeref LEDInc
+            PopDeref
         
             // Random number of steps to throb up and down
             // led.min = BrightnessMin
+            Offset LEDMin
             Push BrightnessMin
-            PopDeref LEDMin
+            PopDeref
 
             // led.max = led.inc + Random(flickerStepsMin, flickerStepsMax);
-            PushDeref LEDInc
+            Offset LEDInc
+            PushDeref
             Push flickerStepsMin
             Push flickerStepsMax
             RandomFloat
             AddFloat
-            PopDeref LEDMax
+			Push led
+            Offset LEDMax
+            Swap
+            PopDeref
         end
 
         // c0.val = led.cur
 		PushZero
 		PushIntConst 2
         Push led            
-        PushDeref LEDCur
+        Offset LEDCur
+        PushDeref
 		CallNative StoreColorComp
 		Drop
 		
@@ -159,13 +168,15 @@ function pulseInit
 
     // pulseState.max = c.val
     PushRef pulseState
+    Offset LEDMax
 	PushZero
 	PushIntConst 2
     CallNative LoadColorComp
-    PopDeref LEDMax
+    PopDeref
     
     // pulseState.min = c.val - (float(depth + 1) / float(NumLevels) * (c.val - BrightnessMin))
     PushRef pulseState
+    Offset LEDMin
 	PushZero
 	PushIntConst 2
     CallNative LoadColorComp
@@ -183,14 +194,16 @@ function pulseInit
 	DivFloat
 	MulFloat
 	SubFloat
-    PopDeref LEDMin
+    PopDeref
 
     // pulseState.inc = (pulseState.max - pulseState.min) / float((NumLevels - speed) * PulseSpeedMult)
     PushRef pulseState
 	Dup
-	PushDeref LEDMax
-    PushRef pulseState
-	PushDeref LEDMin
+    Offset LEDMax
+	PushDeref
+    Swap
+    Offset LEDMin
+	PushDeref
 	SubFloat
 	Push NumLevels
 	PushIntConst 3
@@ -201,16 +214,23 @@ function pulseInit
 	CallNative Float
 	MulFloat
 	DivFloat
-	PopDeref LEDInc
+    PushRef pulseState
+    Offset LEDInc
+    Swap
+	PopDeref
 
     // Start with a random value for cur
     PushRef pulseState
-	Dup
-    PushDeref LEDMin
+    Offset LEDMin
+    PushDeref
 	Swap
-    PushDeref LEDMax
+    Offset LEDMax
+    PushDeref
     RandomFloat
-    PopDeref LEDCur
+    PushRef pulseState
+    Offset LEDCur
+    Swap
+    PopDeref
 end
 
 function pulseLoop
@@ -220,7 +240,8 @@ function pulseLoop
 	Dup
     CallNative Animate
 	Drop
-    PushDeref LEDCur
+    Offset LEDCur
+    PushDeref
     CallNative StoreColorComp
 	Drop
 	

@@ -100,10 +100,14 @@ Interpreter::execute(uint16_t addr)
         }
         
         uint8_t cmd = getUInt8ROM(_pc++);
+        uint8_t index = 0;
+        if (cmd >= 0x80) {
+            index = cmd & 0x0f;
+            cmd &= 0xf0;
+        }
 
         uint8_t id;
         uint8_t i;
-        uint8_t index;
         uint16_t targ;
         uint16_t addr;
         uint8_t numParams;
@@ -139,15 +143,17 @@ Interpreter::execute(uint16_t addr)
                 _stack.push(id + value * i);
                 break;
             case Op::PushDeref:
-                i = getI();
                 value = _stack.pop();
-                _stack.push(loadInt(value + i));
+                _stack.push(loadInt(value));
                 break;
             case Op::PopDeref:
-                i = getI();
                 value = _stack.pop();
-                index = _stack.pop() + i;
+                index = _stack.pop();
                 storeInt(index, value);
+                break;
+
+            case Op::Offset:
+                _stack.top() += index;
                 break;
 
             case Op::Dup:
