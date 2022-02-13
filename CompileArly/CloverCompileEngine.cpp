@@ -383,13 +383,19 @@ CloverCompileEngine::expressionStatement()
         return false;
     }
     
-    // Discard result of expression
-    _exprStack.pop_back();
+    // The exprStack may or may not have one entry.
+    // If it does it means that there was an unused
+    // value from the expression, for instance, a
+    // return value from a function. If not it means
+    // the expression ended in an assignment. Do 
+    // what's needed.
+    if (!_exprStack.empty()) {
+        expect(_exprStack.size() == 1, Compiler::Error::InternalError);
+        _exprStack.pop_back();
+        addOp(Op::Drop);
+    }
     
     expect(Token::Semicolon);
-
-    // Ensure exprStack is empty
-    expect(_exprStack.empty(), Compiler::Error::InternalError);
     return true;
 }
 
