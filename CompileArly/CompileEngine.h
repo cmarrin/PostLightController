@@ -237,10 +237,12 @@ protected:
         { }
 
         // Used to create built-in native functions
-        Function(const char* name, Interpreter::NativeFunction native, const SymbolList& locals)
+        Function(const char* name, Interpreter::NativeFunction native, Type type, const SymbolList& locals)
             : _name(name)
             , _native(native)
             , _locals(locals)
+            , _args(locals.size())
+            , _type(type)
         { }
 
         const std::string& name() const { return _name; }

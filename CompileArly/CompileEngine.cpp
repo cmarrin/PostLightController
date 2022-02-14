@@ -93,39 +93,46 @@ CompileEngine::CompileEngine(std::istream* stream)
     // Add built-in native functions to _functions
     _functions.emplace_back("LoadColorParam",
                             Interpreter::NativeFunction::LoadColorParam,
+                            Type::None,
                             SymbolList {
                                 { "c", 0, Type::Int },
                                 { "p", 1, Type::Int }
                             });
     _functions.emplace_back("SetAllLights",
                             Interpreter::NativeFunction::SetAllLights,
+                            Type::None,
                             SymbolList {
                                 { "c", 0, Type::Int },
                             });
     _functions.emplace_back("SetLight",
                             Interpreter::NativeFunction::SetLight,
+                            Type::None,
                             SymbolList {
                                 { "i", 0, Type::Int },
                                 { "c", 1, Type::Int },
                             });
     _functions.emplace_back("Animate",
                             Interpreter::NativeFunction::Animate,
+                            Type::Int,
                             SymbolList {
                                 { "p", 0, Type::Int },
                             });
     _functions.emplace_back("Param",
                             Interpreter::NativeFunction::Param,
+                            Type::Int,
                             SymbolList {
                                 { "p", 0, Type::Int },
                             });
     _functions.emplace_back("LoadColorComp",
                             Interpreter::NativeFunction::LoadColorComp,
+                            Type::Float,
                             SymbolList {
                                 { "c", 0, Type::Int },
                                 { "i", 1, Type::Int },
                             });
     _functions.emplace_back("StoreColorComp",
                             Interpreter::NativeFunction::StoreColorComp,
+                            Type::None,
                             SymbolList {
                                 { "c", 0, Type::Int },
                                 { "i", 1, Type::Int },
@@ -133,11 +140,13 @@ CompileEngine::CompileEngine(std::istream* stream)
                             });
     _functions.emplace_back("Float",
                             Interpreter::NativeFunction::Float,
+                            Type::Float,
                             SymbolList {
                                 { "v", 0, Type::Int },
                             });
     _functions.emplace_back("Int",
                             Interpreter::NativeFunction::Int,
+                            Type::Int,
                             SymbolList {
                                 { "v", 0, Type::Float },
                             });
