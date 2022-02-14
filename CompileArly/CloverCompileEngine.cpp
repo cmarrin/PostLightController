@@ -444,7 +444,7 @@ CloverCompileEngine::arithmeticExpression(uint8_t minPrec, ArithType arithType)
     
     while(1) {
         OpInfo info;
-        if (!opInfo(_scanner.getToken(), info)) {
+        if (!opInfo(_scanner.getToken(), info) || info.prec() < minPrec) {
             return true;
         }
         
