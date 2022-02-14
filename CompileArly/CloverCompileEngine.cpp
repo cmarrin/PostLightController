@@ -463,7 +463,7 @@ CloverCompileEngine::arithmeticExpression(uint8_t minPrec, ArithType arithType)
         
         if (info.assign() != OpInfo::Assign::None) {
             // Turn TOS into Ref
-            leftType = bakeExpr(ExprAction::Ref);
+            leftType = bakeExpr(ExprAction::LeftRef);
         } else {
             leftType = bakeExpr(ExprAction::Right);
         }
@@ -524,7 +524,9 @@ CloverCompileEngine::unaryExpression()
     
     // FIXME: Handle all cases
     if (op == Op::PushRef) {
-        expect(bakeExpr(ExprAction::Left) == Type::Ref, Compiler::Error::ExpectedRef);
+        // TOS must be a ref
+        // FIXME: We need to indicate that this is a pointer, so the types match
+        bakeExpr(ExprAction::Ptr);
         //_exprStack.emplace_back(ExprEntry::Ref());
     }
     
@@ -652,7 +654,7 @@ CloverCompileEngine::argumentList(const Function& fun)
     
         // Bake the arithmeticExpression, leaving the result in r0.
         // Make sure the type matches the formal argument and push r0
-        expect(bakeExpr(ExprAction::Right) == fun.locals()[0].type(), Compiler::Error::MismatchedType);
+        expect(bakeExpr(ExprAction::Right) == fun.locals()[i - 1].type(), Compiler::Error::MismatchedType);
 
         if (!match(Token::Comma)) {
             break;
@@ -763,10 +765,14 @@ CloverCompileEngine::bakeExpr(ExprAction action)
                     type = sym.type();
                     break;
                 case ExprEntry::Type::Ref: {
-                    // Deref
+                    // If this a ptr then we want to leave the ref on TOS, not the value
                     const ExprEntry::Ref& ref = entry;
                     type = ref._type;
-                    addOp(Op::PushDeref);
+                    if (!ref._ptr) {
+                        addOp(Op::PushDeref);
+                    } else {
+                        type = Type::Ptr;
+                    }
                     break;
                 }
                 case ExprEntry::Type::Value: {
@@ -780,9 +786,9 @@ CloverCompileEngine::bakeExpr(ExprAction action)
         case ExprAction::Left: {
             // The stack contains a ref      
             expect(entry.type() == ExprEntry::Type::Ref, Compiler::Error::InternalError);
-            addOp(Op::PopDeref);
             const ExprEntry::Ref& ref = entry;
-            type = ref._type;
+            type = ref._ptr ? Type::Ptr : ref._type;
+            addOp(Op::PopDeref);
             break;
         }
         case ExprAction::Index:
@@ -817,21 +823,35 @@ CloverCompileEngine::bakeExpr(ExprAction action)
             return elementType;
         }
         case ExprAction::Ref:
+        case ExprAction::LeftRef:
+        case ExprAction::Ptr:
             if (entry.type() == ExprEntry::Type::Ref) {
                 // Already have a ref
                 const ExprEntry::Ref& ref = entry;
-                return ref._type;
+                type = ref._type;
+                
+                // If this is a Ptr action, we want to say that we want the stack to have 
+                // a reference to a value rather than the value. So add the _ptr value
+                // to the Ref
+                if (action == ExprAction::Ptr) {
+                    _exprStack.pop_back();
+                    _exprStack.push_back(ExprEntry::Ref(type, true));
+                }
+                return type;
             }
+            
             expect(entry.type() == ExprEntry::Type::Id, Compiler::Error::InternalError);
 
             // Turn this into a Ref
             expect(findSymbol(entry, sym), Compiler::Error::UndefinedIdentifier);
             _exprStack.pop_back();
-            _exprStack.push_back(ExprEntry::Ref(sym.type()));
+            _exprStack.push_back(ExprEntry::Ref(sym.type(), sym.isPointer()));
             
             // If this is a pointer, just push it, otherwise push the ref
-            addOpId(sym.isPointer() ? Op::Push : Op::PushRef, sym.addr());
-            return sym.type();
+            // But if this is a LeftRef action we are just going to store
+            // a value here, so still do the PushRef
+            addOpId((sym.isPointer() && action == ExprAction::Ref) ? Op::Push : Op::PushRef, sym.addr());
+            return sym.isPointer() ? Type::Ptr : sym.type();
     }
     
     _exprStack.pop_back();

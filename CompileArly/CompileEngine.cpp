@@ -115,7 +115,7 @@ CompileEngine::CompileEngine(std::istream* stream)
                             Interpreter::NativeFunction::Animate,
                             Type::Int,
                             SymbolList {
-                                { "p", 0, Type::Int },
+                                { "p", 0, Type::Ptr },
                             });
     _functions.emplace_back("Param",
                             Interpreter::NativeFunction::Param,
@@ -149,6 +149,38 @@ CompileEngine::CompileEngine(std::istream* stream)
                             Type::Int,
                             SymbolList {
                                 { "v", 0, Type::Float },
+                            });
+    _functions.emplace_back("LogInt",
+                            Interpreter::NativeFunction::LogInt,
+                            Type::None,
+                            SymbolList {
+                                { "i", 0, Type::Int },
+                            });
+    _functions.emplace_back("LogFloat",
+                            Interpreter::NativeFunction::LogFloat,
+                            Type::None,
+                            SymbolList {
+                                { "i", 0, Type::Float },
+                            });
+    _functions.emplace_back("LogColor",
+                            Interpreter::NativeFunction::LogColor,
+                            Type::None,
+                            SymbolList {
+                                { "i", 0, Type::Color },
+                            });
+    _functions.emplace_back("RandomInt",
+                            Interpreter::NativeFunction::RandomInt,
+                            Type::Int,
+                            SymbolList {
+                                { "min", 0, Type::Int },
+                                { "max", 0, Type::Int },
+                            });
+    _functions.emplace_back("RandomFloat",
+                            Interpreter::NativeFunction::RandomFloat,
+                            Type::Float,
+                            SymbolList {
+                                { "min", 0, Type::Float },
+                                { "max", 0, Type::Float },
                             });
 }
 

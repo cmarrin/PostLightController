@@ -259,7 +259,7 @@ private:
     //                    a type. Struct id must be a member of the type of the ref.
     //                    pop the two 
     //
-    enum class ExprAction { Left, Right, Ref, Index, Offset };
+    enum class ExprAction { Left, Right, Ref, LeftRef, Ptr, Index, Offset };
     Type bakeExpr(ExprAction);
     bool isExprFunction();
     uint8_t elementSize(const Symbol&);
@@ -306,9 +306,10 @@ private:
     public:
         struct Ref
         {
-            Ref(Type type) : _type(type) { }
+            Ref(Type type, bool ptr = false) : _type(type), _ptr(ptr) { }
             
             Type _type;
+            bool _ptr;
         };
         
         struct Function

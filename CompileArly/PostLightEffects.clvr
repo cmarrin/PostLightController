@@ -56,7 +56,6 @@ function constantLoop()
 
 effect c 3 constantInit constantLoop;
 
-/*
 
 //
 // Pulse effect
@@ -68,65 +67,26 @@ function pulseInit()
     led = &leds[0];
     
     led.max = LoadColorComp(0, 2);
-    led.min = led.max - (float(Param(4) + 1) / 8 * (led.max - BrightnessMin));
-    led.inc = (led.max - led.min) / float((NumLevels - Param(3)) * PulseSpeedMult);
+    led.min = led.max - (Float(Param(4) + 1) / 8.0 * (led.max - BrightnessMin));
+    led.inc = (led.max - led.min) / Float((NumLevels - Param(3)) * PulseSpeedMult);
 
     // Start with a random value for cur
-    led.cur = Random(led.min, led.max);
+    led.cur = RandomFloat(led.min, led.max);
 }
 
-function pulseLoop()
+function int pulseLoop()
 {
     Animate(&leds[0]);
 
     led = &leds[0];
     StoreColorComp(0, 2, led.cur);
     SetAllLights(0);
-    exit PulseDelay;
+    return PulseDelay;
 }
 
-effect p 5 pulseInit pulseLoop
+effect p 5 pulseInit pulseLoop;
 
-
-
-
-
-const float IncMin          0.004;
-const float IncMax          0.04;
-const float BrightnessMin   0.3;
-const int LedSize           24;
-const int NumPixels         8;
-const int NumLevels         8;
-const int PulseDelay        25;
-const int PulseSpeedMult    35;
-
-table FlickerSpeedEntry FlickerSpeedTable
-{
-    0.98 1    40
-    0.98 1    30
-    0.71 0.94 20
-    0.59 0.78 20
-    0.27 0.47 20
-    0.08 0.31 20
-    0.03 0.16 10
-    0.01 0.02 10
-}
-
-//
-// Constant effect
-//
-function constantInit()
-{
-    c0 = Params[0];
-}
-
-function constantLoop()
-{
-    SetAllLights(c0);
-    exit 0;
-}
-
-effect c 3 constantInit constantLoop
+/*
 
 //
 // Flicker effect

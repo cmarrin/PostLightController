@@ -60,7 +60,7 @@ protected:
     };
     
     // Built-in types are 0x00-0x7f, custom types are 0x80-0xff
-    enum class Type : uint8_t { None = 0, Float = 1, Int = 2, UInt8 = 3, Color = 4, Ref = 6 };
+    enum class Type : uint8_t { None = 0, Float = 1, Int = 2, UInt8 = 3, Color = 4, Ptr = 5 };
 
     virtual bool statement() = 0;
     virtual bool function() = 0;
