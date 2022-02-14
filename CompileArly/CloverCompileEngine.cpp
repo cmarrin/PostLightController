@@ -169,7 +169,7 @@ CloverCompileEngine::var()
 
         // There is only enough room for GlobalSize values
         expect(_nextMem + size <= GlobalSize, Compiler::Error::TooManyVars);
-        _globalSize = _nextMem;
+        _globalSize = _nextMem + size;
     }
     
     _nextMem += size;
