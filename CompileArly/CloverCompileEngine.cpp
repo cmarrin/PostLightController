@@ -23,14 +23,14 @@ CloverCompileEngine::opInfo(Token token, OpInfo& op) const
         { Token::SubSto,    1, Op::SubInt,  Op::SubFloat, OpInfo::Assign::Op   },
         { Token::MulSto,    1, Op::MulInt,  Op::MulFloat, OpInfo::Assign::Op   },
         { Token::DivSto,    1, Op::DivInt,  Op::DivFloat, OpInfo::Assign::Op   },
-        { Token::AndSto,    1, Op::And,     Op::And,      OpInfo::Assign::Op   },
-        { Token::OrSto,     1, Op::Or,      Op::Or,       OpInfo::Assign::Op   },
-        { Token::XorSto,    1, Op::Xor,     Op::Xor,      OpInfo::Assign::Op   },
-        { Token::LOr,       6, Op::LOr,     Op::LOr,      OpInfo::Assign::None },
-        { Token::LAnd,      7, Op::LAnd,    Op::LOr,      OpInfo::Assign::None },
-        { Token::Or,        8, Op::Or,      Op::LOr,      OpInfo::Assign::None },
-        { Token::Xor,       9, Op::Xor,     Op::LOr,      OpInfo::Assign::None },
-        { Token::And,      10, Op::And,     Op::LOr,      OpInfo::Assign::None },
+        { Token::AndSto,    1, Op::And,     Op::None,     OpInfo::Assign::Op   },
+        { Token::OrSto,     1, Op::Or,      Op::None,     OpInfo::Assign::Op   },
+        { Token::XorSto,    1, Op::Xor,     Op::None,     OpInfo::Assign::Op   },
+        { Token::LOr,       6, Op::LOr,     Op::None,     OpInfo::Assign::None },
+        { Token::LAnd,      7, Op::LAnd,    Op::None,     OpInfo::Assign::None },
+        { Token::Or,        8, Op::Or,      Op::None,     OpInfo::Assign::None },
+        { Token::Xor,       9, Op::Xor,     Op::None,     OpInfo::Assign::None },
+        { Token::And,      10, Op::And,     Op::None,     OpInfo::Assign::None },
         { Token::EQ,       11, Op::EQInt,   Op::EQFloat,  OpInfo::Assign::None },
         { Token::NE,       11, Op::NEInt,   Op::NEFloat,  OpInfo::Assign::None },
         { Token::LT,       12, Op::LTInt,   Op::LTFloat,  OpInfo::Assign::None },
@@ -466,15 +466,17 @@ CloverCompileEngine::arithmeticExpression(uint8_t minPrec, ArithType arithType)
         }
         
         expect(arithmeticExpression(nextMinPrec), Compiler::Error::ExpectedExpr);
-            
-        switch(info.intOp()) {
-            case Op::Pop: {
+
+        switch(info.assign()) {
+            case OpInfo::Assign::Only: {
                 // Bake RHS
                 rightType = bakeExpr(ExprAction::Right);
                 break;
             }
-            case Op::AddInt:
-                // FIXME: Use AddInt or AddFloat, depending on type
+            case OpInfo::Assign::Op:
+                // FIXME: Implement assign op
+                break;
+            case OpInfo::Assign::None:
                 rightType = bakeExpr(ExprAction::Right);
                 expect(leftType == rightType, Compiler::Error::MismatchedType);
                 addOp((leftType == Type::Int) ? info.intOp() : info.floatOp());
