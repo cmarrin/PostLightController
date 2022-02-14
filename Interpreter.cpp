@@ -391,13 +391,11 @@ Interpreter::execute(uint16_t addr)
                         break;
                     }
                     case NativeFunction::LogInt: {
-                        uint32_t i = _stack.local(0);
-                        log(_pc - 1, i, int32_t(_stack.top(i)));
+                        log(_pc - 1, 0, int32_t(_stack.local(0)));
                         break;
                     }
                     case NativeFunction::LogFloat: {
-                        uint32_t i = _stack.local(0);
-                        logFloat(_pc - 1, i, intToFloat(_stack.top(i)));
+                        logFloat(_pc - 1, 0, intToFloat(_stack.local(0)));
                         break;
                     }
                     case NativeFunction::LogColor: {
