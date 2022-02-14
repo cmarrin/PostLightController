@@ -46,18 +46,8 @@ var LedEntry* led;
 
 function constantInit(float a)
 {
-    var int i;
-    //var float j;
-
-    //led.max = leds[i].min + a;
-
-    led.min = led.max - (Float(Param(4) + 1) / 8. * (led.max - BrightnessMin));
-	//LoadColorParam(0, 0);
-
-    return;
+	LoadColorParam(0, 0);
 }
-
-/*
 
 function constantLoop()
 {
@@ -65,6 +55,8 @@ function constantLoop()
 }
 
 effect c 3 constantInit constantLoop;
+
+/*
 
 //
 // Pulse effect

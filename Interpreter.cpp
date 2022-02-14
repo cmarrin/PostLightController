@@ -397,13 +397,15 @@ Interpreter::execute(uint16_t addr)
                 }
                 break;
             case Op::Return: {
+                uint32_t retVal = _stack.pop();
+                
                 if (_stack.empty()) {
                     // Returning from top level is like Exit
                     return 0;
                 }
                 
                 // TOS has return value. Pop it and push it back after restore
-                _pc = _stack.restoreFrame(_stack.pop());
+                _pc = _stack.restoreFrame(retVal);
                 break;
             }
             case Op::SetFrame:
