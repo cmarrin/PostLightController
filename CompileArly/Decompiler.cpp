@@ -13,13 +13,13 @@ using namespace arly;
 
 bool Decompiler::decompile()
 {    
-    // Make sure we start with 'arly'
-    if (getUInt8() != 'a' || getUInt8() != 'r' || getUInt8() != 'l' || getUInt8() != 'y') {
-        _error = Error::InvalidSignature;
-        return false;
-    }
-    
     try {
+        // Make sure we start with 'arly'
+        if (getUInt8() != 'a' || getUInt8() != 'r' || getUInt8() != 'l' || getUInt8() != 'y') {
+            _error = Error::InvalidSignature;
+            return false;
+        }
+    
         constants();
         effects();
     }

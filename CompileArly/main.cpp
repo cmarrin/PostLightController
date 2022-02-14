@@ -263,6 +263,7 @@ int main(int argc, char * const argv[])
                 case arly::Decompiler::Error::None: err = "internal error"; break;
                 case arly::Decompiler::Error::InvalidSignature: err = "invalid signature"; break;
                 case arly::Decompiler::Error::InvalidOp: err = "invalid op"; break;
+                case arly::Decompiler::Error::PrematureEOF: err = "premature EOF"; break;
             }
             std::cout << "Decompile failed: " << err << "\n\n";
             return 0;

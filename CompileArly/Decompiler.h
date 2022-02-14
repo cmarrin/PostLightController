@@ -22,6 +22,7 @@ public:
         None,
         InvalidSignature,
         InvalidOp,
+        PrematureEOF,
     };
     
     Decompiler(const std::vector<uint8_t>* in, std::string* out)
@@ -44,6 +45,11 @@ private:
     
     uint32_t getUInt32()
     {
+        if (_in->end() - _it < 4) {
+            _error = Error::PrematureEOF;
+            throw true;
+        }
+        
         // Little endian
         return uint32_t(*_it++) | (uint32_t(*_it++) << 8) | 
                 (uint32_t(*_it++) << 16) | (uint32_t(*_it++) << 24);
@@ -51,11 +57,25 @@ private:
     
     uint16_t getUInt16()
     {
+        if (_in->end() - _it < 2) {
+            _error = Error::PrematureEOF;
+            throw true;
+        }
+        
         // Little endian
         return uint32_t(*_it++) | (uint32_t(*_it++) << 8);
     }
     
-    uint16_t getUInt8() { return *_it++; }
+    uint16_t getUInt8()
+    {
+        if (_in->end() - _it < 1) {
+            _error = Error::PrematureEOF;
+            throw true;
+        }
+        
+
+        return *_it++;
+    }
     
     std::string regString(uint8_t r);
     std::string colorString(uint8_t c);
