@@ -231,6 +231,9 @@ CloverCompileEngine::function()
     expect(Token::CloseParen);
     expect(Token::OpenBrace);
 
+    // Remember the rom addr so we can check to see if we've emitted any code
+    uint16_t size = romSize();
+    
     while(var()) { }
     while(statement()) { }
 
@@ -242,7 +245,7 @@ CloverCompileEngine::function()
     }
     
     // Emit Return at the end if there's not already one
-    if (lastOp() != Op::Return) {
+    if (size == romSize() || lastOp() != Op::Return) {
         addOp(Op::PushZero);
         addOp(Op::Return);
     }

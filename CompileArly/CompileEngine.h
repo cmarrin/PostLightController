@@ -115,6 +115,7 @@ protected:
     
     // This assumes the last op is a single byte op
     Op lastOp() const { return _rom8.size() ? Op(_rom8.back()) : Op::None; }
+    uint16_t romSize() const { return _rom8.size(); }
     
     void addOp(Op op) { _rom8.push_back(uint8_t(op)); }
     void addOpR(Op op, uint8_t r) { _rom8.push_back(uint8_t(op) | (r & 0x03)); }
