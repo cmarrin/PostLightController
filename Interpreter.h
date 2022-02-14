@@ -95,6 +95,11 @@ public:
         StoreColorComp = 7,
         Float = 8,
         Int = 9,
+        LogInt = 10,
+        LogFloat = 11,
+        LogColor = 12,
+        RandomInt = 13,
+        RandomFloat = 14,
     };
     
     Interpreter() { }

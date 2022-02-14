@@ -285,67 +285,73 @@ Interpreter::execute(uint16_t addr)
                     return -1;
                 }
                 break;
-            case Op::CallNative:
+            case Op::CallNative: {
                 // FIXME: Probably better this be function pointers
                 id = getConst();
 
                 // Save the _pc just to make setFrame work
                 _stack.push(_pc);
+                
+                uint8_t numParams = 0;
+                
+                switch(NativeFunction(id)) {
+                    case NativeFunction::None:
+                        _error = Error::InvalidNativeFunction;
+                        return -1;
+                    case NativeFunction::LoadColorParam: numParams = 2; break;
+                    case NativeFunction::SetAllLights: numParams = 1; break;
+                    case NativeFunction::SetLight: numParams = 2; break;
+                    case NativeFunction::Animate: numParams = 1; break;
+                    case NativeFunction::Param: numParams = 1; break;
+                    case NativeFunction::LoadColorComp: numParams = 2; break;
+                    case NativeFunction::StoreColorComp: numParams = 3; break;
+                    case NativeFunction::Float: numParams = 1; break;
+                    case NativeFunction::Int: numParams = 1; break;
+                    case NativeFunction::LogInt: numParams = 1; break;
+                    case NativeFunction::LogFloat: numParams = 1; break;
+                    case NativeFunction::LogColor: numParams = 1; break;
+                    case NativeFunction::RandomInt: numParams = 2; break;
+                    case NativeFunction::RandomFloat: numParams = 2; break;
+                }
+
+                if (!_stack.setFrame(numParams, 0)) {
+                    return -1;
+                }
+                
+                uint32_t returnVal = 0;
 
                 switch(NativeFunction(id)) {
                     case NativeFunction::None:
                         _error = Error::InvalidNativeFunction;
                         return -1;
                     case NativeFunction::LoadColorParam: {
-                        if (!_stack.setFrame(2, 0)) {
-                            return -1;
-                        }
                         uint32_t r = _stack.local(0);
                         uint32_t i = _stack.local(1);
                         _c[r] = Color(_params[i], _params[i + 1], _params[i + 2]);
-                        _pc = _stack.restoreFrame(0);
                         break;
                     }
                     case NativeFunction::SetAllLights: {
-                        if (!_stack.setFrame(1, 0)) {
-                            return -1;
-                        }
                         uint32_t r = _stack.local(0);
                         setAllLights(r);
-                        _pc = _stack.restoreFrame(0);
                         break;
                     }
                     case NativeFunction::SetLight: {
-                        if (!_stack.setFrame(2, 0)) {
-                            return -1;
-                        }
                         uint32_t i = _stack.local(0);
                         uint32_t r = _stack.local(1);
                         setLight(i, _c[r].rgb());
-                        _pc = _stack.restoreFrame(0);
                         break;
                     }
                     case NativeFunction::Animate: {
-                        if (!_stack.setFrame(1, 0)) {
-                            return -1;
-                        }
                         uint32_t i = _stack.local(0);
-                        _pc = _stack.restoreFrame(animate(i));
-                        
+                        returnVal = animate(i);
                         break;
                     }
                     case NativeFunction::Param: {
-                        if (!_stack.setFrame(1, 0)) {
-                            return -1;
-                        }
                         uint32_t i = _stack.local(0);
-                        _pc = _stack.restoreFrame(uint32_t(_params[i]));
+                        returnVal = uint32_t(_params[i]);
                         break;
                     }
                     case NativeFunction::LoadColorComp: {
-                        if (!_stack.setFrame(2, 0)) {
-                            return -1;
-                        }
                         uint32_t c = _stack.local(0);
                         uint32_t i = _stack.local(1);
                         float comp;
@@ -357,13 +363,10 @@ Interpreter::execute(uint16_t addr)
                                 _error = Error::InvalidColorComp;
                                 return -1;
                         }
-                        _pc = _stack.restoreFrame(floatToInt(comp));
+                        returnVal = floatToInt(comp);
                         break;
                     }
                     case NativeFunction::StoreColorComp: {
-                        if (!_stack.setFrame(3, 0)) {
-                            return -1;
-                        }
                         uint32_t c = _stack.local(0);
                         uint32_t i = _stack.local(1);
                         float v = intToFloat(_stack.local(2));
@@ -375,29 +378,52 @@ Interpreter::execute(uint16_t addr)
                                 _error = Error::InvalidColorComp;
                                 return -1;
                         }
-                        _pc = _stack.restoreFrame(0);
                         break;
                     }
                     case NativeFunction::Float: {
-                        if (!_stack.setFrame(1, 0)) {
-                            return -1;
-                        }
                         uint32_t v = _stack.local(0);
-                        _pc = _stack.restoreFrame(floatToInt(float(v)));
+                        returnVal = floatToInt(float(v));
                         break;
                     }
                     case NativeFunction::Int: {
-                        if (!_stack.setFrame(1, 0)) {
-                            return -1;
-                        }
                         float v = intToFloat(_stack.local(0));
-                        _pc = _stack.restoreFrame(uint32_t(int32_t(v)));
+                        returnVal = uint32_t(int32_t(v));
+                        break;
+                    }
+                    case NativeFunction::LogInt: {
+                        uint32_t i = _stack.local(0);
+                        log(_pc - 1, i, int32_t(_stack.top(i)));
+                        break;
+                    }
+                    case NativeFunction::LogFloat: {
+                        uint32_t i = _stack.local(0);
+                        logFloat(_pc - 1, i, intToFloat(_stack.top(i)));
+                        break;
+                    }
+                    case NativeFunction::LogColor: {
+                        uint32_t i = _stack.local(0);
+                        logColor(_pc - 1, i, _c[i]);
+                        break;
+                    }
+                    case NativeFunction::RandomInt: {
+                        int32_t min = _stack.local(0);
+                        int32_t max = _stack.local(1);
+                        returnVal = uint32_t(random(min, max));
+                        break;
+                    }
+                    case NativeFunction::RandomFloat: {
+                        float max = intToFloat(_stack.local(0));
+                        float min = intToFloat(_stack.local(1));
+                        returnVal = floatToInt(random(min, max));
                         break;
                     }
                 }
+                
+                _pc = _stack.restoreFrame(returnVal);
                 break;
+            }
             case Op::Return: {
-                uint32_t retVal = _stack.pop();
+                uint32_t retVal = _stack.empty() ? 0 : _stack.pop();
                 
                 if (_stack.empty()) {
                     // Returning from top level is like Exit
