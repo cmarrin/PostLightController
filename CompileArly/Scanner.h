@@ -114,6 +114,7 @@ public:
   	 : _lastChar(0xff)
   	 , _stream(stream)
      , _lineno(1)
+     , _charno(1)
   	{
     }
   	
@@ -126,6 +127,7 @@ public:
     void setIgnoreNewlines(bool ignore) { _ignoreNewlines = ignore; }
     
     uint32_t lineno() const { return _lineno; }
+    uint32_t charno() const { return _charno; }
   	
     Token getToken()
     {
@@ -173,6 +175,7 @@ private:
   	std::string _tokenString;
   	std::istream* _stream;
     mutable uint32_t _lineno;
+    mutable uint32_t _charno;
 
     Token _currentToken = Token::None;
     Scanner::TokenType _currentTokenValue;

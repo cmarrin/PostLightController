@@ -38,6 +38,7 @@ bool Compiler::compile(std::istream* istream, Language lang, std::vector<uint8_t
     _expectedToken = engine->expectedToken();
     _expectedString = engine->expectedString();
     _lineno = engine->lineno();
+    _charno = engine->charno();
     
     if (_error == Error::None) {
         engine->emit(executable);

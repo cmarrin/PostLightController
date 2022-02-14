@@ -32,6 +32,7 @@ public:
     Token expectedToken() const { return _expectedToken; }
     const std::string& expectedString() const { return _expectedString; }
     uint32_t lineno() const { return _scanner.lineno(); }
+    uint32_t charno() const { return _scanner.charno(); }
     
     static bool opDataFromOp(const Op op, OpData& data);
 

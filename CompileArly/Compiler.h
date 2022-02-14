@@ -79,12 +79,14 @@ public:
     Token expectedToken() const { return _expectedToken; }
     const std::string& expectedString() const { return _expectedString; }
     uint32_t lineno() const { return _lineno; }
+    uint32_t charno() const { return _charno; }
 
 private:
     Error _error = Error::None;
     Token _expectedToken = Token::None;
     std::string _expectedString;
     uint32_t _lineno;
+    uint32_t _charno;
 };
 
 }

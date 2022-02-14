@@ -249,12 +249,14 @@ uint8_t Scanner::get() const
         return c;
     }
     int result = _stream->get();
+    _charno++;
     if (_stream->eof() || result < 0 || result > 0xff || result == EOF) {
         return C_EOF;
     }
     uint8_t c = static_cast<uint8_t>(result);
     if (c == '\n') {
         ++_lineno;
+        _charno = 1;
     }
     return c;
 }

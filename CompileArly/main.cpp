@@ -85,7 +85,7 @@ static std::vector<Test> Tests = {
     { 'f', { 20, 224, 200, 0 } },
 };
 
-static void showError(arly::Compiler::Error error, arly::Token token, const std::string& str, uint32_t lineno)
+static void showError(arly::Compiler::Error error, arly::Token token, const std::string& str, uint32_t lineno, uint32_t charno)
 {
     const char* err = "unknown";
     switch(error) {
@@ -134,7 +134,7 @@ static void showError(arly::Compiler::Error error, arly::Token token, const std:
     if (!str.empty()) {
         std::cout << " ('" << str << "')";
     }
-    std::cout << " on line " << lineno << "\n";
+    std::cout << " on line " << lineno << ":" << charno << "\n";
 }
 
 static constexpr int NumLoops = 10;
@@ -185,7 +185,7 @@ int main(int argc, char * const argv[])
 
     compiler.compile(&stream, arly::Compiler::Language::Arly, executable);
     if (compiler.error() != arly::Compiler::Error::None) {
-        showError(compiler.error(), compiler.expectedToken(), compiler.expectedString(), compiler.lineno());
+        showError(compiler.error(), compiler.expectedToken(), compiler.expectedString(), compiler.lineno(), compiler.charno());
         
         std::cout << "\n\nTrying Clover...\n";
         
@@ -193,7 +193,7 @@ int main(int argc, char * const argv[])
         compiler.compile(&stream, arly::Compiler::Language::Clover, executable);
 
         if (compiler.error() != arly::Compiler::Error::None) {
-            showError(compiler.error(), compiler.expectedToken(), compiler.expectedString(), compiler.lineno());
+            showError(compiler.error(), compiler.expectedToken(), compiler.expectedString(), compiler.lineno(), compiler.charno());
             return -1;
         }
     }
