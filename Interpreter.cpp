@@ -412,8 +412,8 @@ Interpreter::execute(uint16_t addr)
                         break;
                     }
                     case NativeFunction::RandomFloat: {
-                        float max = intToFloat(_stack.local(0));
-                        float min = intToFloat(_stack.local(1));
+                        float min = intToFloat(_stack.local(0));
+                        float max = intToFloat(_stack.local(1));
                         returnVal = floatToInt(random(min, max));
                         break;
                     }
