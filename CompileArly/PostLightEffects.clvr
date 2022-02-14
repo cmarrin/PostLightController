@@ -27,8 +27,8 @@ const int PulseSpeedMult    35;
 
 table FlickerSpeedEntry FlickerSpeedTable
 {
-    0.98 1    40
-    0.98 1    30
+    0.98 1.0  40
+    0.98 1.0  30
     0.71 0.94 20
     0.59 0.78 20
     0.27 0.47 20
