@@ -311,6 +311,7 @@ int main(int argc, char * const argv[])
                     case arly::Interpreter::Error::InvalidColorComp: err = "invalid color component"; break;
                     case arly::Interpreter::Error::ExpectedSetFrame: err = "expected SetFrame as first function op"; break;
                     case arly::Interpreter::Error::NotEnoughArgs: err = "not enough args on stack"; break;
+                    case arly::Interpreter::Error::WrongNumberOfArgs: err = "wrong number of args"; break;
                 }
                 std::cout << "Interpreter failed: " << err;
                 

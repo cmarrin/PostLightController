@@ -71,6 +71,11 @@ Interpreter::init(uint8_t cmd, const uint8_t* buf, uint8_t size)
     _initStart += _codeOffset;
     _loopStart += _codeOffset;
     
+    if (_numParams != size) {
+        _error = Error::WrongNumberOfArgs;
+        return false;
+    }
+    
     // Execute init();
     if (Op(getUInt8ROM(_initStart)) != Op::SetFrame) {
         _error = Error::ExpectedSetFrame;

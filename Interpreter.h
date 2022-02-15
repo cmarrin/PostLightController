@@ -79,6 +79,7 @@ public:
         ExpectedSetFrame,
         InvalidNativeFunction,
         NotEnoughArgs,
+        WrongNumberOfArgs,
         StackOverrun,
         StackUnderrun,
         StackOutOfRange,
