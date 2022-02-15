@@ -262,7 +262,7 @@ private:
     enum class ExprAction { Left, Right, Ref, LeftRef, Ptr, Index, Offset };
     Type bakeExpr(ExprAction);
     bool isExprFunction();
-    uint8_t elementSize(const Symbol&);
+    uint8_t elementSize(Type);
     
     struct ParamEntry
     {

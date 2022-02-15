@@ -158,6 +158,8 @@ CloverCompileEngine::var()
     if (!integerValue(size)) {
         size = 1;
     }
+    
+    size *= elementSize(t);
 
     expect(Token::Semicolon);
 
@@ -893,13 +895,13 @@ CloverCompileEngine::findStructElement(Type type, const std::string& id, uint8_t
 }
 
 uint8_t
-CloverCompileEngine::elementSize(const Symbol& sym)
+CloverCompileEngine::elementSize(Type type)
 {
-    if (!sym.isCustomType()) {
+    if (uint8_t(type) < 0x80) {
         return 1;
     }
     
-    uint8_t structIndex = sym.customTypeIndex();
+    uint8_t structIndex = uint8_t(type) - 0x80;
     expect(structIndex < _structs.size(), Compiler::Error::InternalError);
     return _structs[structIndex].size();
 }
