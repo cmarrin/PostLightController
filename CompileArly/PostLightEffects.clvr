@@ -51,9 +51,10 @@ function constantInit()
 	LoadColorParam(0, 0);
 }
 
-function constantLoop()
+function int constantLoop()
 {
 	SetAllLights(0);
+    return 20;
 }
 
 effect c 3 constantInit constantLoop;

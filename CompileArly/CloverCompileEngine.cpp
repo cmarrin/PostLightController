@@ -412,6 +412,9 @@ CloverCompileEngine::returnStatement()
         // Push the return value
         expect(bakeExpr(ExprAction::Right) == currentFunction().type(), Compiler::Error::MismatchedType);
     } else {
+        // If the function return type not None, we need a return value
+        expect(currentFunction().type() == Type::None, Compiler::Error::MismatchedType);
+        
         // No return value, push a zero
         addOp(Op::PushZero);
     }
