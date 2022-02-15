@@ -76,23 +76,6 @@ protected:
     // Value is returned as an int32_t, but it might be a float
     bool value(int32_t& i, Type);
         
-    // Every function has local variables on the top of the stack.
-    // They are allocated by the 'var' keyword. Functiions can
-    // also define temp locations on top of that var storage.
-    // The methods below alloc and free those locations. The 
-    // allocated temp locations are kept in a 32 bit map, so
-    // there can be a max of 32 temps active at one time.
-    // There is also a _tempSize value which says how many words
-    // of temp storage is being used currently. When allocTemp
-    // is called the first free bit in the map is found. If
-    // its index is less than _tempSize, this is a reuse of
-    // a previously allocated and then freed location. If it
-    // is equal then this is a new temp value and _tempSize
-    // is incremented. If it is greater, there is an internal
-    // error.
-    uint8_t allocTemp();
-    void freeTemp(uint8_t i);
-    
     // The expect methods validate the passed param and if
     // there is no match, the passed error is saved and
     // throw is called. The first version also retires the
@@ -313,17 +296,8 @@ protected:
     // When a function is being defined the vars are placed on the
     // stack.
     
-    // These vars deal with stack memory use for the current function.
-    // On entry, _nextMem is 0 which means no vars have been defined.
-    // It increases on every var statement, according to how many
-    // words that var takes. Once all vars are defined (which must
-    // be at the top of the function, before any statements) the
-    // next memory locations are temps, indicated by _tempSize. Var
-    // and temp memory are accessed with LoadLocal/StoreLocal.
     uint16_t _nextMem = 0; // next available location in mem
     uint16_t _localHighWaterMark = 0;
-    uint32_t _tempAllocationMap = 0;
-    uint8_t _tempSize = 0;
     uint16_t _globalSize = 0;
     bool inFunction = false;
 };

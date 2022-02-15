@@ -375,44 +375,6 @@ CompileEngine::value(int32_t& i, Type t)
     return false;
 }
 
-uint8_t
-CompileEngine::allocTemp()
-{
-    static_assert(MaxTempSize <= sizeof(_tempAllocationMap) * 8);
-
-    // Find first free bit
-    for (uint8_t i = 0; i < MaxTempSize; ++i) {
-        if ((_tempAllocationMap & (1 << i)) == 0) {
-            _tempAllocationMap |= (1 << i);
-            
-            if (i > _tempSize) {
-                // Internal error
-                _error = Compiler::Error::InternalError;
-                throw true;
-            }
-            
-            if (i == _tempSize) {
-                _tempSize++;
-            }
-            
-            return i;
-        }
-    }
-    _error = Compiler::Error::NoMoreTemps;
-    throw true;
-}
-
-void
-CompileEngine::freeTemp(uint8_t i)
-{
-    if ((_tempAllocationMap & (1 << i)) == 0) {
-        _tempAllocationMap &= ~(1 << i);
-        return;
-    }
-    _error = Compiler::Error::TempNotAllocated;
-    throw true;
-}
-
 void
 CompileEngine::expect(Token token, const char* str)
 {
