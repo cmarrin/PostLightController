@@ -182,6 +182,14 @@ CompileEngine::CompileEngine(std::istream* stream)
                                 { "min", 0, Type::Float },
                                 { "max", 0, Type::Float },
                             });
+    _functions.emplace_back("InitArray",
+                            Interpreter::NativeFunction::InitArray,
+                            Type::None,
+                            SymbolList {
+                                { "dst", 0, Type::Ptr },
+                                { "v",   0, Type::Int },
+                                { "n",   0, Type::Int },
+                            });
 }
 
 void
