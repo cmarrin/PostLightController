@@ -38,6 +38,9 @@ table FlickerSpeedEntry FlickerSpeedTable
 
 var LedEntry leds 8;
 var LedEntry* led;
+var float flickerStepsMin;
+var float flickerStepsMax;
+var int flickerSpeedDelay;
 
 //
 // Constant effect
@@ -89,8 +92,15 @@ effect p 5 pulseInit pulseLoop;
 //
 function flickerInit()
 {
+    var int speed;
+
 	LoadColorParam(0, 0);
     InitArray(&leds, 0, NumPixels * 4);
+
+    speed = Param(3);
+    flickerStepsMin = FlickerSpeedTable[speed].min;
+    flickerStepsMax = FlickerSpeedTable[speed].max;
+    flickerSpeedDelay = FlickerSpeedTable[speed].delay;
 }
 
 function int flickerLoop()
@@ -108,14 +118,14 @@ function int flickerLoop()
         
             // Random number of steps to throb up and down
             led.min = BrightnessMin;
-            led.max = led.inc + RandomFloat(FlickerSpeedTable[i].min, FlickerSpeedTable[i].max);
+            led.max = led.inc + RandomFloat(flickerStepsMin, flickerStepsMax);
         }
 
         StoreColorComp(0, 2, led.cur);
         SetLight(i, 0);
     }
     
-    return FlickerSpeedTable[i].delay;
+    return flickerSpeedDelay;
 }
 
 effect f 4 flickerInit flickerLoop;
