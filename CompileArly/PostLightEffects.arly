@@ -82,7 +82,7 @@ function flickerInit
     Pop flickerStepsMax
     Offset 2
     PushDeref
-    ToInt
+    CallNative Int
     Pop flickerSpeedDelay
 end
 
