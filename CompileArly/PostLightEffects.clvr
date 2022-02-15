@@ -19,7 +19,6 @@ struct LedEntry
 const float IncMin          0.004;
 const float IncMax          0.04;
 const float BrightnessMin   0.3;
-const int LedSize           24;
 const int NumPixels         8;
 const int NumLevels         8;
 const int PulseDelay        25;
@@ -44,7 +43,7 @@ var LedEntry* led;
 // Constant effect
 //
 
-function constantInit(float a)
+function constantInit()
 {
 	LoadColorParam(0, 0);
 }
@@ -55,7 +54,6 @@ function constantLoop()
 }
 
 effect c 3 constantInit constantLoop;
-
 
 //
 // Pulse effect
@@ -86,18 +84,16 @@ function int pulseLoop()
 
 effect p 5 pulseInit pulseLoop;
 
-/*
-
 //
 // Flicker effect
 //
 function flickerInit()
 {
-    c0 = Params[0];
+	LoadColorParam(0, 0);
     InitArray(&leds, 0, NumPixels * 4);
 }
 
-function flickerLoop()
+function int flickerLoop()
 {
     var int i;
 
@@ -108,21 +104,18 @@ function flickerLoop()
             // We are done with the throb, select a new inc and lim
             // Increment inc value for each step a random amount
             led.cur = BrightnessMin;
-            led.inc = Random(IncMin, IncMax);
+            led.inc = RandomFloat(IncMin, IncMax);
         
             // Random number of steps to throb up and down
             led.min = BrightnessMin;
-            led.max = led.inc + Random(FlickerSpeedTable[i].min, FlickerSpeedTable[i].max);
+            led.max = led.inc + RandomFloat(FlickerSpeedTable[i].min, FlickerSpeedTable[i].max);
         }
 
-        c0.val = led.cur;
-        SetLight(i, c0);
+        StoreColorComp(0, 2, led.cur);
+        SetLight(i, 0);
     }
     
     return FlickerSpeedTable[i].delay;
 }
 
-effect f 4 flickerInit flickerLoop
-
-
-*/
+effect f 4 flickerInit flickerLoop;
