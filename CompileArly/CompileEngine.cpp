@@ -32,11 +32,6 @@ static std::vector<OpData> _opcodes = {
     { "MaxInt",         Op::MaxInt          , OpParams::None },
     { "MaxFloat",       Op::MaxFloat        , OpParams::None },
 
-    { "Exit",           Op::Exit            , OpParams::None },
-    { "ToFloat",        Op::ToFloat         , OpParams::None },
-    { "ToInt",          Op::ToInt           , OpParams::None },
-
-    { "Init",           Op::Init            , OpParams::Id },
     { "RandomInt",      Op::RandomInt       , OpParams::None },
     { "RandomFloat",    Op::RandomFloat     , OpParams::None },
     

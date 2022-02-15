@@ -48,7 +48,6 @@ protected:
         Return,
         Effect,
         End,
-        Init,
         Loop,
         ForEach,
         If,

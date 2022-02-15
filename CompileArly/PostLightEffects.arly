@@ -52,7 +52,7 @@ function constantLoop
 	CallNative SetAllLights
 	Drop
     PushZero
-    Exit
+    Return
 end
 
 function flickerInit
@@ -64,9 +64,11 @@ function flickerInit
 	Drop
     
     // Init leds
+    PushRef flickerLeds
     PushZero
     Push LedSize
-    Init flickerLeds
+    CallNative InitArray
+	Drop
     
     // Init min, max and delay from SpeedTable
     PushRef FlickerSpeedTable
@@ -161,7 +163,7 @@ function flickerLoop
     
     // return flickerSpeedDelay
     Push flickerSpeedDelay
-    Exit
+    Return
 end
 
 function pulseInit
@@ -258,7 +260,7 @@ function pulseLoop
 	Drop
 	
     Push PulseDelay
-    Exit
+    Return
 end
 
 effect c 3 constantInit constantLoop

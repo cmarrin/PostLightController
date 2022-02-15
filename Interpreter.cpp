@@ -190,31 +190,6 @@ Interpreter::execute(uint16_t addr)
                 _stack.push(floatToInt(max(intToFloat(_stack.pop()), intToFloat(_stack.pop()))));
                 break;
 
-            case Op::Exit:
-                return _stack.pop();
-            case Op::ToFloat:
-                _stack.top() = floatToInt(float(int32_t(_stack.top())));
-                break;
-            case Op::ToInt:
-                _stack.top() = uint32_t(int32_t(intToFloat(_stack.top())));
-                break;
-
-            case Op::Init:
-                id = getId();
-                
-                // Only global or local
-                if (id < GlobalStart) {
-                    _error = Error::OnlyMemAddressesAllowed;
-                    return -1;
-                }
-                
-                value = _stack.pop();
-                if (id < LocalStart) {
-                    memset(_global + (id - GlobalStart), _stack.pop(), value * sizeof(uint32_t));
-                } else {
-                    memset(&_stack.local(id - LocalStart), _stack.pop(), value * sizeof(uint32_t));
-                }
-                break;
             case Op::RandomInt: {
                 int32_t max = _stack.pop();
                 int32_t min = _stack.pop();
@@ -454,14 +429,14 @@ Interpreter::execute(uint16_t addr)
                 uint32_t retVal = _stack.empty() ? 0 : _stack.pop();
                 
                 if (_stack.empty()) {
-                    // Returning from top level is like Exit
+                    // Returning from top level
                     return 0;
                 }
                 
                 // TOS has return value. Pop it and push it back after restore
                 _pc = _stack.restoreFrame(retVal);
                 
-                // A _pc of -1 is like an exit
+                // A _pc of -1 returns from top level
                 if (_pc < 0) {
                     // retVal was pushed, get rid of it
                     _stack.pop();

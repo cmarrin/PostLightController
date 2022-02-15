@@ -177,12 +177,7 @@ Opcodes:
     MinFloat                - stack[sp++] = min(stack[--sp], stack[--sp]) (values are float)
     MaxInt                  - stack[sp++] = max(stack[--sp], stack[--sp]) (values are int32_t)
     MaxFloat                - stack[sp++] = max(stack[--sp], stack[--sp]) (values are float)
-    
-    Exit                    - exit interpreter and return value in stack[--sp] (assumes stack[--sp] is int32_t)
-    ToFloat                 - stack[sp] = float(stack[sp])
-    ToInt                   - stack[sp] = int32_t(stack[sp])
-    
-    Init id                 - Init mem at id with value in stack[--sp] for stack[--sp] values
+        
     RandomInt               - stack[sp++] = random(stack[--sp], stack[--sp]), integer params, integer return
     RandomFloat             - stack[sp++] = random(stack[--sp], stack[--sp]), float params, float return
 
@@ -299,11 +294,6 @@ enum class Op: uint8_t {
     MaxInt          = 0x32,
     MaxFloat        = 0x33,
     
-    Exit            = 0x34,
-    ToFloat         = 0x35,
-    ToInt           = 0x36,
-
-    Init            = 0x37,
     RandomInt       = 0x38,
     RandomFloat     = 0x39,
 
