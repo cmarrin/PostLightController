@@ -312,10 +312,11 @@ CloverCompileEngine::ifStatement()
     expect(Token::OpenParen);
     
     arithmeticExpression();
-    
+    expect(bakeExpr(ExprAction::Right) == Type::Int, Compiler::Error::ExpectedInt);
     expect(Token::CloseParen);
 
-    // At this point the expresssion has been executed and the result is in r0
+    // At this point the expresssion has been executed and the result is on TOS
+    
     // Emit the if test
     _rom8.push_back(uint8_t(Op::If));
 
@@ -374,15 +375,14 @@ CloverCompileEngine::forStatement()
     expect(Token::Colon);
 
     arithmeticExpression();
-    
-    // At this point id has the iterator and r0 has the result
-    // of the expression, which is the end value. Save the end
-    // value in a temp
-    uint8_t temp = allocTemp();
-    addOpRdI(Op::Pop, 0, temp);
-    
+    expect(bakeExpr(ExprAction::Right) == Type::Int, Compiler::Error::ExpectedInt);
     expect(Token::CloseParen);
     
+    // Now we have the count pushed on TOS. Generate the foreach op
+    Symbol sym;
+    expect(findSymbol(id, sym), Compiler::Error::UndefinedIdentifier);
+    addOpId(Op::ForEach, sym.addr());
+
     // Output a placeholder for sz and rember where it is
     auto szIndex = _rom8.size();
     _rom8.push_back(0);
@@ -395,7 +395,7 @@ CloverCompileEngine::forStatement()
     expect(offset < 256, Compiler::Error::ForEachTooBig);
     _rom8[szIndex] = uint8_t(offset);
     
-    // Push a dummy end, mostly for the decompiler
+    // Push EndForEach so we can do the looping and count checking
     _rom8.push_back(uint8_t(Op::EndForEach));
 
     return true;
@@ -458,7 +458,6 @@ CloverCompileEngine::arithmeticExpression(uint8_t minPrec, ArithType arithType)
         }
         
         // If this is an assignment operator, we only allow one so handle it separately
-
         uint8_t nextMinPrec = info.prec() + 1;
         _scanner.retireToken();
                 
@@ -768,7 +767,7 @@ CloverCompileEngine::bakeExpr(ExprAction action)
                     // Push the value of the id
                     expect(findSymbol(entry, sym), Compiler::Error::UndefinedIdentifier);
                     addOpId(Op::Push, sym.addr());
-                    type = sym.type();
+                    type = sym.isPointer() ? Type::Ptr : sym.type();
                     break;
                 case ExprEntry::Type::Ref: {
                     // If this a ptr then we want to leave the ref on TOS, not the value
@@ -851,7 +850,7 @@ CloverCompileEngine::bakeExpr(ExprAction action)
             // Turn this into a Ref
             expect(findSymbol(entry, sym), Compiler::Error::UndefinedIdentifier);
             _exprStack.pop_back();
-            _exprStack.push_back(ExprEntry::Ref(sym.type(), sym.isPointer()));
+            _exprStack.push_back(ExprEntry::Ref(sym.type(), action == ExprAction::Ptr || sym.isPointer()));
             
             // If this is a pointer, just push it, otherwise push the ref
             // But if this is a LeftRef action we are just going to store
