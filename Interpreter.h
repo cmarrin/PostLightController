@@ -273,21 +273,6 @@ private:
         return b & 0x0f;
     }
 
-    void getRdRs(uint8_t& rd, uint8_t& rs)
-    {
-        uint8_t b = getUInt8ROM(_pc++);
-        rd = b >> 6;
-        rs = (b >> 4) & 0x03;
-    }
-
-    void getRdRsI(uint8_t& rd, uint8_t& rs, uint8_t& i)
-    {
-        uint8_t b = getUInt8ROM(_pc++);
-        rd = b >> 6;
-        rs = (b >> 4) & 0x03;
-        i = b & 0x0f;
-    }
-    
     float loadFloat(uint8_t id, uint8_t index = 0)
     {
         uint32_t i = loadInt(id, index);
