@@ -72,6 +72,7 @@ constexpr int BufferSize = 66;
 constexpr char StartChar = '(';
 constexpr char EndChar = ')';
 constexpr unsigned long SerialTimeOut = 2000; // ms
+constexpr int32_t MaxDelay = 1000; // ms
 
 class PostLightController
 {
@@ -104,6 +105,10 @@ public:
 	void loop()
 	{
 		int32_t delayInMs = _currentEffect ? _currentEffect->loop() : 0;
+
+        if (delayInMs > MaxDelay) {
+            delayInMs = MaxDelay;
+        }
 		
 		if (delayInMs < 0) {
 			// An effect has finished. End it and clear the display
