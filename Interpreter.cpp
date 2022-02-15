@@ -72,6 +72,13 @@ Interpreter::init(uint8_t cmd, const uint8_t* buf, uint8_t size)
     _loopStart += _codeOffset;
     
     // Execute init();
+    if (Op(getUInt8ROM(_initStart)) != Op::SetFrame) {
+        _error = Error::ExpectedSetFrame;
+        return false;
+    }
+
+    // Push a dummy pc, for the return
+    _stack.push(uint32_t(-1));
     execute(_initStart);
     if (_error == Error::None) {
         _error = _stack.error();
@@ -82,6 +89,13 @@ Interpreter::init(uint8_t cmd, const uint8_t* buf, uint8_t size)
 int32_t
 Interpreter::loop()
 {
+    if (Op(getUInt8ROM(_loopStart)) != Op::SetFrame) {
+        _error = Error::ExpectedSetFrame;
+        return false;
+    }
+
+    // Push a dummy pc, for the return
+    _stack.push(uint32_t(-1));
     return execute(_loopStart);
 }
 
