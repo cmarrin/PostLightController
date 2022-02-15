@@ -142,6 +142,12 @@ protected:
         _rom8.push_back(i);
     }
     
+    void addOpInt(Op op, uint8_t i)
+    {
+        _rom8.push_back(uint8_t(op));
+        _rom8.push_back(i);
+    }
+    
     void addOpIndex(Op op, uint8_t i)
     {
         _rom8.push_back(uint8_t(op) | (i & 0x0f));
@@ -152,6 +158,7 @@ protected:
     void addOpIdI(Op op, uint8_t id, uint8_t i) { addOpRdIdRsI(op, 0, id, 0, i); }
     void addOpRId(Op op, uint8_t r, uint8_t id) { addOpRInt(op, r, id); }
     void addOpConst(Op op, uint8_t c) { addOpRInt(op, 0, c); }
+    void addOpPL(Op op, uint8_t p, uint8_t l) {addOpInt(op, (p << 4) | (l & 0x0f)); }
     
     void addOpTarg(Op op, uint16_t targ)
     {
@@ -207,14 +214,7 @@ protected:
         bool isPointer() const { return _ptr; }
         Storage storage() const { return _storage; }
         uint8_t size() const { return _size; }
-        bool isCustomType() const { return uint8_t(_type) >= 0x80; }
         
-        uint8_t customTypeIndex() const
-        {
-            int16_t t = int16_t(_type) - 0x80;
-            return (t < 0) ? 0 : uint8_t(t);
-        }
-
     private:
         std::string _name;
         uint8_t _addr = 0;
