@@ -27,11 +27,6 @@ static std::vector<OpData> _opcodes = {
     { "Drop",           Op::Drop            , OpParams::None },
     { "Swap",           Op::Swap            , OpParams::None },
     
-    { "MinInt",         Op::MinInt          , OpParams::None },
-    { "MinFloat",       Op::MinFloat        , OpParams::None },
-    { "MaxInt",         Op::MaxInt          , OpParams::None },
-    { "MaxFloat",       Op::MaxFloat        , OpParams::None },
-
     { "if",             Op::If              , OpParams::Sz },
     { "else",           Op::Else            , OpParams::Sz },
     { "foreach",        Op::ForEach         , OpParams::Id_Sz },
@@ -181,6 +176,34 @@ CompileEngine::CompileEngine(std::istream* stream)
                                 { "dst", 0, Type::Ptr },
                                 { "v",   0, Type::Int },
                                 { "n",   0, Type::Int },
+                            });
+    _functions.emplace_back("MinInt",
+                            Interpreter::NativeFunction::MinInt,
+                            Type::Int,
+                            SymbolList {
+                                { "a",   0, Type::Int },
+                                { "b",   0, Type::Int },
+                            });
+    _functions.emplace_back("MinFloat",
+                            Interpreter::NativeFunction::MinFloat,
+                            Type::Float,
+                            SymbolList {
+                                { "a",   0, Type::Float },
+                                { "b",   0, Type::Float },
+                            });
+    _functions.emplace_back("MaxInt",
+                            Interpreter::NativeFunction::MaxInt,
+                            Type::Int,
+                            SymbolList {
+                                { "a",   0, Type::Int },
+                                { "b",   0, Type::Int },
+                            });
+    _functions.emplace_back("MaxFloat",
+                            Interpreter::NativeFunction::MaxFloat,
+                            Type::Float,
+                            SymbolList {
+                                { "a",   0, Type::Float },
+                                { "b",   0, Type::Float },
                             });
 }
 

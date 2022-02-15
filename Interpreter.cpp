@@ -177,19 +177,6 @@ Interpreter::execute(uint16_t addr)
                 _stack.swap();
                 break;
 
-            case Op::MinInt:
-                _stack.push(min(int32_t(_stack.pop()), int32_t(_stack.pop())));
-                break;
-            case Op::MinFloat:
-                _stack.push(floatToInt(min(intToFloat(_stack.pop()), intToFloat(_stack.pop()))));
-                break;
-            case Op::MaxInt:
-                _stack.push(max(int32_t(_stack.pop()), int32_t(_stack.pop())));
-                break;
-            case Op::MaxFloat:
-                _stack.push(floatToInt(max(intToFloat(_stack.pop()), intToFloat(_stack.pop()))));
-                break;
-
             case Op::If:
                 id = getSz();
                 if (_stack.pop() == 0) {
@@ -286,6 +273,10 @@ Interpreter::execute(uint16_t addr)
                     case NativeFunction::RandomInt: numParams = 2; break;
                     case NativeFunction::RandomFloat: numParams = 2; break;
                     case NativeFunction::InitArray: numParams = 3; break;
+                    case NativeFunction::MinInt: numParams = 2; break;
+                    case NativeFunction::MinFloat: numParams = 2; break;
+                    case NativeFunction::MaxInt: numParams = 2; break;
+                    case NativeFunction::MaxFloat: numParams = 2; break;
                 }
 
                 if (!_stack.setFrame(numParams, 0)) {
@@ -407,6 +398,18 @@ Interpreter::execute(uint16_t addr)
                         }
                         break;
                     }
+                    case NativeFunction::MinInt:
+                        _stack.push(min(int32_t(_stack.local(0)), int32_t(_stack.local(1))));
+                        break;
+                    case NativeFunction::MinFloat:
+                        _stack.push(floatToInt(min(intToFloat(_stack.local(0)), intToFloat(_stack.local(1)))));
+                        break;
+                    case NativeFunction::MaxInt:
+                        _stack.push(max(int32_t(_stack.local(0)), int32_t(_stack.local(1))));
+                        break;
+                    case NativeFunction::MaxFloat:
+                        _stack.push(floatToInt(max(intToFloat(_stack.local(0)), intToFloat(_stack.local(1)))));
+                        break;
                 }
                 
                 _pc = _stack.restoreFrame(returnVal);

@@ -101,6 +101,10 @@ public:
         RandomInt = 13,
         RandomFloat = 14,
         InitArray = 15,
+        MinInt = 16,
+        MinFloat = 17,
+        MaxInt = 18,
+        MaxFloat = 19,
     };
     
     Interpreter() { }

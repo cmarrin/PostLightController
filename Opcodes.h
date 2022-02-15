@@ -173,11 +173,6 @@ Opcodes:
     Drop                    - --sp
     Swap                    - t = stack[sp]; stack[sp] = stack[sp-1]; stack[sp-1[ = t;
 
-    MinInt                  - stack[sp++] = min(stack[--sp], stack[--sp]) (values are int32_t)
-    MinFloat                - stack[sp++] = min(stack[--sp], stack[--sp]) (values are float)
-    MaxInt                  - stack[sp++] = max(stack[--sp], stack[--sp]) (values are int32_t)
-    MaxFloat                - stack[sp++] = max(stack[--sp], stack[--sp]) (values are float)
-        
     If sz                   - If stack[--sp] is non-zero execute statements in first clause. 
                               If zero skip the statements. Number of bytes to skip is 
                               in sz.
@@ -285,11 +280,6 @@ enum class Op: uint8_t {
     Dup             = 0x20,
     Drop            = 0x21,
     Swap            = 0x22,
-    
-    MinInt          = 0x30,
-    MinFloat        = 0x31,
-    MaxInt          = 0x32,
-    MaxFloat        = 0x33,
     
     If              = 0x3a,
     Else            = 0x3b,
