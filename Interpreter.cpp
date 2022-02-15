@@ -123,7 +123,6 @@ Interpreter::execute(uint16_t addr)
         uint8_t id;
         uint8_t i;
         uint16_t targ;
-        uint16_t addr;
         uint8_t numParams;
         uint8_t numLocals;
         uint32_t value;
@@ -211,11 +210,9 @@ Interpreter::execute(uint16_t addr)
                 
                 value = _stack.pop();
                 if (id < LocalStart) {
-                    addr = id - GlobalStart;
-                    memset(_global + addr, _stack.pop(), value * sizeof(uint32_t));
+                    memset(_global + (id - GlobalStart), _stack.pop(), value * sizeof(uint32_t));
                 } else {
-                    addr = id - LocalStart;
-                    memset(&_stack.local(addr), _stack.pop(), value * sizeof(uint32_t));
+                    memset(&_stack.local(id - LocalStart), _stack.pop(), value * sizeof(uint32_t));
                 }
                 break;
             case Op::RandomInt: {
@@ -442,11 +439,9 @@ Interpreter::execute(uint16_t addr)
                         }
                 
                         if (i < LocalStart) {
-                            addr = i - GlobalStart;
-                            memset(_global + addr, v, n * sizeof(uint32_t));
+                            memset(_global + (i - GlobalStart), v, n * sizeof(uint32_t));
                         } else {
-                            addr = i - LocalStart;
-                            memset(&_stack.local(addr), v, n * sizeof(uint32_t));
+                            memset(&_stack.local(i - LocalStart), v, n * sizeof(uint32_t));
                         }
                         break;
                     }
