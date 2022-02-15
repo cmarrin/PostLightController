@@ -153,7 +153,7 @@ CompileEngine::CompileEngine(std::istream* stream)
                             Interpreter::NativeFunction::LogColor,
                             Type::None,
                             SymbolList {
-                                { "i", 0, Type::Color },
+                                { "i", 0, Type::Int },
                             });
     _functions.emplace_back("RandomInt",
                             Interpreter::NativeFunction::RandomInt,
@@ -630,8 +630,6 @@ CompileEngine::Symbol::addr() const
             return _addr + GlobalStart;
         case CompileEngine::Symbol::Storage::Local:
             return _addr + LocalStart;
-        case CompileEngine::Symbol::Storage::Color:
-            return _addr;
     }
 }
 
