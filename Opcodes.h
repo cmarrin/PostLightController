@@ -178,9 +178,6 @@ Opcodes:
     MaxInt                  - stack[sp++] = max(stack[--sp], stack[--sp]) (values are int32_t)
     MaxFloat                - stack[sp++] = max(stack[--sp], stack[--sp]) (values are float)
         
-    RandomInt               - stack[sp++] = random(stack[--sp], stack[--sp]), integer params, integer return
-    RandomFloat             - stack[sp++] = random(stack[--sp], stack[--sp]), float params, float return
-
     If sz                   - If stack[--sp] is non-zero execute statements in first clause. 
                               If zero skip the statements. Number of bytes to skip is 
                               in sz.
@@ -294,9 +291,6 @@ enum class Op: uint8_t {
     MaxInt          = 0x32,
     MaxFloat        = 0x33,
     
-    RandomInt       = 0x38,
-    RandomFloat     = 0x39,
-
     If              = 0x3a,
     Else            = 0x3b,
     EndIf           = 0x3c, // At the end of if

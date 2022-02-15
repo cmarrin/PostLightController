@@ -190,19 +190,6 @@ Interpreter::execute(uint16_t addr)
                 _stack.push(floatToInt(max(intToFloat(_stack.pop()), intToFloat(_stack.pop()))));
                 break;
 
-            case Op::RandomInt: {
-                int32_t max = _stack.pop();
-                int32_t min = _stack.pop();
-                _stack.push(uint32_t(random(min, max)));
-                break;
-            }
-            case Op::RandomFloat: {
-                float max = intToFloat(_stack.pop());
-                float min = intToFloat(_stack.pop());
-                _stack.push(floatToInt(random(min, max)));
-                break;
-            }
-
             case Op::If:
                 id = getSz();
                 if (_stack.pop() == 0) {

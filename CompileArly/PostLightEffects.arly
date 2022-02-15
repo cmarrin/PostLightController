@@ -123,7 +123,7 @@ function flickerLoop
             Offset LEDInc
             Push IncMin
             Push IncMax
-            RandomFloat
+            CallNative RandomFloat
             PopDeref
         
             // Random number of steps to throb up and down
@@ -137,7 +137,7 @@ function flickerLoop
             PushDeref
             Push flickerStepsMin
             Push flickerStepsMax
-            RandomFloat
+            CallNative RandomFloat
             AddFloat
 			Push led
             Offset LEDMax
@@ -235,7 +235,7 @@ function pulseInit
 	Swap
     Offset LEDMax
     PushDeref
-    RandomFloat
+    CallNative RandomFloat
     PushRef pulseState
     Offset LEDCur
     Swap
