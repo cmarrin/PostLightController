@@ -465,6 +465,13 @@ Interpreter::execute(uint16_t addr)
                 
                 // TOS has return value. Pop it and push it back after restore
                 _pc = _stack.restoreFrame(retVal);
+                
+                // A _pc of -1 is like an exit
+                if (_pc < 0) {
+                    // retVal was pushed, get rid of it
+                    _stack.pop();
+                    return retVal;
+                }
                 break;
             }
             case Op::SetFrame:

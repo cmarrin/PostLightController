@@ -237,6 +237,10 @@ CloverCompileEngine::function()
     uint16_t size = romSize();
     
     while(var()) { }
+    
+    // SetFrame has to be the first instruction in the Function. Pass Params and Locals
+    addOpPL(Op::SetFrame, currentFunction().args(), currentFunction().locals().size() - currentFunction().args());
+    
     while(statement()) { }
 
     expect(Token::CloseBrace);
