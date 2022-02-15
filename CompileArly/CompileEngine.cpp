@@ -314,7 +314,7 @@ CompileEngine::effect()
         throw true;
     }
     
-    _effects.emplace_back(id[0], paramCount, handleFunctionName(), handleFunctionName());
+    _effects.emplace_back(id[0], paramCount, handleFunctionName().addr(), handleFunctionName().addr());
     return true;
 }
 
@@ -519,7 +519,7 @@ CompileEngine::reserved(Reserved &r)
     return isReserved(_scanner.getToken(), _scanner.getTokenString(), r);
 }
 
-uint16_t
+const CompileEngine::Function&
 CompileEngine::handleFunctionName()
 {
     std::string targ;
@@ -529,7 +529,7 @@ CompileEngine::handleFunctionName()
                     [targ](const Function& fun) { return fun.name() == targ; });
     expect(it != _functions.end(), Compiler::Error::UndefinedIdentifier);
 
-    return it->addr();
+    return *it;
 }
 
 bool

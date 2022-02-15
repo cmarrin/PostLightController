@@ -150,7 +150,8 @@ protected:
     
     virtual bool isReserved(Token token, const std::string str, Reserved& r);
 
-    uint16_t handleFunctionName();
+    class Function;
+    const Function& handleFunctionName();
 
     static bool opDataFromString(const std::string str, OpData& data);
 
