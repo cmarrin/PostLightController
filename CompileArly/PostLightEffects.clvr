@@ -94,7 +94,7 @@ effect p 5 pulseInit pulseLoop;
 function flickerInit()
 {
     c0 = Params[0];
-    Init(leds, 0, LedSize * 4);
+    InitArray(&leds, 0, NumPixels * 4);
 }
 
 function flickerLoop()

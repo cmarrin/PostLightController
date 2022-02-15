@@ -100,6 +100,7 @@ public:
         LogColor = 12,
         RandomInt = 13,
         RandomFloat = 14,
+        InitArray = 15,
     };
     
     Interpreter() { }

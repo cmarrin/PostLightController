@@ -326,6 +326,7 @@ Interpreter::execute(uint16_t addr)
                     case NativeFunction::LogColor: numParams = 1; break;
                     case NativeFunction::RandomInt: numParams = 2; break;
                     case NativeFunction::RandomFloat: numParams = 2; break;
+                    case NativeFunction::InitArray: numParams = 3; break;
                 }
 
                 if (!_stack.setFrame(numParams, 0)) {
@@ -427,6 +428,26 @@ Interpreter::execute(uint16_t addr)
                         float min = intToFloat(_stack.local(0));
                         float max = intToFloat(_stack.local(1));
                         returnVal = floatToInt(random(min, max));
+                        break;
+                    }
+                    case NativeFunction::InitArray: {
+                        uint32_t i = _stack.local(0);
+                        uint32_t v = _stack.local(1);
+                        uint32_t n = _stack.local(2);
+
+                        // Only global or local
+                        if (i < GlobalStart) {
+                            _error = Error::OnlyMemAddressesAllowed;
+                            return -1;
+                        }
+                
+                        if (i < LocalStart) {
+                            addr = i - GlobalStart;
+                            memset(_global + addr, v, n * sizeof(uint32_t));
+                        } else {
+                            addr = i - LocalStart;
+                            memset(&_stack.local(addr), v, n * sizeof(uint32_t));
+                        }
                         break;
                     }
                 }
