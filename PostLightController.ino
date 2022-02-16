@@ -288,6 +288,9 @@ public:
 								        case Device::Error::StackOutOfRange:
 										errorMsg = F("stack access out of range");
 										break;
+                                        case Device::Error::WrongNumberOfArgs:
+										errorMsg = F("wrong number of args to init");
+										break;
 									}
 
 									Serial.print(F("Interpreted effect error: "));
