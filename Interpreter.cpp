@@ -126,7 +126,6 @@ Interpreter::execute(uint16_t addr)
         }
 
         uint8_t id;
-        uint8_t i;
         uint16_t targ;
         uint8_t numParams;
         uint8_t numLocals;
@@ -251,7 +250,6 @@ Interpreter::execute(uint16_t addr)
                 }
                 break;
             case Op::CallNative: {
-                // FIXME: Probably better this be function pointers
                 id = getConst();
 
                 // Save the _pc just to make setFrame work
