@@ -68,10 +68,6 @@ static std::vector<OpData> _opcodes = {
     
     { "Offset",         Op::Offset          , OpParams::Index },
     { "Index",          Op::Index           , OpParams::Index },
-    
-    { "Log",            Op::Log             , OpParams::I },
-    { "LogFloat",       Op::LogFloat        , OpParams::I },
-    { "LogColor",       Op::LogColor        , OpParams::I },
 };
 
 CompileEngine::CompileEngine(std::istream* stream)

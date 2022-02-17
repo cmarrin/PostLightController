@@ -361,11 +361,11 @@ Interpreter::execute(uint16_t addr)
                         break;
                     }
                     case NativeFunction::LogInt: {
-                        log(_pc - 1, 0, int32_t(_stack.local(0)));
+                        log(_pc - 1, int32_t(_stack.local(0)));
                         break;
                     }
                     case NativeFunction::LogFloat: {
-                        logFloat(_pc - 1, 0, intToFloat(_stack.local(0)));
+                        logFloat(_pc - 1, intToFloat(_stack.local(0)));
                         break;
                     }
                     case NativeFunction::LogColor: {
@@ -540,22 +540,6 @@ Interpreter::execute(uint16_t addr)
                 break;
             case Op::NegFloat:
                 _stack.top() = floatToInt(-intToFloat(_stack.top()));
-                break;
-
-            case Op::Log:
-                // Log tos-i and current addr
-                i = getI();
-                log(_pc - 1, i, int32_t(_stack.top(i)));
-                break;
-            case Op::LogFloat:
-                // Log tos-i and current addr
-                i = getI();
-                logFloat(_pc - 1, i, intToFloat(_stack.top(i)));
-                break;
-            case Op::LogColor:
-                // Log color[i] and current addr
-                i = getI();
-                logColor(_pc - 1, i, _c[i]);
                 break;
         }
     }

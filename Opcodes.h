@@ -228,10 +228,6 @@ Opcodes:
     NegInt                  - v[0] = -v[0] (assumes int32_t, result is int32_t)
     NegFloat                - v[0] = -v[0] (assumes float, result is float)
 
-    Log i                   - Print value of TOS-i as int
-    LogFloat i              - Print value of TOS-i as float
-    LogColor i              - Print value of c[i] as color
-    
     Executable format
     
     Format Id           - 4 bytes: 'arly'
@@ -335,10 +331,6 @@ enum class Op: uint8_t {
     
     Offset          = 0x90,
     Index           = 0xa0,
-    
-    Log             = 0xf0, // Print r as int32_t with addr - For debugging
-    LogFloat        = 0xf1, // Print r as float with addr - For debugging
-    LogColor        = 0xf2, // Print c with addr - For debugging
     
     End             = 0xff,
     
