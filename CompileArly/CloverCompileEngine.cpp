@@ -516,31 +516,49 @@ CloverCompileEngine::unaryExpression()
         return true;
     }
 
-    Op op = Op::None;
+    Token token;
     
     if (match(Token::Minus)) {
-        op = Op::NegInt;
+        token = Token::Minus;
     } else if (match(Token::Twiddle)) {
-        op = Op::Not;
+        token = Token::Twiddle;
     } else if (match(Token::Bang)) {
-        op = Op::LNot;
+        token = Token::Bang;
     } else if (match(Token::And)) {
-        // This is just a placeholder to indicate that this is a ref
-        op = Op::PushRef;
-    }
-
-    if (op == Op::None) {
+        token = Token::And;
+    } else {
         return false;
     }
     
     expect(unaryExpression(), Compiler::Error::ExpectedExpr);
     
-    // FIXME: Handle all cases
-    if (op == Op::PushRef) {
-        // TOS must be a ref
-        // FIXME: We need to indicate that this is a pointer, so the types match
+    // If this is ampersand, make it into a pointer, otherwise bake it into a value
+    Type type;
+
+    if (token == Token::And) {
         bakeExpr(ExprAction::Ptr);
-        //_exprStack.emplace_back(ExprEntry::Ref());
+        return true;
+    } else {
+        type = bakeExpr(ExprAction::Right);
+        _exprStack.push_back(ExprEntry::Value(type));
+    }
+
+    switch(token) {
+        default:
+            break;
+        case Token::Minus:
+            if (type == Type::Float) {
+                addOp(Op::NegFloat);
+            } else {
+                expect(type == Type::Int, Compiler::Error::MismatchedType);
+                addOp(Op::NegFloat);
+            }
+            break;
+        case Token::Twiddle:
+        case Token::Bang:
+            expect(type == Type::Int, Compiler::Error::ExpectedInt);
+            addOp((token == Token::Twiddle) ? Op::Not : Op::LNot);
+            break;
     }
     
     return true;
