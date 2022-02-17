@@ -608,9 +608,6 @@ CloverCompileEngine::postfixExpression()
             
             _exprStack.emplace_back(id);
             bakeExpr(ExprAction::Offset);
-            
-            // FIXME: The primaryExpression is an address. The identifier is
-            // a struct member. Use its offset in a deref op (load or store?)
         } else {
             return true;
         }
