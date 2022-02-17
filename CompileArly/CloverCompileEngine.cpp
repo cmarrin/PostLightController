@@ -762,7 +762,7 @@ CloverCompileEngine::bakeExpr(ExprAction action)
         case ExprAction::Right:
             switch(entry.type()) {
                 default:
-                    // FIXME: Handle all the other types
+                    expect(false, Compiler::Error::InternalError);
                 case ExprEntry::Type::Int: {
                     int32_t i = int32_t(entry);
                     if (i >= -128 && i < 127) {
