@@ -41,8 +41,12 @@ bool Compiler::compile(std::istream* istream, Language lang, std::vector<uint8_t
     _lineno = engine->lineno();
     _charno = engine->charno();
     
-    if (_error == Error::None) {
-        engine->emit(executable);
+    try {
+        if (_error == Error::None) {
+            engine->emit(executable);
+        }
+    }
+    catch(...) {
     }
     
     delete engine;
