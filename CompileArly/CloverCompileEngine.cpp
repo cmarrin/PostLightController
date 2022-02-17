@@ -318,11 +318,11 @@ CloverCompileEngine::ifStatement()
     // At this point the expresssion has been executed and the result is on TOS
     
     // Emit the if test
-    _rom8.push_back(uint8_t(Op::If));
+    addOp(Op::If);
 
     // Output a placeholder for sz and rember where it is
     auto szIndex = _rom8.size();
-    _rom8.push_back(0);
+    addInt(0);
     
     statement();
 
@@ -332,11 +332,11 @@ CloverCompileEngine::ifStatement()
     _rom8[szIndex] = uint8_t(offset);
     
     if (match(Reserved::Else)) {
-        _rom8.push_back(uint8_t(Op::Else));
+        addOp(Op::Else);
 
         // Output a placeholder for sz and rember where it is
         auto szIndex = _rom8.size();
-        _rom8.push_back(0);
+        addInt(0);
 
         statement();
 
@@ -355,7 +355,7 @@ CloverCompileEngine::ifStatement()
     // if statement we've skipped, so we execute its
     // statements. If we see an EndIf it means this If
     // doesn't have an Else.
-    _rom8.push_back(uint8_t(Op::EndIf));
+    addOp(Op::EndIf);
 
     return true;
 }
@@ -385,7 +385,7 @@ CloverCompileEngine::forStatement()
 
     // Output a placeholder for sz and rember where it is
     auto szIndex = _rom8.size();
-    _rom8.push_back(0);
+    addInt(0);
     
     statement();
     
@@ -396,7 +396,7 @@ CloverCompileEngine::forStatement()
     _rom8[szIndex] = uint8_t(offset);
     
     // Push EndForEach so we can do the looping and count checking
-    _rom8.push_back(uint8_t(Op::EndForEach));
+    addOp(Op::EndForEach);
 
     return true;
 }
@@ -749,14 +749,14 @@ CloverCompileEngine::bakeExpr(ExprAction action)
                         addOpInt(Op::PushIntConst, i);
                     } else {
                         // Add an int const
-                        addOpRInt(Op::Push, 0, findInt(i));
+                        addOpInt(Op::Push, findInt(i));
                     }
                     type = Type::Int;
                     break;
                 }
                 case ExprEntry::Type::Float:
                     // Use an fp constant
-                    addOpRInt(Op::Push, 0, findFloat(entry));
+                    addOpInt(Op::Push, findFloat(entry));
                     type = Type::Float;
                     break;
                 case ExprEntry::Type::Id:

@@ -99,54 +99,40 @@ protected:
     Op lastOp() const { return _rom8.size() ? Op(_rom8.back()) : Op::None; }
     uint16_t romSize() const { return _rom8.size(); }
     
-    void addOp(Op op) { _rom8.push_back(uint8_t(op)); }
-    void addOpR(Op op, uint8_t r) { _rom8.push_back(uint8_t(op) | (r & 0x03)); }
-    void addOpRdRs(Op op, uint8_t rd, uint8_t rs) { addOpRdRsI(op, rd, rs, 0); }
-    void addOpRsI(Op op, uint8_t rs, uint8_t i) { addOpRdRsI(op, 0, rs, i); }
-    void addOpRdI(Op op, uint8_t rd, uint8_t i) { addOpRdRsI(op, rd, 0, i); }
-    
-    void addOpRdRsI(Op op, uint8_t rd, uint8_t rs, uint8_t i)
-    {
-        _rom8.push_back(uint8_t(op));
-        _rom8.push_back(uint8_t((rd << 6) | ((rs & 0x03) << 4) | (i & 0x0f)));
-    }
-
-    void addOpRdIdRsI(Op op, uint8_t rd, uint8_t id, uint8_t rs, uint8_t i)
-    {
-        _rom8.push_back(uint8_t(op));
-        _rom8.push_back(id);
-        _rom8.push_back(uint8_t((rd << 6) | ((rs & 0x03) << 4) | (i & 0x0f)));
-    }
-
-    void addOpRInt(Op op, uint8_t r, uint8_t i)
-    {
-        _rom8.push_back(uint8_t(op) | (r & 0x03));
-        _rom8.push_back(i);
-    }
-    
-    void addOpInt(Op op, uint8_t i)
-    {
-        _rom8.push_back(uint8_t(op));
-        _rom8.push_back(i);
-    }
+    void addOp(Op op) { annotate(); _rom8.push_back(uint8_t(op)); }
     
     void addOpIndex(Op op, uint8_t i)
     {
+        annotate();
         _rom8.push_back(uint8_t(op) | (i & 0x0f));
     }
 
-    void addOpI(Op op, uint8_t i) { addOpRInt(op, 0, i); }
-    void addOpId(Op op, uint8_t id) { addOpRInt(op, 0, id); }
-    void addOpIdI(Op op, uint8_t id, uint8_t i) { addOpRdIdRsI(op, 0, id, 0, i); }
-    void addOpRId(Op op, uint8_t r, uint8_t id) { addOpRInt(op, r, id); }
-    void addOpConst(Op op, uint8_t c) { addOpRInt(op, 0, c); }
-    void addOpPL(Op op, uint8_t p, uint8_t l) {addOpInt(op, (p << 4) | (l & 0x0f)); }
-    
     void addOpTarg(Op op, uint16_t targ)
     {
+        annotate();
         _rom8.push_back(uint8_t(op) | ((targ >> 6) & 0x03));
         _rom8.push_back(uint8_t(targ));
     }
+    
+    void addOpIdI(Op op, uint8_t id, uint8_t i)
+    {
+        addOp(op);
+        _rom8.push_back(id);
+        _rom8.push_back(uint8_t(i & 0x0f));
+    }
+
+    void addOpInt(Op op, uint8_t i)
+    {
+        addOp(op);
+        _rom8.push_back(i);
+    }
+    
+    void addInt(uint8_t i) { _rom8.push_back(i); }
+    
+    void addOpI(Op op, uint8_t i) { addOpInt(op, i); }
+    void addOpId(Op op, uint8_t id) { addOpInt(op, id); }
+    void addOpConst(Op op, uint8_t c) { addOpInt(op, c); }
+    void addOpPL(Op op, uint8_t p, uint8_t l) {addOpInt(op, (p << 4) | (l & 0x0f)); }
     
     virtual bool isReserved(Token token, const std::string str, Reserved& r);
 
