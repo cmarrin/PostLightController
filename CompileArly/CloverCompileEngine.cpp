@@ -745,15 +745,8 @@ CloverCompileEngine::bakeExpr(ExprAction action)
                     // FIXME: Handle all the other types
                 case ExprEntry::Type::Int: {
                     int32_t i = int32_t(entry);
-                    if (i >= -256 && i < 256) {
-                        bool neg = i < 0;
-                        if (neg) {
-                            i = -i;
-                        }
-                        addOpRInt(Op::PushIntConst, 0, i);
-                        if (neg) {
-                            addOp(Op::NegInt);
-                        }
+                    if (i >= -128 && i < 127) {
+                        addOpInt(Op::PushIntConst, i);
                     } else {
                         // Add an int const
                         addOpRInt(Op::Push, 0, findInt(i));
