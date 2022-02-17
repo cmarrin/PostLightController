@@ -12,7 +12,18 @@
 using namespace arly;
 
 bool Decompiler::decompile()
-{    
+{
+    // Output everything before the first addr
+    _annotationIndex = 0;
+    for ( ; _annotationIndex < _annotations.size(); ++_annotationIndex) {
+        if (_annotations[_annotationIndex].first != -1) {
+            break;
+        }
+        
+        _out->append("//    ");
+        _out->append(_annotations[_annotationIndex].second);
+    }
+    
     try {
         // Make sure we start with 'arly'
         if (getUInt8() != 'a' || getUInt8() != 'r' || getUInt8() != 'l' || getUInt8() != 'y') {
@@ -172,6 +183,17 @@ Decompiler::colorString(uint8_t r)
 Op
 Decompiler::statement()
 {
+    uint16_t a = addr();
+    if (_annotations[_annotationIndex].first == -1 || _annotations[_annotationIndex].first < a) {
+        for ( ; _annotationIndex < _annotations.size(); ) {
+            _out->append("//    ");
+            _out->append(_annotations[_annotationIndex++].second);
+            if (_annotations[_annotationIndex].first != -1) {
+                break;
+            }
+        }
+    }
+    
     uint8_t opInt = getUInt8();
     if (Op(opInt) == Op::End) {
         return Op::End;

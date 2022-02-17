@@ -53,7 +53,7 @@ class ArlyCompileEngine : public CompileEngine
 {
 public:
     ArlyCompileEngine(std::istream* stream)
-        : CompileEngine(stream)
+        : CompileEngine(stream, nullptr)
     { }
     
     virtual bool program() override;

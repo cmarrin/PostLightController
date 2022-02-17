@@ -20,7 +20,7 @@ namespace arly {
 class CompileEngine
 {
 public:
-    CompileEngine(std::istream* stream);
+    CompileEngine(std::istream* stream, std::vector<std::pair<int32_t, std::string>>* annotations);
     
     virtual ~CompileEngine() { }
     
@@ -259,6 +259,13 @@ protected:
         return _functions.back();
     }
     
+    void annotate()
+    {
+        if (_scanner.annotation() == -1) {
+            _scanner.setAnnotation(int32_t(_rom8.size()));
+        }
+    }
+        
     std::vector<Symbol>& currentLocals() { return currentFunction().locals(); }
 
     bool findSymbol(const std::string&, Symbol&);
@@ -276,7 +283,7 @@ protected:
     std::vector<Effect> _effects;
     std::vector<uint32_t> _rom32;
     std::vector<uint8_t> _rom8;
-    
+
     // Vars are defined in 2 places. At global scope (when there are
     // no active functions) they are placed in _global memory.
     // When a function is being defined the vars are placed on the

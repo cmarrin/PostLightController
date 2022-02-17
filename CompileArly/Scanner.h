@@ -10,6 +10,7 @@
 
 #include <cstdint>
 #include <istream>
+#include <vector>
 
 namespace arly {
 
@@ -110,12 +111,14 @@ public:
         const char*     str;
     } TokenType;
 
-  	Scanner(std::istream* stream = nullptr)
+  	Scanner(std::istream* stream = nullptr, std::vector<std::pair<int32_t, std::string>>* annotations = nullptr)
   	 : _lastChar(0xff)
   	 , _stream(stream)
      , _lineno(1)
      , _charno(1)
+     , _annotations(annotations)
   	{
+        if (_annotations) _annotations->emplace_back(-1, "");
     }
   	
   	~Scanner()
@@ -152,6 +155,20 @@ public:
     }
     
     void retireToken() { _currentToken = Token::None; }
+    
+    int32_t annotation() const
+    {
+        return (_annotations && _annotations->empty()) ? -1 : _annotations->back().first;
+    }
+    
+    void setAnnotation(int32_t id)
+    {
+        if (_annotations && !_annotations->empty()) {
+            _annotations->back().first = id;
+        }
+    }
+    
+    const std::vector<std::pair<int32_t, std::string>>* annotations() const { return _annotations; }
 
 private:
   	Token getToken(TokenType& token);
@@ -181,6 +198,9 @@ private:
     Scanner::TokenType _currentTokenValue;
     
     bool _ignoreNewlines = false;
+    
+    std::vector<std::pair<int32_t, std::string>>* _annotations;
+
 };
 
 }

@@ -70,8 +70,8 @@ static std::vector<OpData> _opcodes = {
     { "Index",          Op::Index           , OpParams::Index },
 };
 
-CompileEngine::CompileEngine(std::istream* stream)
-    : _scanner(stream)
+CompileEngine::CompileEngine(std::istream* stream, std::vector<std::pair<int32_t, std::string>>* annotations)
+    : _scanner(stream, annotations)
 {
     // Add built-in native functions to _functions
     _functions.emplace_back("LoadColorParam",

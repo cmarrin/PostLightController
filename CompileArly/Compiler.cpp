@@ -15,7 +15,8 @@
 
 using namespace arly;
 
-bool Compiler::compile(std::istream* istream, Language lang, std::vector<uint8_t>& executable)
+bool Compiler::compile(std::istream* istream, Language lang, std::vector<uint8_t>& executable,
+                       std::vector<std::pair<int32_t, std::string>>* annotations)
 {
     CompileEngine* engine = nullptr;
     
@@ -24,7 +25,7 @@ bool Compiler::compile(std::istream* istream, Language lang, std::vector<uint8_t
             engine = new ArlyCompileEngine(istream);
             break;
         case Language::Clover:
-            engine = new CloverCompileEngine(istream);
+            engine = new CloverCompileEngine(istream, annotations);
             break;
     }
     

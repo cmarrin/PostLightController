@@ -73,7 +73,8 @@ public:
     
     enum class Language { Arly, Clover };
     
-    bool compile(std::istream*, Language, std::vector<uint8_t>& executable);
+    bool compile(std::istream*, Language, std::vector<uint8_t>& executable,
+                 std::vector<std::pair<int32_t, std::string>>* annotations = nullptr);
 
     Error error() const { return _error; }
     Token expectedToken() const { return _expectedToken; }

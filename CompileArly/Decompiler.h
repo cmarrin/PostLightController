@@ -25,9 +25,10 @@ public:
         PrematureEOF,
     };
     
-    Decompiler(const std::vector<uint8_t>* in, std::string* out)
+    Decompiler(const std::vector<uint8_t>* in, std::string* out, const std::vector<std::pair<int32_t, std::string>>& annotations)
         : _in(in)
         , _out(out)
+        , _annotations(annotations)
     {
         _it = _in->begin();
     }
@@ -101,10 +102,12 @@ private:
         _indent++;
     }
     
+    uint16_t addr() const { return (_it - _in->begin()) - _codeOffset; }
+    
     void outputAddr()
     {
         _out->append("[");
-        _out->append(std::to_string(_it - _in->begin() - 1));
+        _out->append(std::to_string(addr() - 1));
         _out->append("] ");
     }
 
@@ -114,6 +117,8 @@ private:
     std::string* _out;
     int32_t _indent = 0;
     uint16_t _codeOffset = 0; // Used by Call
+    const std::vector<std::pair<int32_t, std::string>>& _annotations;
+    int _annotationIndex = 0;
 };
 
 }
