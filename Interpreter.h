@@ -151,6 +151,10 @@ private:
             }
             _size = size;
             _stack = new uint32_t [size];
+            
+            _sp = 0;
+            _bp = 0;
+            _error = Error::None;
         }
             
         void push(uint32_t v) { ensurePush(); _stack[_sp++] = v; }
@@ -170,7 +174,7 @@ private:
 
         bool empty() const { return _sp == 0; }
         Error error() const { return _error; }
-        
+                
         bool setFrame(uint8_t params, uint8_t locals)
         {
             int16_t savedPC = pop();
