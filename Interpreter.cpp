@@ -553,6 +553,8 @@ Interpreter::setAllLights(uint8_t r)
     }
 }
 
+// Return -1 if we just finished going down, or 1 
+// if we just finished going up. Otherwise return 0.
 int32_t
 Interpreter::animate(uint32_t index)
 {
@@ -570,6 +572,7 @@ Interpreter::animate(uint32_t index)
             inc = -inc;
             storeFloat(index, 0, cur);
             storeFloat(index, 1, inc);
+            return 1;
         }
     } else {
         if (cur <= min) {
@@ -577,7 +580,7 @@ Interpreter::animate(uint32_t index)
             inc = -inc;
             storeFloat(index, 0, cur);
             storeFloat(index, 1, inc);
-            return 1;
+            return -1;
         }
     }
     return 0;
