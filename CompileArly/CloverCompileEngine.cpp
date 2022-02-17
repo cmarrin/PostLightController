@@ -485,7 +485,12 @@ CloverCompileEngine::arithmeticExpression(uint8_t minPrec, ArithType arithType)
                 break;
             }
             case OpInfo::Assign::Op:
-                // FIXME: Implement assign op
+                // The ref is on TOS, dup and get the value, then bake the right, then do the op
+                addOp(Op::Dup);
+                addOp(Op::PushDeref);
+                rightType = bakeExpr(ExprAction::Right);
+                expect(leftType == rightType, Compiler::Error::MismatchedType);
+                addOp((leftType == Type::Int) ? info.intOp() : info.floatOp());
                 break;
             case OpInfo::Assign::None:
                 rightType = bakeExpr(ExprAction::Right);
