@@ -21,7 +21,7 @@ const float IncMax          0.04;
 const float BrightnessMin   0.3;
 const int NumPixels         8;
 const int NumLevels         8;
-const int PulseDelay        25;
+const int Delay             25; // in ms
 const int PulseSpeedMult    35;
 
 table FlickerSpeedEntry FlickerSpeedTable
@@ -40,7 +40,89 @@ var LedEntry leds 8;
 var LedEntry* led;
 var float flickerStepsMin;
 var float flickerStepsMax;
-var int flickerSpeedDelay;
+var int loopDelay;
+var int durationMax; // Number of counts between fade (based on Delay)
+var int durationCur;
+var int multiColorIndex;
+var int isCrossfading;
+
+// Multicolor - pass 4 colors and cross fade between them
+//
+// Params:  0..2       Color 1
+//          3..5       Color 2
+//          6..8       Color 3
+//          9..11      Color 4
+//          12         Duration between cross fades in 1 second intervals (0-255)
+
+function initFade(int c, int fadeIn)
+{
+    led.min = 0.0;
+    led.max = LoadColorComp(c, 2);
+    led.cur = 0.0;
+    led.inc = IncMax;
+
+    if (!fadeIn) {
+        led.cur = led.max;
+        led.inc = -led.inc;
+    }
+}
+
+function multicolorInit()
+{
+    LoadColorParam(0, 0);
+    LoadColorParam(1, 3);
+    LoadColorParam(2, 6);
+    LoadColorParam(3, 9);
+
+    durationMax = Param(12) * 1000 / Delay;
+    multiColorIndex = 0;
+    led = &leds[0];
+
+    // Start by fading in the first color
+    initFade(multiColorIndex, 1);
+
+    isCrossfading = 1;
+}
+
+function int multicolorLoop()
+{
+    var int animateResult;
+
+    if (isCrossfading) {
+        animateResult = Animate(led);
+        if (animateResult < 0) {
+            // The current light has faded out
+            // Restore the Val of the current color
+            StoreColorComp(multiColorIndex, 2, led.max);
+
+            multiColorIndex += 1;
+            if (multiColorIndex >= 4) {
+                multiColorIndex = 0;
+            }
+
+            initFade(multiColorIndex, 1);
+        } else if (animateResult > 0) {
+            // The new light has completed fading in
+            isCrossfading = 0;
+            durationCur = 0;
+        }
+
+        StoreColorComp(multiColorIndex, 2, led.cur);
+        SetAllLights(multiColorIndex);
+        return Delay;
+    }
+
+    if (durationCur < durationMax) {
+        durationCur += 1;
+        return Delay;
+    }
+
+    // We've hit the desired duration, transition
+    isCrossfading = 1;
+    return Delay;
+}
+
+effect m 13 multicolorInit multicolorLoop;
 
 //
 // Constant effect
@@ -83,7 +165,7 @@ function int pulseLoop()
     led = &leds[0];
     StoreColorComp(0, 2, led.cur);
     SetAllLights(0);
-    return PulseDelay;
+    return Delay;
 }
 
 effect p 5 pulseInit pulseLoop;
@@ -101,7 +183,7 @@ function flickerInit()
     speed = Param(3);
     flickerStepsMin = FlickerSpeedTable[speed].min;
     flickerStepsMax = FlickerSpeedTable[speed].max;
-    flickerSpeedDelay = FlickerSpeedTable[speed].delay;
+    loopDelay = FlickerSpeedTable[speed].delay;
 }
 
 function int flickerLoop()
@@ -111,7 +193,7 @@ function int flickerLoop()
     i = 0;
     foreach (i : NumPixels) {
         led = &leds[i];
-        if (Animate(led)) {
+        if (Animate(led) == -1) {
             // We are done with the throb, select a new inc and lim
             // Increment inc value for each step a random amount
             led.cur = BrightnessMin;
@@ -126,7 +208,7 @@ function int flickerLoop()
         SetLight(i, 0);
     }
     
-    return flickerSpeedDelay;
+    return loopDelay;
 }
 
 effect f 4 flickerInit flickerLoop;

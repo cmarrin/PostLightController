@@ -86,6 +86,7 @@ static std::vector<Test> Tests = {
     { 'p', { 40, 224, 250, 7, 7 } },
     { 'c', { 240, 224, 64 } },
     { 'f', { 20, 224, 200, 0 } },
+    { 'm', { 40, 224, 250,  80, 224, 250,  120, 224, 250,  180, 224, 250, 1 } },
 };
 
 static void showError(arly::Compiler::Error error, arly::Token token, const std::string& str, uint32_t lineno, uint32_t charno)
