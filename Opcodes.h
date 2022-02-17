@@ -145,7 +145,7 @@ Opcodes:
     Pop id                  - global[id - 0x80] or stack[bp + id = 0xc0] = stack[--sp]
     
     PushZero                - stack[sp++] = 0
-    PushIntConst const      - stack[sp++] = const (constant value 0-255)
+    PushIntConst const      - stack[sp++] = const (constant value -128 to 127)
 
     // The opcodes deal with variable references. LoadRef simply places
     // the address of the passed id in the passed register. It can later

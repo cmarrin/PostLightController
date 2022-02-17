@@ -286,7 +286,7 @@ Interpreter::execute(uint16_t addr)
                     return -1;
                 }
                 
-                uint32_t returnVal = 0;
+                int32_t returnVal = 0;
 
                 switch(NativeFunction(id)) {
                     case NativeFunction::None:
