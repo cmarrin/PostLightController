@@ -36,19 +36,22 @@ public:
 
     void logAddr(uint16_t addr) const { std::cout << "[" << addr << "]"; }
     
-    virtual void log(uint16_t addr, uint8_t r, int32_t v) const override
+    virtual void log(uint16_t addr, int32_t v) const override
     {
+        std::cout << "*** LogInt at addr ";
         logAddr(addr);
-        std::cout << ": tos-" << uint32_t(r) << " = " << v << std::endl;
+        std::cout << ": " << v << std::endl;
     }
-    virtual void logFloat(uint16_t addr, uint8_t r, float v) const override
+    virtual void logFloat(uint16_t addr, float v) const override
     {
+        std::cout << "*** LogFloat at addr ";
         logAddr(addr);
-        std::cout << ": tos-" << uint32_t(r) << " = " << v << std::endl;
+        std::cout << ": " << v << std::endl;
     }
 
     virtual void logColor(uint16_t addr, uint8_t r, const Color& c) const override
     {
+        std::cout << "*** LogColor at addr ";
         logAddr(addr);
         std::cout << ": c[" << uint32_t(r) << "] = (" << c.hue() << ", " << c.sat() << ", " << c.val() << ")" << std::endl;
     }
