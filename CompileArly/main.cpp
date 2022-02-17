@@ -172,6 +172,8 @@ int main(int argc, char * const argv[])
     
     std::string inputFile = argv[optind];
     
+    std::vector<std::pair<int32_t, std::string>> annotations;
+
     arly::Compiler compiler;
     std::fstream stream;
     stream.open(inputFile.c_str(), std::fstream::in);
@@ -193,7 +195,7 @@ int main(int argc, char * const argv[])
         std::cout << "\n\nTrying Clover...\n";
         
         stream.seekg(0);
-        compiler.compile(&stream, arly::Compiler::Language::Clover, executable);
+        compiler.compile(&stream, arly::Compiler::Language::Clover, executable, &annotations);
 
         if (compiler.error() != arly::Compiler::Error::None) {
             showError(compiler.error(), compiler.expectedToken(), compiler.expectedString(), compiler.lineno(), compiler.charno());
@@ -257,7 +259,7 @@ int main(int argc, char * const argv[])
     // decompile if needed
     if (decompile) {
         std::string out;
-        arly::Decompiler decompiler(&executable, &out);
+        arly::Decompiler decompiler(&executable, &out, annotations);
         bool success = decompiler.decompile();
         std::cout << "\nDecompiled executable:\n" << out << "\nEnd decompilation\n\n";
         if (!success) {
