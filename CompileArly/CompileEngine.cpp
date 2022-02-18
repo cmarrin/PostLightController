@@ -18,6 +18,7 @@ static std::vector<OpData> _opcodes = {
     { "Pop",            Op::Pop             , OpParams::Id },
     { "PushZero",       Op::PushZero        , OpParams::None },
     { "PushIntConst",   Op::PushIntConst    , OpParams::Const },
+    { "PushIntConstS",  Op::PushIntConstS   , OpParams::Index },
 
     { "PushRef",        Op::PushRef         , OpParams::Id },
     { "PushDeref",      Op::PushDeref       , OpParams::None },

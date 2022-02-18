@@ -765,7 +765,9 @@ CloverCompileEngine::bakeExpr(ExprAction action)
                     expect(false, Compiler::Error::InternalError);
                 case ExprEntry::Type::Int: {
                     int32_t i = int32_t(entry);
-                    if (i >= -128 && i < 127) {
+                    if (i >= -8 && i <= 7) {
+                        addOpSingleByteIndex(Op::PushIntConstS, i);
+                    } else if (i >= -128 && i <= 127) {
                         addOpInt(Op::PushIntConst, i);
                     } else {
                         // Add an int const
@@ -825,7 +827,7 @@ CloverCompileEngine::bakeExpr(ExprAction action)
                 _exprStack.pop_back();
                 _exprStack.push_back(ExprEntry::Ref(type));
             }
-            addOpIndex(Op::Index, structFromType(type).size());
+            addOpSingleByteIndex(Op::Index, structFromType(type).size());
             return type;
         case ExprAction::Offset: {
             // Prev entry has a Ref. Get the type so we can get an element index
@@ -840,7 +842,7 @@ CloverCompileEngine::bakeExpr(ExprAction action)
             _exprStack.pop_back();
             _exprStack.pop_back();
             _exprStack.push_back(ExprEntry::Ref(elementType));
-            addOpIndex(Op::Offset, index);
+            addOpSingleByteIndex(Op::Offset, index);
             return elementType;
         }
         case ExprAction::Ref:

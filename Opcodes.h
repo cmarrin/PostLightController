@@ -146,6 +146,7 @@ Opcodes:
     
     PushZero                - stack[sp++] = 0
     PushIntConst const      - stack[sp++] = const (constant value -128 to 127)
+    PushIntConstS constS    - stack[sp++] = const (in lower 4 bits of op, -8 to 7)
 
     // The opcodes deal with variable references. LoadRef simply places
     // the address of the passed id in the passed register. It can later
@@ -331,6 +332,7 @@ enum class Op: uint8_t {
     
     Offset          = 0x90,
     Index           = 0xa0,
+    PushIntConstS   = 0xb0,
     
     End             = 0xff,
     

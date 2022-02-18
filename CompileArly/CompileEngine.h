@@ -101,7 +101,7 @@ protected:
     
     void addOp(Op op) { annotate(); _rom8.push_back(uint8_t(op)); }
     
-    void addOpIndex(Op op, uint8_t i)
+    void addOpSingleByteIndex(Op op, uint8_t i)
     {
         annotate();
         _rom8.push_back(uint8_t(op) | (i & 0x0f));
