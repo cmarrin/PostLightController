@@ -42,6 +42,7 @@ function constantInit
     SetFrame 0 0
 	PushZero
 	PushZero
+    PushIntConst 1
 	CallNative LoadColorParam
 	Drop
 end
@@ -60,6 +61,7 @@ function flickerInit
     // Get color param
 	PushZero
 	PushZero
+    PushIntConst 1
 	CallNative LoadColorParam
 	Drop
     
@@ -170,6 +172,7 @@ function pulseInit
     SetFrame 0 0
 	PushZero
 	PushZero
+    PushIntConst 1
 	CallNative LoadColorParam
 	Drop
     

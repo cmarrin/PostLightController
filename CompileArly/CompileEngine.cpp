@@ -79,7 +79,8 @@ CompileEngine::CompileEngine(std::istream* stream, std::vector<std::pair<int32_t
                             Type::None,
                             SymbolList {
                                 { "c", 0, Type::Int },
-                                { "p", 1, Type::Int }
+                                { "p", 1, Type::Int },
+                                { "n", 2, Type::Int }
                             });
     _functions.emplace_back("SetAllLights",
                             Interpreter::NativeFunction::SetAllLights,

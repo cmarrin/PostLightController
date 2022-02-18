@@ -69,10 +69,7 @@ function initFade(int c, int fadeIn)
 
 function multicolorInit()
 {
-    LoadColorParam(0, 0);
-    LoadColorParam(1, 3);
-    LoadColorParam(2, 6);
-    LoadColorParam(3, 9);
+    LoadColorParam(0, 0, 4);
 
     durationMax = Param(12) * 1000 / Delay;
     multiColorIndex = 0;
@@ -130,7 +127,7 @@ effect m 13 multicolorInit multicolorLoop;
 
 function constantInit()
 {
-	LoadColorParam(0, 0);
+	LoadColorParam(0, 0, 1);
 }
 
 function int constantLoop()
@@ -146,7 +143,7 @@ effect c 3 constantInit constantLoop;
 //
 function pulseInit()
 {
-	LoadColorParam(0, 0);
+	LoadColorParam(0, 0, 1);
 	
     led = &leds[0];
     
@@ -177,7 +174,7 @@ function flickerInit()
 {
     var int speed;
 
-	LoadColorParam(0, 0);
+	LoadColorParam(0, 0, 1);
     InitArray(&leds, 0, NumPixels * 4);
 
     speed = Param(3);

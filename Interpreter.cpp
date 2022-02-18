@@ -261,7 +261,7 @@ Interpreter::execute(uint16_t addr)
                     case NativeFunction::None:
                         _error = Error::InvalidNativeFunction;
                         return -1;
-                    case NativeFunction::LoadColorParam: numParams = 2; break;
+                    case NativeFunction::LoadColorParam: numParams = 3; break;
                     case NativeFunction::SetAllLights: numParams = 1; break;
                     case NativeFunction::SetLight: numParams = 2; break;
                     case NativeFunction::Animate: numParams = 1; break;
@@ -293,9 +293,16 @@ Interpreter::execute(uint16_t addr)
                         _error = Error::InvalidNativeFunction;
                         return -1;
                     case NativeFunction::LoadColorParam: {
-                        uint32_t r = _stack.local(0);
-                        uint32_t i = _stack.local(1);
-                        _c[r] = Color(_params[i], _params[i + 1], _params[i + 2]);
+                        uint32_t c = _stack.local(0);
+                        uint32_t p = _stack.local(1);
+                        uint32_t n = _stack.local(2);
+                        if (c + n > 4) {
+                            _error = Error::AddressOutOfRange;
+                            return -1;
+                        }
+                        for ( ; n > 0; ++c, --n, p += 3) {
+                            _c[c] = Color(_params[p], _params[p + 1], _params[p + 2]);
+                        }
                         break;
                     }
                     case NativeFunction::SetAllLights: {
