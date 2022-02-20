@@ -92,6 +92,8 @@ public:
 		
 		delay(500);
 
+        randomSeed(millis());
+
 	    _pixels.begin(); // This initializes the NeoPixel library.
 	    _pixels.setBrightness(255);
 		

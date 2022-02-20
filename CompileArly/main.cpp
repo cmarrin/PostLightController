@@ -188,6 +188,8 @@ int main(int argc, char * const argv[])
     std::vector<uint8_t> executable;
     
     std::cout << "\n\nTrying Arly...\n";
+    
+    randomSeed(uint32_t(clock()));
 
     compiler.compile(&stream, arly::Compiler::Language::Arly, executable);
     if (compiler.error() != arly::Compiler::Error::None) {
