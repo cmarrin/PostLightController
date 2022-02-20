@@ -22,3 +22,5 @@ Test/Interpreter.cpp
 Test/Interpreter.h
 Test/Opcodes.h
 Test/Test.ino
+.vscode/arduino.json
+.vscode/c_cpp_properties.json
