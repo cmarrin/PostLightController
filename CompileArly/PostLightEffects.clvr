@@ -72,13 +72,18 @@ function multicolorInit()
     LoadColorParam(0, 0, 4);
 
     durationMax = Param(12) * 1000 / Delay;
-    multiColorIndex = 0;
     led = &leds[0];
+
+    // Start on a random color
+    multiColorIndex = RandomInt(0, 4);
 
     // Start by fading in the first color
     initFade(multiColorIndex, 1);
 
     isCrossfading = 1;
+
+    // Start at a random place in the delay
+    durationCur = RandomInt(0, durationMax);
 }
 
 function int multicolorLoop()
@@ -101,7 +106,9 @@ function int multicolorLoop()
         } else if (animateResult > 0) {
             // The new light has completed fading in
             isCrossfading = 0;
-            durationCur = 0;
+            if (durationCur >= durationMax) {
+                durationCur = 0;
+            }
         }
 
         StoreColorComp(multiColorIndex, 2, led.cur);
