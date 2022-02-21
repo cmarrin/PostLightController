@@ -252,7 +252,7 @@ CloverCompileEngine::function()
     
     // Emit Return at the end if there's not already one
     if (size == romSize() || lastOp() != Op::Return) {
-        addOp(Op::PushZero);
+        addOpSingleByteIndex(Op::PushIntConstS, 0);
         addOp(Op::Return);
     }
     
@@ -416,7 +416,7 @@ CloverCompileEngine::returnStatement()
         expect(currentFunction().type() == Type::None, Compiler::Error::MismatchedType);
         
         // No return value, push a zero
-        addOp(Op::PushZero);
+        addOpSingleByteIndex(Op::PushIntConstS, 0);
     }
     
     addOp(Op::Return);

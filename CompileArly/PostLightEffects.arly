@@ -40,8 +40,8 @@ var float pulseState 4 // cur, inc, min, max
 
 function constantInit
     SetFrame 0 0
-	PushZero
-	PushZero
+    PushIntConstS 0
+	PushIntConstS 0
     PushIntConst 1
 	CallNative LoadColorParam
 	Drop
@@ -49,25 +49,25 @@ end
 
 function constantLoop
     SetFrame 0 0
-	PushZero
+	PushIntConstS 0
 	CallNative SetAllLights
 	Drop
-    PushZero
+    PushIntConstS 0
     Return
 end
 
 function flickerInit
     SetFrame 0 0
     // Get color param
-	PushZero
-	PushZero
+	PushIntConstS 0
+	PushIntConstS 0
     PushIntConst 1
 	CallNative LoadColorParam
 	Drop
     
     // Init leds
     PushRef flickerLeds
-    PushZero
+    PushIntConstS 0
     Push LedSize
     CallNative InitArray
 	Drop
@@ -92,7 +92,7 @@ end
 
 function flickerLoop
     SetFrame 0 0
-	PushZero
+	PushIntConstS 0
 	Pop i
     Push NumPixels
     
@@ -148,7 +148,7 @@ function flickerLoop
         end
 
         // c0.val = led.cur
-		PushZero
+		PushIntConstS 0
 		PushIntConst 2
         Push led            
         Offset LEDCur
@@ -158,7 +158,7 @@ function flickerLoop
 		
 		// SetLight(i, c0)
 		Push i
-		PushZero
+		PushIntConstS 0
 		CallNative SetLight
 		Drop
     end
@@ -170,8 +170,8 @@ end
 
 function pulseInit
     SetFrame 0 0
-	PushZero
-	PushZero
+	PushIntConstS 0
+	PushIntConstS 0
     PushIntConst 1
 	CallNative LoadColorParam
 	Drop
@@ -181,7 +181,7 @@ function pulseInit
     // pulseState.max = c.val
     PushRef pulseState
     Offset LEDMax
-	PushZero
+	PushIntConstS 0
 	PushIntConst 2
     CallNative LoadColorComp
     PopDeref
@@ -189,7 +189,7 @@ function pulseInit
     // pulseState.min = c.val - (float(depth + 1) / float(NumLevels) * (c.val - BrightnessMin))
     PushRef pulseState
     Offset LEDMin
-	PushZero
+	PushIntConstS 0
 	PushIntConst 2
     CallNative LoadColorComp
 	Dup
@@ -247,7 +247,7 @@ end
 
 function pulseLoop
     SetFrame 0 0
-	PushZero
+	PushIntConstS 0
 	PushIntConst 2
     PushRef pulseState
 	Dup
@@ -258,7 +258,7 @@ function pulseLoop
     CallNative StoreColorComp
 	Drop
 	
-	PushZero
+	PushIntConstS 0
 	CallNative SetAllLights
 	Drop
 	

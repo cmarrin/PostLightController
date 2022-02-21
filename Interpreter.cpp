@@ -143,9 +143,6 @@ Interpreter::execute(uint16_t addr)
                 id = getId();
                 storeInt(id, _stack.pop());
                 break;
-            case Op::PushZero:
-                _stack.push(0);
-                break;
             case Op::PushIntConst:
                 _stack.push(getConst());
                 break;

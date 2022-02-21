@@ -16,7 +16,6 @@ using namespace arly;
 static std::vector<OpData> _opcodes = {
     { "Push",           Op::Push            , OpParams::Id },
     { "Pop",            Op::Pop             , OpParams::Id },
-    { "PushZero",       Op::PushZero        , OpParams::None },
     { "PushIntConst",   Op::PushIntConst    , OpParams::Const },
     { "PushIntConstS",  Op::PushIntConstS   , OpParams::Index },
 

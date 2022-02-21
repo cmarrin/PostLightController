@@ -212,7 +212,7 @@ ArlyCompileEngine::function()
     expect(Token::Identifier, "end");
     
     // Insert a return at the end of the function to make sure it returns
-    _rom8.push_back(uint8_t(Op::PushZero));
+    addOpSingleByteIndex(Op::PushIntConstS, 0);
     _rom8.push_back(uint8_t(Op::Return));
     return true;
 }

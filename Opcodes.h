@@ -144,7 +144,6 @@ Opcodes:
     Push id                 - stack[sp++] = global[id - 0x80] or const[id] or stack[bp + id - 0xc0]
     Pop id                  - global[id - 0x80] or stack[bp + id = 0xc0] = stack[--sp]
     
-    PushZero                - stack[sp++] = 0
     PushIntConst const      - stack[sp++] = const (constant value -128 to 127)
     PushIntConstS constS    - stack[sp++] = const (in lower 4 bits of op, -8 to 7)
 
@@ -267,12 +266,11 @@ enum class Op: uint8_t {
     Push            = 0x10,
     Pop             = 0x11,
 
-    PushZero        = 0x12,
-    PushIntConst    = 0x13,
+    PushIntConst    = 0x12,
     
-    PushRef         = 0x14,
-    PushDeref       = 0x15,
-    PopDeref        = 0x16,
+    PushRef         = 0x13,
+    PushDeref       = 0x14,
+    PopDeref        = 0x15,
     
     Dup             = 0x20,
     Drop            = 0x21,
