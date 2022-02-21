@@ -158,7 +158,7 @@ public:
     
     int32_t annotation() const
     {
-        return (_annotations && _annotations->empty()) ? -1 : _annotations->back().first;
+        return (_annotations && _annotations->empty()) ? _annotations->back().first : -1;
     }
     
     void setAnnotation(int32_t id)

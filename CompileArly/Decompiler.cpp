@@ -184,7 +184,7 @@ Op
 Decompiler::statement()
 {
     uint16_t a = addr();
-    if (_annotations[_annotationIndex].first == -1 || _annotations[_annotationIndex].first < a) {
+    if (!_annotations.empty() && (_annotations[_annotationIndex].first == -1 || _annotations[_annotationIndex].first < a)) {
         for ( ; _annotationIndex < _annotations.size(); ) {
             _out->append("//    ");
             _out->append(_annotations[_annotationIndex++].second);
