@@ -65,6 +65,15 @@ static std::vector<OpData> _opcodes = {
     { "DivFloat",       Op::DivFloat        , OpParams::None },
     { "NegInt",         Op::NegInt          , OpParams::None },
     { "NegFloat",       Op::NegFloat        , OpParams::None },
+
+    { "PreIncInt",      Op::PreIncInt       , OpParams::None },
+    { "PreIncFloat",    Op::PreIncFloat     , OpParams::None },
+    { "PreDecInt",      Op::PreDecInt       , OpParams::None },
+    { "PreDecFloat",    Op::PreDecFloat     , OpParams::None },
+    { "PostIncInt",     Op::PostIncInt      , OpParams::None },
+    { "PostIncFloat",   Op::PostIncFloat    , OpParams::None },
+    { "PostDecInt",     Op::PostDecInt      , OpParams::None },
+    { "PostDecFloat",   Op::PostDecFloat    , OpParams::None },
     
     { "Offset",         Op::Offset          , OpParams::Index },
     { "Index",          Op::Index           , OpParams::Index },

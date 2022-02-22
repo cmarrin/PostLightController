@@ -228,6 +228,23 @@ Opcodes:
     NegInt                  - v[0] = -v[0] (assumes int32_t, result is int32_t)
     NegFloat                - v[0] = -v[0] (assumes float, result is float)
 
+    Increment and decrement ops expect a ref on TOS. The "pre" versions will load the
+    value, increment or decrement, store the new value and push that value. The "post"
+    versions will load the value, push that value, then increment or decrement and store
+    the result. There are Int and Float versions of all. The end result is one value
+    left on the stack, which is either increment or decremented or not and one value at
+    the location of the ref which is either incremented or decremented.
+     
+    PreIncInt
+    PreIncFloat
+    PreDecInt
+    PreDecFloat
+    PostIncInt
+    PostIncFloat
+    PostDecInt
+    PostDecFloat
+    
+    
     Executable format
     
     Format Id           - 4 bytes: 'arly'
@@ -321,6 +338,15 @@ enum class Op: uint8_t {
 
     NegInt          = 0x6b,
     NegFloat        = 0x6c,
+    
+    PreIncInt       = 0x6d,
+    PreIncFloat     = 0x6e,
+    PreDecInt       = 0x6f,
+    PreDecFloat     = 0x70,
+    PostIncInt      = 0x71,
+    PostIncFloat    = 0x72,
+    PostDecInt      = 0x73,
+    PostDecFloat    = 0x74,
     
     // 0x80 - 0xe0 (7 ops have an index (0-15) in b[3:0]
     

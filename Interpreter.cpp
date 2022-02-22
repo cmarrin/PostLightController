@@ -548,6 +548,29 @@ Interpreter::execute(uint16_t addr)
             case Op::NegFloat:
                 _stack.top() = floatToInt(-intToFloat(_stack.top()));
                 break;
+
+            case Op::PreIncInt:
+            case Op::PreDecInt:
+            case Op::PostIncInt:
+            case Op::PostDecInt: {
+                uint32_t addr = _stack.pop();
+                int32_t value = int32_t(loadInt(addr));
+                int32_t valueAfter = (Op(cmd) == Op::PreIncInt || Op(cmd) == Op::PostIncInt) ? (value + 1) : (value - 1);
+                storeInt(addr, valueAfter);
+                _stack.push((Op(cmd) == Op::PreIncInt || Op(cmd) == Op::PreDecInt) ? valueAfter : value);
+                break;
+            }
+            case Op::PreIncFloat:
+            case Op::PreDecFloat:
+            case Op::PostIncFloat:
+            case Op::PostDecFloat: {
+                uint32_t addr = _stack.pop();
+                float value = loadFloat(addr);
+                float valueAfter = (Op(cmd) == Op::PreIncFloat || Op(cmd) == Op::PostIncFloat) ? (value + 1) : (value - 1);
+                storeFloat(addr, valueAfter);
+                _stack.push((Op(cmd) == Op::PreIncFloat || Op(cmd) == Op::PreDecFloat) ? floatToInt(valueAfter) : floatToInt(value));
+                break;
+            }
         }
     }
 }

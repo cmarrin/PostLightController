@@ -524,6 +524,10 @@ CloverCompileEngine::unaryExpression()
         token = Token::Twiddle;
     } else if (match(Token::Bang)) {
         token = Token::Bang;
+    } else if (match(Token::Inc)) {
+        token = Token::Inc;
+    } else if (match(Token::Dec)) {
+        token = Token::Dec;
     } else if (match(Token::And)) {
         token = Token::And;
     } else {
@@ -535,29 +539,42 @@ CloverCompileEngine::unaryExpression()
     // If this is ampersand, make it into a pointer, otherwise bake it into a value
     Type type;
 
-    if (token == Token::And) {
-        bakeExpr(ExprAction::Ptr);
-        return true;
-    } else {
-        type = bakeExpr(ExprAction::Right);
-        _exprStack.push_back(ExprEntry::Value(type));
-    }
-
     switch(token) {
         default:
             break;
-        case Token::Minus:
+        case Token::And:
+            bakeExpr(ExprAction::Ptr);
+            break;
+        case Token::Inc:
+        case Token::Dec:
+            type = bakeExpr(ExprAction::Ref);
+            _exprStack.pop_back();
+            _exprStack.push_back(ExprEntry::Value(type));
+
             if (type == Type::Float) {
-                addOp(Op::NegFloat);
+                addOp((token == Token::Inc) ? Op::PreIncFloat : Op::PreDecFloat);
             } else {
                 expect(type == Type::Int, Compiler::Error::MismatchedType);
-                addOp(Op::NegFloat);
+                addOp((token == Token::Inc) ? Op::PreIncInt : Op::PreDecInt);
             }
             break;
+        case Token::Minus:
         case Token::Twiddle:
         case Token::Bang:
-            expect(type == Type::Int, Compiler::Error::ExpectedInt);
-            addOp((token == Token::Twiddle) ? Op::Not : Op::LNot);
+            type = bakeExpr(ExprAction::Right);
+            _exprStack.push_back(ExprEntry::Value(type));
+
+            if (token == Token::Minus) {
+                if (type == Type::Float) {
+                    addOp(Op::NegFloat);
+                } else {
+                    expect(type == Type::Int, Compiler::Error::MismatchedType);
+                    addOp(Op::NegInt);
+                }
+            } else {
+                expect(type == Type::Int, Compiler::Error::ExpectedInt);
+                addOp((token == Token::Twiddle) ? Op::Not : Op::LNot);
+            }
             break;
     }
     
@@ -601,13 +618,35 @@ CloverCompileEngine::postfixExpression()
             // Index the Ref
             bakeExpr(ExprAction::Index);
         } else if (match(Token::Dot)) {
-            // The 
             std::string id;
             expect(identifier(id), Compiler::Error::ExpectedIdentifier);
             bakeExpr(ExprAction::Ref);
             
             _exprStack.emplace_back(id);
             bakeExpr(ExprAction::Offset);
+            return true;
+        } else if (match(Token::Inc)) {
+            Type type = bakeExpr(ExprAction::Ref);
+            _exprStack.pop_back();
+            _exprStack.push_back(ExprEntry::Value(type));
+
+            if (type == Type::Float) {
+                addOp(Op::PostIncFloat);
+            } else {
+                expect(type == Type::Int, Compiler::Error::MismatchedType);
+                addOp(Op::PostIncInt);
+            }
+        } else if (match(Token::Dec)) {
+            Type type = bakeExpr(ExprAction::Ref);
+            _exprStack.pop_back();
+            _exprStack.push_back(ExprEntry::Value(type));
+
+            if (type == Type::Float) {
+                addOp(Op::PostDecFloat);
+            } else {
+                expect(type == Type::Int, Compiler::Error::MismatchedType);
+                addOp(Op::PostDecInt);
+            }
         } else {
             return true;
         }
