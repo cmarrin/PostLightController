@@ -147,9 +147,7 @@ Interpreter::execute(uint16_t addr)
                 _stack.push(getConst());
                 break;
             case Op::PushIntConstS: {
-                // Index here is signed. Need to sign extend the lower 4 bits to 32 bits
-                int8_t i = (index & 0x08) ? (index | 0xf0) : index;
-                _stack.push(uint32_t(i));
+                _stack.push(index);
                 break;
             }    
             case Op::PushRef:

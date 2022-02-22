@@ -803,10 +803,10 @@ CloverCompileEngine::bakeExpr(ExprAction action)
                 default:
                     expect(false, Compiler::Error::InternalError);
                 case ExprEntry::Type::Int: {
-                    int32_t i = int32_t(entry);
-                    if (i >= -8 && i <= 7) {
+                    uint32_t i = uint32_t(int32_t(entry));
+                    if (i <= 15) {
                         addOpSingleByteIndex(Op::PushIntConstS, i);
-                    } else if (i >= -128 && i <= 127) {
+                    } else if (i <= 255) {
                         addOpInt(Op::PushIntConst, i);
                     } else {
                         // Add an int const

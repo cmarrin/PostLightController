@@ -87,17 +87,10 @@ Token Scanner::scanNumber(TokenType& tokenValue)
     if (c == C_EOF) {
         return Token::EndOfFile;
     }
-    
-    // if we hit a minus sign, see if the next thing is a number.
-    bool neg = false;
-    if (c == '-') {
-        neg = true;
-        c = get();
-    }
-    
+
 	if (!isdigit(c)) {
 		putback(c);
-		return neg ? Token::Minus : Token::EndOfFile;
+		return Token::EndOfFile;
 	}
 	
     bool hex = false;
@@ -125,16 +118,10 @@ Token Scanner::scanNumber(TokenType& tokenValue)
     scanDigits(number, hex);
     if (scanFloat(number, exp)) {
         tokenValue.number = float(number) * pow10(exp);
-        if (neg) {
-            tokenValue.number = -tokenValue.number;
-        }
         return Token::Float;
     }
     assert(exp == 0);
     tokenValue.integer = static_cast<uint32_t>(number);
-    if (neg) {
-        tokenValue.integer = -tokenValue.integer;
-    }
     return Token::Integer;
 }
 
@@ -310,10 +297,10 @@ Token Scanner::getToken(TokenType& tokenValue)
 				
 			default:
 				putback(c);
-				if ((token = scanNumber(tokenValue)) != Token::EndOfFile) {
+				if ((token = scanSpecial()) != Token::EndOfFile) {                    
 					break;
 				}
-				if ((token = scanSpecial()) != Token::EndOfFile) {                    
+				if ((token = scanNumber(tokenValue)) != Token::EndOfFile) {
 					break;
 				}
 				if ((token = scanIdentifier()) != Token::EndOfFile) {
