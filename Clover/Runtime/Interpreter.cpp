@@ -7,8 +7,6 @@
 
 #include "Interpreter.h"
 
-#include "Opcodes.h"
-
 using namespace arly;
 
 bool
@@ -237,18 +235,13 @@ Interpreter::execute(uint16_t addr)
                     case NativeFunction::None:
                         _error = Error::InvalidNativeFunction;
                         return -1;
-                    case NativeFunction::LoadColorParam: numParams = 3; break;
-                    case NativeFunction::SetAllLights: numParams = 1; break;
-                    case NativeFunction::SetLight: numParams = 2; break;
                     case NativeFunction::Animate: numParams = 1; break;
                     case NativeFunction::Param: numParams = 1; break;
-                    case NativeFunction::LoadColorComp: numParams = 2; break;
-                    case NativeFunction::StoreColorComp: numParams = 3; break;
                     case NativeFunction::Float: numParams = 1; break;
                     case NativeFunction::Int: numParams = 1; break;
                     case NativeFunction::LogInt: numParams = 1; break;
                     case NativeFunction::LogFloat: numParams = 1; break;
-                    case NativeFunction::LogColor: numParams = 1; break;
+                    case NativeFunction::LogHex: numParams = 2; break;
                     case NativeFunction::RandomInt: numParams = 2; break;
                     case NativeFunction::RandomFloat: numParams = 2; break;
                     case NativeFunction::InitArray: numParams = 3; break;
@@ -268,30 +261,6 @@ Interpreter::execute(uint16_t addr)
                     case NativeFunction::None:
                         _error = Error::InvalidNativeFunction;
                         return -1;
-                    case NativeFunction::LoadColorParam: {
-                        uint32_t c = _stack.local(0);
-                        uint32_t p = _stack.local(1);
-                        uint32_t n = _stack.local(2);
-                        if (c + n > 4) {
-                            _error = Error::AddressOutOfRange;
-                            return -1;
-                        }
-                        for ( ; n > 0; ++c, --n, p += 3) {
-                            _c[c] = Color(_params[p], _params[p + 1], _params[p + 2]);
-                        }
-                        break;
-                    }
-                    case NativeFunction::SetAllLights: {
-                        uint32_t r = _stack.local(0);
-                        setAllLights(r);
-                        break;
-                    }
-                    case NativeFunction::SetLight: {
-                        uint32_t i = _stack.local(0);
-                        uint32_t r = _stack.local(1);
-                        setLight(i, _c[r].rgb());
-                        break;
-                    }
                     case NativeFunction::Animate: {
                         uint32_t i = _stack.local(0);
                         returnVal = animate(i);
@@ -300,35 +269,6 @@ Interpreter::execute(uint16_t addr)
                     case NativeFunction::Param: {
                         uint32_t i = _stack.local(0);
                         returnVal = uint32_t(_params[i]);
-                        break;
-                    }
-                    case NativeFunction::LoadColorComp: {
-                        uint32_t c = _stack.local(0);
-                        uint32_t i = _stack.local(1);
-                        float comp;
-                        switch(i) {
-                            case 0: comp = _c[c].hue(); break;
-                            case 1: comp = _c[c].sat(); break;
-                            case 2: comp = _c[c].val(); break;
-                            default:
-                                _error = Error::InvalidColorComp;
-                                return -1;
-                        }
-                        returnVal = floatToInt(comp);
-                        break;
-                    }
-                    case NativeFunction::StoreColorComp: {
-                        uint32_t c = _stack.local(0);
-                        uint32_t i = _stack.local(1);
-                        float v = intToFloat(_stack.local(2));
-                        switch(i) {
-                            case 0: _c[c].setHue(v); break;
-                            case 1: _c[c].setSat(v); break;
-                            case 2: _c[c].setVal(v); break;
-                            default:
-                                _error = Error::InvalidColorComp;
-                                return -1;
-                        }
                         break;
                     }
                     case NativeFunction::Float: {
@@ -342,16 +282,17 @@ Interpreter::execute(uint16_t addr)
                         break;
                     }
                     case NativeFunction::LogInt: {
-                        log(_pc - 1, int32_t(_stack.local(0)));
+                        logInt(_pc - 1, -1, int32_t(_stack.local(0)));
                         break;
                     }
                     case NativeFunction::LogFloat: {
-                        logFloat(_pc - 1, intToFloat(_stack.local(0)));
+                        logFloat(_pc - 1, -1, intToFloat(_stack.local(0)));
                         break;
                     }
-                    case NativeFunction::LogColor: {
+                    case NativeFunction::LogHex: {
                         uint32_t i = _stack.local(0);
-                        logColor(_pc - 1, i, _c[i]);
+                        uint32_t v = _stack.local(0);
+                        logHex(_pc - 1, i, v);
                         break;
                     }
                     case NativeFunction::RandomInt: {
@@ -546,16 +487,6 @@ Interpreter::execute(uint16_t addr)
                 break;
             }
         }
-    }
-}
-
-void
-Interpreter::setAllLights(uint8_t r)
-{
-    uint32_t rgb = _c[r].rgb();
-    uint8_t n = numPixels();
-    for (uint8_t i = 0; i < n; ++i) {
-        setLight(i, rgb);
     }
 }
 

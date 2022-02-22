@@ -36,24 +36,24 @@ public:
 
     void logAddr(uint16_t addr) const { std::cout << "[" << addr << "]"; }
     
-    virtual void log(uint16_t addr, int32_t v) const override
+    virtual void logInt(uint16_t addr, int8_t i, int32_t v) const override
     {
         std::cout << "*** LogInt at addr ";
         logAddr(addr);
         std::cout << ": " << v << std::endl;
     }
-    virtual void logFloat(uint16_t addr, float v) const override
+    virtual void logFloat(uint16_t addr, int8_t i, float v) const override
     {
         std::cout << "*** LogFloat at addr ";
         logAddr(addr);
         std::cout << ": " << v << std::endl;
     }
 
-    virtual void logColor(uint16_t addr, uint8_t r, const Color& c) const override
+    virtual void logHex(uint16_t addr, int8_t i, uint32_t v) const override
     {
-        std::cout << "*** LogColor at addr ";
+        std::cout << "*** LogHex at addr ";
         logAddr(addr);
-        std::cout << ": c[" << uint32_t(r) << "] = (" << c.hue() << ", " << c.sat() << ", " << c.val() << ")" << std::endl;
+        std::cout << ": v[" << uint32_t(i) << "] = (0x" << std::setfill('0') << std::setw(8) << std::right << std::hex << ")" << std::endl;
     }
 
     void setROM(const std::vector<uint8_t>& buf)

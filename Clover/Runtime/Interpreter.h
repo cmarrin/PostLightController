@@ -11,9 +11,9 @@
 
 #pragma once
 
-#include "Color.h"
 #include "Opcodes.h"
 
+#include <stdlib.h>
 #include <string.h>
 
 #ifdef ARDUINO
@@ -87,26 +87,21 @@ public:
     };
     
     enum class NativeFunction {
-        None = 0,
-        LoadColorParam = 1,
-        SetAllLights = 2,
-        SetLight = 3,
-        Animate = 4,
-        Param = 5,
-        LoadColorComp = 6,
-        StoreColorComp = 7,
-        Float = 8,
-        Int = 9,
-        LogInt = 10,
-        LogFloat = 11,
-        LogColor = 12,
-        RandomInt = 13,
-        RandomFloat = 14,
-        InitArray = 15,
-        MinInt = 16,
-        MinFloat = 17,
-        MaxInt = 18,
-        MaxFloat = 19,
+        None            = 0,
+        Animate         = 1,
+        Param           = 2,
+        Float           = 3,
+        Int             = 4,
+        LogInt          = 5,
+        LogFloat        = 6,
+        LogHex          = 7,
+        RandomInt       = 8,
+        RandomFloat     = 9,
+        InitArray       = 10,
+        MinInt          = 11,
+        MinFloat        = 12,
+        MaxInt          = 13,
+        MaxFloat        = 14,
     };
     
     Interpreter() { }
@@ -138,9 +133,9 @@ protected:
     virtual uint8_t rom(uint16_t i) const = 0;
     virtual void setLight(uint8_t i, uint32_t rgb) = 0;
     virtual uint8_t numPixels() const = 0;
-    virtual void log(uint16_t addr, int32_t v) const = 0;
-    virtual void logFloat(uint16_t addr, float v) const = 0;
-    virtual void logColor(uint16_t addr, uint8_t r, const Color& c) const = 0;
+    virtual void logInt(uint16_t addr, int8_t i, int32_t v) const = 0;
+    virtual void logFloat(uint16_t addr, int8_t i, float v) const = 0;
+    virtual void logHex(uint16_t addr, int8_t i, uint32_t v) const = 0;
 
 private:    
     class Stack
@@ -350,8 +345,6 @@ private:
     
     uint8_t _params[ParamsSize];
     uint8_t _paramsSize = 0;
-
-    Color _c[4];
 
     uint32_t* _global = nullptr;
     uint16_t _globalSize = 0;

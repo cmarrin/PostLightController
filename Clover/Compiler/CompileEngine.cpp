@@ -85,27 +85,6 @@ CompileEngine::CompileEngine(std::istream* stream, std::vector<std::pair<int32_t
     : _scanner(stream, annotations)
 {
     // Add built-in native functions to _functions
-    _functions.emplace_back("LoadColorParam",
-                            Interpreter::NativeFunction::LoadColorParam,
-                            Type::None,
-                            SymbolList {
-                                { "c", 0, Type::Int },
-                                { "p", 1, Type::Int },
-                                { "n", 2, Type::Int }
-                            });
-    _functions.emplace_back("SetAllLights",
-                            Interpreter::NativeFunction::SetAllLights,
-                            Type::None,
-                            SymbolList {
-                                { "c", 0, Type::Int },
-                            });
-    _functions.emplace_back("SetLight",
-                            Interpreter::NativeFunction::SetLight,
-                            Type::None,
-                            SymbolList {
-                                { "i", 0, Type::Int },
-                                { "c", 1, Type::Int },
-                            });
     _functions.emplace_back("Animate",
                             Interpreter::NativeFunction::Animate,
                             Type::Int,
@@ -117,21 +96,6 @@ CompileEngine::CompileEngine(std::istream* stream, std::vector<std::pair<int32_t
                             Type::Int,
                             SymbolList {
                                 { "p", 0, Type::Int },
-                            });
-    _functions.emplace_back("LoadColorComp",
-                            Interpreter::NativeFunction::LoadColorComp,
-                            Type::Float,
-                            SymbolList {
-                                { "c", 0, Type::Int },
-                                { "i", 1, Type::Int },
-                            });
-    _functions.emplace_back("StoreColorComp",
-                            Interpreter::NativeFunction::StoreColorComp,
-                            Type::None,
-                            SymbolList {
-                                { "c", 0, Type::Int },
-                                { "i", 1, Type::Int },
-                                { "v", 2, Type::Float },
                             });
     _functions.emplace_back("Float",
                             Interpreter::NativeFunction::Float,
@@ -157,11 +121,12 @@ CompileEngine::CompileEngine(std::istream* stream, std::vector<std::pair<int32_t
                             SymbolList {
                                 { "i", 0, Type::Float },
                             });
-    _functions.emplace_back("LogColor",
-                            Interpreter::NativeFunction::LogColor,
+    _functions.emplace_back("LogHex",
+                            Interpreter::NativeFunction::LogHex,
                             Type::None,
                             SymbolList {
                                 { "i", 0, Type::Int },
+                                { "v", 1, Type::Int },
                             });
     _functions.emplace_back("RandomInt",
                             Interpreter::NativeFunction::RandomInt,
