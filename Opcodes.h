@@ -186,6 +186,9 @@ Opcodes:
                               sz is number of bytes in loop
     EndForEach              - End of for loop
     
+    Jump sz                 - Jump forward size bytes
+    Loop sz                 - Jump back size bytes
+    
     Call target             - Call function [target], params on stack
     CallNative Const        - Call native function [enum NativeFunction] (0..255)
     Return                  - Return from function
@@ -296,12 +299,13 @@ enum class Op: uint8_t {
     If              = 0x3a,
     Else            = 0x3b,
     EndIf           = 0x3c, // At the end of if
-    ForEach         = 0x3d,
-    EndForEach      = 0x3e, // At the end of foreach
 
     CallNative      = 0x3f,
     Return          = 0x40,
     SetFrame        = 0x41,
+    
+    Jump            = 0x42,
+    Loop            = 0x43,
     
 // 5 unused opcodes
     

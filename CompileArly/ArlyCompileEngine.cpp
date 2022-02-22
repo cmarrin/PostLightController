@@ -379,15 +379,13 @@ ArlyCompileEngine::opStatement()
 bool
 ArlyCompileEngine::forStatement()
 {
+    // FIXME: foreach is completely broken in arly.
+    // No more foreach op. It's handled with Loop now
     if (!match(Reserved::ForEach)) {
         return false;
     }
     
-    uint8_t idAddr = handleId();
     expect(Token::NewLine);
-    
-    _rom8.push_back(uint8_t(Op::ForEach));
-    _rom8.push_back(idAddr);
     
     // Output a placeholder for sz and rember where it is
     auto szIndex = _rom8.size();
@@ -399,13 +397,10 @@ ArlyCompileEngine::forStatement()
     // Update sz
     // rom is pointing at inst past 'end', we want to point at end
     auto offset = _rom8.size() - szIndex - 1;
-    expect(offset < 256, Compiler::Error::ForEachTooBig);
+    expect(offset < 256, Compiler::Error::JumpTooBig);
     
     _rom8[szIndex] = uint8_t(offset);
     
-    // Push a dummy end, mostly for the decompiler
-    _rom8.push_back(uint8_t(Op::EndForEach));
-
     return true;
 }
 
@@ -427,7 +422,7 @@ ArlyCompileEngine::ifStatement()
     
     // Update sz
     auto offset = _rom8.size() - szIndex - 1;
-    expect(offset < 256, Compiler::Error::ForEachTooBig);
+    expect(offset < 256, Compiler::Error::JumpTooBig);
     
     _rom8[szIndex] = uint8_t(offset);
     
@@ -444,7 +439,7 @@ ArlyCompileEngine::ifStatement()
         // Update sz
         // rom is pointing at inst past 'end', we want to point at end
         auto offset = _rom8.size() - szIndex - 1;
-        expect(offset < 256, Compiler::Error::ForEachTooBig);
+        expect(offset < 256, Compiler::Error::JumpTooBig);
     
         _rom8[szIndex] = uint8_t(offset);
     }

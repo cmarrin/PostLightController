@@ -199,9 +199,9 @@ Decompiler::statement()
         return Op::End;
     }
     
-    // There is an end statement at the end of an if and foreach statement
+    // There is an end statement at the end of an if statement
     // Handle them separately
-    if (Op(opInt) == Op::EndIf || Op(opInt) == Op::EndForEach) {
+    if (Op(opInt) == Op::EndIf) {
         decIndent();
         doIndent();
         outputAddr();
@@ -228,8 +228,8 @@ Decompiler::statement()
         decIndent();
     }
 
-    // Add blank like before if and foreach
-    if (opData._op == Op::ForEach || opData._op == Op::If) {
+    // Add blank like before if
+    if (opData._op == Op::If) {
         _out->append("\n");
     }
 
@@ -290,7 +290,7 @@ Decompiler::statement()
     
     _out->append("\n");
     
-    if (opData._op == Op::ForEach || opData._op == Op::If || opData._op == Op::Else) {
+    if (opData._op == Op::If || opData._op == Op::Else) {
         incIndent();
     }
     return Op(opInt);

@@ -54,7 +54,7 @@ public:
         InvalidParamCount,
         UndefinedIdentifier,
         ParamOutOfRange,
-        ForEachTooBig,
+        JumpTooBig,
         IfTooBig,
         ElseTooBig,
         TooManyConstants,

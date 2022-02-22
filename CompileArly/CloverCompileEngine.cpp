@@ -328,7 +328,7 @@ CloverCompileEngine::ifStatement()
 
     // Update sz
     auto offset = _rom8.size() - szIndex - 1;
-    expect(offset < 256, Compiler::Error::ForEachTooBig);
+    expect(offset < 256, Compiler::Error::JumpTooBig);
     _rom8[szIndex] = uint8_t(offset);
     
     if (match(Reserved::Else)) {
@@ -343,7 +343,7 @@ CloverCompileEngine::ifStatement()
         // Update sz
         // rom is pointing at inst past 'end', we want to point at end
         auto offset = _rom8.size() - szIndex - 1;
-        expect(offset < 256, Compiler::Error::ForEachTooBig);
+        expect(offset < 256, Compiler::Error::JumpTooBig);
         _rom8[szIndex] = uint8_t(offset);
     }
     
@@ -367,6 +367,8 @@ CloverCompileEngine::forStatement()
         return false;
     }
 
+    enterJumpContext();
+    
     expect(Token::OpenParen);
 
     std::string id;
@@ -374,29 +376,43 @@ CloverCompileEngine::forStatement()
 
     expect(Token::Colon);
 
-    arithmeticExpression();
-    expect(bakeExpr(ExprAction::Right) == Type::Int, Compiler::Error::ExpectedInt);
-    expect(Token::CloseParen);
+    // Loop starts with an if test of id < expr
+    uint16_t startAddr = _rom8.size();
     
-    // Now we have the count pushed on TOS. Generate the foreach op
     Symbol sym;
     expect(findSymbol(id, sym), Compiler::Error::UndefinedIdentifier);
-    addOpId(Op::ForEach, sym.addr());
-
-    // Output a placeholder for sz and rember where it is
-    auto szIndex = _rom8.size();
-    addInt(0);
+    addOpId(Op::Push, sym.addr());
+    
+    arithmeticExpression();
+    expect(bakeExpr(ExprAction::Right) == Type::Int, Compiler::Error::ExpectedInt);
+    
+    // We do the inverse test and break if true
+    addOp(Op::GEInt);
+    addOpInt(Op::If, 2);
+    
+    addJumpEntry(JumpEntry::Type::Break);
+    
+    addOp(Op::EndIf);
+    
+    expect(Token::CloseParen);
     
     statement();
+
+    // Add the increment of the iterator
+    uint16_t loopAddr = _rom8.size();
+    addOpId(Op::PushRef, sym.addr());
+    addOp(Op::PreIncInt);
+    addOp(Op::Drop);
     
-    // Update sz
-    // rom is pointing at inst past 'end', we want to point at end
-    auto offset = _rom8.size() - szIndex - 1;
-    expect(offset < 256, Compiler::Error::ForEachTooBig);
-    _rom8[szIndex] = uint8_t(offset);
+    // Loop back to the beginning
+    addOp(Op::Loop);
+
+    uint16_t offset = uint16_t(_rom8.size()) - startAddr + 1;
+    expect(offset < 256, Compiler::Error::JumpTooBig);
+    addInt(uint8_t(offset));
     
-    // Push EndForEach so we can do the looping and count checking
-    addOp(Op::EndForEach);
+    // Now resolve all the jumps
+    exitJumpContext(loopAddr);
 
     return true;
 }
@@ -964,4 +980,36 @@ CloverCompileEngine::elementSize(Type type)
     uint8_t structIndex = uint8_t(type) - 0x80;
     expect(structIndex < _structs.size(), Compiler::Error::InternalError);
     return _structs[structIndex].size();
+}
+
+void
+CloverCompileEngine::exitJumpContext(uint16_t loopAddr)
+{
+    expect(!_jumpList.empty(), Compiler::Error::InternalError);
+
+    // Go through all the entries in the last _jumpList entry and fill in
+    // the addresses. The current address (_rom8.size()) is used if this
+    // is a break and the passed loopAddr is used if this is a continue
+    uint16_t breakAddr = _rom8.size();
+    for (const auto& it : _jumpList.back()) {
+        expect(it._addr < breakAddr, Compiler::Error::InternalError);
+        
+        uint16_t offset = ((it._type == JumpEntry::Type::Break) ? breakAddr : loopAddr) - it._addr - 1;
+        expect(offset < 256, Compiler::Error::JumpTooBig);
+        expect(_rom8[it._addr] == 0, Compiler::Error::InternalError);
+        _rom8[it._addr] = offset;
+    }
+    
+    _jumpList.pop_back();
+}
+
+void
+CloverCompileEngine::addJumpEntry(JumpEntry::Type type)
+{
+    expect(!_jumpList.empty(), Compiler::Error::InternalError);
+    
+    addOp(Op::Jump);
+    uint16_t addr = _rom8.size();
+    addInt(0);
+    _jumpList.back().emplace_back(type, addr);
 }

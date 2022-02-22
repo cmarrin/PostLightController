@@ -97,8 +97,7 @@ function int multicolorLoop()
             // Restore the Val of the current color
             StoreColorComp(multiColorIndex, 2, led.max);
 
-            multiColorIndex += 1;
-            if (multiColorIndex >= 4) {
+            if (++multiColorIndex >= 4) {
                 multiColorIndex = 0;
             }
 
@@ -116,8 +115,7 @@ function int multicolorLoop()
         return Delay;
     }
 
-    if (durationCur < durationMax) {
-        durationCur += 1;
+    if (++durationCur < durationMax) {
         return Delay;
     }
 

@@ -372,15 +372,33 @@ private:
                      , Value
                      > _variant;
     };
-
+    
     const Struct& structFromType(Type);
     void findStructElement(Type, const std::string& id, uint8_t& index, Type&);
 
+    struct JumpEntry
+    {
+        enum class Type { Break, Continue };
+        
+        JumpEntry(Type type, uint16_t addr) : _type(type), _addr(addr) { }
+        
+        Type _type;
+        uint16_t _addr;
+    };
+
+    void enterJumpContext() { _jumpList.emplace_back(); }
+    void exitJumpContext(uint16_t loopAddr);
+    void addJumpEntry(JumpEntry::Type);
+    
     std::vector<Struct> _structs;
     std::vector<ExprEntry> _exprStack;
-    
-    // built-in variables. These can be color registers, functions, arrays, etc.
     std::vector<Symbol> _builtins;
+    
+    // The jump list is an array of arrays of JumpEntries. The outermost array
+    // is a stack of active looping statements (for, loop, etc.). Each of these
+    // has an array of break or continue statements that need to be resolved
+    // when the looping statement ends.
+    std::vector<std::vector<JumpEntry>> _jumpList;
 };
 
 }

@@ -115,7 +115,7 @@ static void showError(arly::Compiler::Error error, arly::Token token, const std:
         case arly::Compiler::Error::InvalidParamCount: err = "invalid param count"; break;
         case arly::Compiler::Error::UndefinedIdentifier: err = "undefined identifier"; break;
         case arly::Compiler::Error::ParamOutOfRange: err = "param must be 0..15"; break;
-        case arly::Compiler::Error::ForEachTooBig: err = "too many instructions in foreach"; break;
+        case arly::Compiler::Error::JumpTooBig: err = "tried to jump too far"; break;
         case arly::Compiler::Error::IfTooBig: err = "too many instructions in if"; break;
         case arly::Compiler::Error::ElseTooBig: err = "too many instructions in else"; break;
         case arly::Compiler::Error::TooManyConstants: err = "too many constants"; break;

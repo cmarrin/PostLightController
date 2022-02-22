@@ -208,37 +208,13 @@ Interpreter::execute(uint16_t addr)
                 // This is the end of an if, always ignore it
                 break;
 
-            case Op::ForEach:
-                if (_foreachSz >= 0) {
-                    // Can't do nested for loops
-                    _error = Error::NestedForEachNotAllowed;
-                    return -1;
-                }
-                
-                _foreachId = getId();
-                _foreachSz = getSz();
-                _foreachCount = int32_t(_stack.pop());
-                _foreachLoopAddr = _pc;
-                
-                // See if we've already gone past count
-                if (int32_t(loadInt(_foreachId)) >= _foreachCount) {
-                    _pc += _foreachSz + 1;
-                    _foreachSz = -1;
-                }
+            case Op::Jump:
+                _pc += getSz();
                 break;
-            case Op::EndForEach: {
-                // End of loop. Iterate and check for end
-                int32_t i = loadInt(_foreachId) + 1;
-                storeInt(_foreachId, i);
-                if (i < _foreachCount) {
-                    _pc = _foreachLoopAddr;
-                } else {
-                    // Finished loop
-                    _foreachSz = -1;
-                }
+            case Op::Loop:
+                _pc -= getSz();
                 break;
-            }
-            
+
             case Op::Call:
                 targ = uint16_t(getId()) | (uint16_t(index)  << 8);
                 _stack.push(_pc);

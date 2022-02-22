@@ -29,12 +29,14 @@ static std::vector<OpData> _opcodes = {
     
     { "if",             Op::If              , OpParams::Sz },
     { "else",           Op::Else            , OpParams::Sz },
-    { "foreach",        Op::ForEach         , OpParams::Id_Sz },
 
     { "Call",           Op::Call            , OpParams::Target },
     { "CallNative",     Op::CallNative      , OpParams::Const },
     { "Return",         Op::Return          , OpParams::None },
     { "SetFrame",       Op::SetFrame        , OpParams::P_L },
+
+    { "Jump",           Op::Jump            , OpParams::Sz },
+    { "Loop",           Op::Loop            , OpParams::Sz },
     
     { "Or",             Op::Or              , OpParams::None },
     { "Xor",            Op::Xor             , OpParams::None },
