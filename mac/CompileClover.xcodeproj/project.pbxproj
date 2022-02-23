@@ -48,7 +48,7 @@
 		49BDF4D727C5B5BE00325407 /* PostLightController.ino */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = PostLightController.ino; path = ../PostLightController.ino; sourceTree = "<group>"; };
 		49BDF4D827C5B5BE00325407 /* Flash.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Flash.cpp; path = ../Flash.cpp; sourceTree = "<group>"; };
 		49BDF4D927C5B5BE00325407 /* Effect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Effect.h; path = ../Effect.h; sourceTree = "<group>"; };
-		49DAA643278B212E00F67EEB /* CompileArly */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = CompileArly; sourceTree = BUILT_PRODUCTS_DIR; };
+		49DAA643278B212E00F67EEB /* CompileClover */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = CompileClover; sourceTree = BUILT_PRODUCTS_DIR; };
 		49DAA646278B212E00F67EEB /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		49DAA64E278B2E5500F67EEB /* PostLightEffects.arly */ = {isa = PBXFileReference; lastKnownFileType = text; path = PostLightEffects.arly; sourceTree = "<group>"; };
 		49DAA64F278B3AFE00F67EEB /* Compiler.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Compiler.cpp; path = ../Clover/Compiler/Compiler.cpp; sourceTree = "<group>"; };
@@ -99,7 +99,7 @@
 		49DAA644278B212E00F67EEB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				49DAA643278B212E00F67EEB /* CompileArly */,
+				49DAA643278B212E00F67EEB /* CompileClover */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -141,9 +141,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		49DAA642278B212E00F67EEB /* CompileArly */ = {
+		49DAA642278B212E00F67EEB /* CompileClover */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 49DAA64A278B212E00F67EEB /* Build configuration list for PBXNativeTarget "CompileArly" */;
+			buildConfigurationList = 49DAA64A278B212E00F67EEB /* Build configuration list for PBXNativeTarget "CompileClover" */;
 			buildPhases = (
 				49DAA63F278B212E00F67EEB /* Sources */,
 				49DAA640278B212E00F67EEB /* Frameworks */,
@@ -153,9 +153,9 @@
 			);
 			dependencies = (
 			);
-			name = CompileArly;
+			name = CompileClover;
 			productName = CompileArly;
-			productReference = 49DAA643278B212E00F67EEB /* CompileArly */;
+			productReference = 49DAA643278B212E00F67EEB /* CompileClover */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -172,7 +172,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 49DAA63E278B212E00F67EEB /* Build configuration list for PBXProject "CompileArly" */;
+			buildConfigurationList = 49DAA63E278B212E00F67EEB /* Build configuration list for PBXProject "CompileClover" */;
 			compatibilityVersion = "Xcode 13.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -185,7 +185,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				49DAA642278B212E00F67EEB /* CompileArly */,
+				49DAA642278B212E00F67EEB /* CompileClover */,
 			);
 		};
 /* End PBXProject section */
@@ -340,7 +340,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		49DAA63E278B212E00F67EEB /* Build configuration list for PBXProject "CompileArly" */ = {
+		49DAA63E278B212E00F67EEB /* Build configuration list for PBXProject "CompileClover" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				49DAA648278B212E00F67EEB /* Debug */,
@@ -349,7 +349,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		49DAA64A278B212E00F67EEB /* Build configuration list for PBXNativeTarget "CompileArly" */ = {
+		49DAA64A278B212E00F67EEB /* Build configuration list for PBXNativeTarget "CompileClover" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				49DAA64B278B212E00F67EEB /* Debug */,

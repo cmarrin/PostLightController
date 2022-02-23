@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "49DAA642278B212E00F67EEB"
-               BuildableName = "CompileArly"
-               BlueprintName = "CompileArly"
-               ReferencedContainer = "container:CompileArly.xcodeproj">
+               BuildableName = "CompileClover"
+               BlueprintName = "CompileClover"
+               ReferencedContainer = "container:CompileClover.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -46,9 +46,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "49DAA642278B212E00F67EEB"
-            BuildableName = "CompileArly"
-            BlueprintName = "CompileArly"
-            ReferencedContainer = "container:CompileArly.xcodeproj">
+            BuildableName = "CompileClover"
+            BlueprintName = "CompileClover"
+            ReferencedContainer = "container:CompileClover.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <CommandLineArguments>
@@ -85,9 +85,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "49DAA642278B212E00F67EEB"
-            BuildableName = "CompileArly"
-            BlueprintName = "CompileArly"
-            ReferencedContainer = "container:CompileArly.xcodeproj">
+            BuildableName = "CompileClover"
+            BlueprintName = "CompileClover"
+            ReferencedContainer = "container:CompileClover.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
