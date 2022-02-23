@@ -7,8 +7,9 @@
 #pragma once
 
 #include "Effect.h"
-#include "Interpreter.h"
+#include <Clover.h>
 #include <EEPROM.h>
+#include <Adafruit_NeoPixel.h>
 
 class Device : public arly::Interpreter
 {
@@ -38,14 +39,14 @@ public:
 		Serial.print(F("]"));
 	}
     
-    virtual void log(uint16_t addr, int32_t v) const override
+    virtual void logInt(uint16_t addr, int8_t, int32_t v) const override
     {
 		Serial.print(F("*** LogInt at addr "));
         logAddr(addr);
 		Serial.print(F(": "));
 		Serial.println(v);
     }
-    virtual void logFloat(uint16_t addr, float v) const override
+    virtual void logFloat(uint16_t addr, int8_t, float v) const override
     {
 		Serial.print(F("*** LogFloat at addr "));
         logAddr(addr);
@@ -53,19 +54,15 @@ public:
 		Serial.println(v);
     }
 
-    virtual void logColor(uint16_t addr, uint8_t r, const Color& c) const override
+    virtual void logHex(uint16_t addr, int8_t i, uint32_t v) const override
     {
-		Serial.print(F("*** LogColor at addr "));
+		Serial.print(F("*** LogHex at addr "));
         logAddr(addr);
-        Serial.print(F(": c["));
-		Serial.print(r);
+        Serial.print(F(": v["));
+		Serial.print(i);
 		Serial.print(F("] = ("));
-		Serial.print(c.hue());
-		Serial.print(F(", "));
-		Serial.print(c.sat());
-		Serial.print(F(", "));
-		Serial.print(c.val());
-		Serial.println(F(")"));
+		Serial.print(v, HEX);
+			Serial.println(F(")"));
     }
 
 private:
