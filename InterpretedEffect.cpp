@@ -4,9 +4,9 @@
 
 #include "InterpretedEffect.h"
 
-InterpretedEffect::InterpretedEffect(Adafruit_NeoPixel* pixels)
+InterpretedEffect::InterpretedEffect(arly::NativeModule** mod, uint32_t modSize, Adafruit_NeoPixel* pixels)
 	: Effect(pixels)
-	, _device(pixels)
+	, _device(mod, modSize, pixels)
 {
 }
 

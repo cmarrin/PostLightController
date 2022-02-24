@@ -65,6 +65,7 @@ Hue is an angle on the color wheel. A 0-360 degree value is obtained with hue / 
 
 #include "Flash.h"
 #include "InterpretedEffect.h"
+#include "NativeColor.h"
 
 constexpr int LEDPin = 6;
 constexpr int NumPixels = 8;
@@ -74,6 +75,8 @@ constexpr char EndChar = ')';
 constexpr unsigned long SerialTimeOut = 2000; // ms
 constexpr int32_t MaxDelay = 1000; // ms
 
+static void setLight(uint8_t i, uint32_t rgb);
+
 class PostLightController
 {
 public:
@@ -81,10 +84,18 @@ public:
 		: _pixels(NumPixels, LEDPin, NEO_GRB + NEO_KHZ800)
 		, _serial(11, 10)
 		, _flashEffect(&_pixels)
-		, _interpretedEffect(&_pixels)
+        , _color(::setLight, _pixels.numPixels())
+        , _modules(&_color)
+		, _interpretedEffect(&_modules, 1, &_pixels)
 	{ }
 	~PostLightController() { }
 	
+    void setLight(uint8_t i, uint32_t rgb)
+    {
+        _pixels.setPixelColor(i, rgb);
+		_pixels.show();
+    }
+    
 	void setup()
 	{
 	    Serial.begin(115200);
@@ -352,6 +363,8 @@ private:
 	Effect* _currentEffect = nullptr;
 	
 	Flash _flashEffect;
+    arly::NativeColor _color;
+    arly::NativeModule* _modules;
 	InterpretedEffect _interpretedEffect;
 	
 	uint8_t _buf[BufferSize];
@@ -370,6 +383,11 @@ private:
 };
 
 PostLightController controller;
+
+static void setLight(uint8_t i, uint32_t rgb)
+{
+    controller.setLight(i, rgb);
+}
 
 void setup()
 {

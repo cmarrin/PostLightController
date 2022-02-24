@@ -8,6 +8,7 @@
 #include "Compiler.h"
 #include "Decompiler.h"
 #include "Interpreter.h"
+#include "NativeColor.h"
 #include <iostream>
 #include <filesystem>
 #include <fstream>
@@ -19,21 +20,14 @@
 class Simulator : public arly::Interpreter
 {
 public:
+    Simulator(arly::NativeModule** mod, uint32_t modSize) : Interpreter(mod, modSize) { }
+    virtual ~Simulator() { }
+    
     virtual uint8_t rom(uint16_t i) const override
     {
         return (i < 1024) ? _rom[i] : 0;
     }
     
-    virtual void setLight(uint8_t i, uint32_t rgb) override
-    {
-        printf("    setLight[%d] <== 0x%08x\n", i, rgb);
-    }
-    
-    virtual uint8_t numPixels() const override
-    {
-        return 8;
-    }
-
     void logAddr(uint16_t addr) const { std::cout << "[" << addr << "]"; }
     
     virtual void logInt(uint16_t addr, int8_t i, int32_t v) const override
@@ -143,6 +137,11 @@ static void showError(arly::Compiler::Error error, arly::Token token, const std:
 
 static constexpr int NumLoops = 10;
 
+void setLight(uint8_t i, uint32_t rgb)
+{
+    printf("    setLight[%d] <== 0x%08x\n", i, rgb);
+}
+
 int main(int argc, char * const argv[])
 {
     std::cout << "Arly Compiler v0.1\n\n";
@@ -191,14 +190,16 @@ int main(int argc, char * const argv[])
     
     randomSeed(uint32_t(clock()));
 
-    compiler.compile(&stream, arly::Compiler::Language::Arly, executable);
+    arly::NativeColor nativeColor(setLight, 8);
+    
+    compiler.compile(&stream, arly::Compiler::Language::Arly, executable, { &nativeColor });
     if (compiler.error() != arly::Compiler::Error::None) {
         showError(compiler.error(), compiler.expectedToken(), compiler.expectedString(), compiler.lineno(), compiler.charno());
         
         std::cout << "\n\nTrying Clover...\n";
         
         stream.seekg(0);
-        compiler.compile(&stream, arly::Compiler::Language::Clover, executable, &annotations);
+        compiler.compile(&stream, arly::Compiler::Language::Clover, executable, { &nativeColor }, &annotations);
 
         if (compiler.error() != arly::Compiler::Error::None) {
             showError(compiler.error(), compiler.expectedToken(), compiler.expectedString(), compiler.lineno(), compiler.charno());
@@ -280,7 +281,9 @@ int main(int argc, char * const argv[])
     
     // Execute if needed
     if (execute) {
-        Simulator sim;
+        arly::NativeModule* mod = &nativeColor;
+        Simulator sim(&mod, 1);
+        
         sim.setROM(executable);
         
         for (const Test& test : Tests) {

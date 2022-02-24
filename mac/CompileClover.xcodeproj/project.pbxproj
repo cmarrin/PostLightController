@@ -11,6 +11,8 @@
 		491DED262793225B00D007C2 /* Interpreter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 491DED242793225B00D007C2 /* Interpreter.cpp */; };
 		491DED29279385B700D007C2 /* Color.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 491DED27279385B700D007C2 /* Color.cpp */; };
 		4963436C27A81DA200ABF09F /* CompileEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4963436B27A81DA200ABF09F /* CompileEngine.cpp */; };
+		49BDF4DF27C6EBF700325407 /* NativeColor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49BDF4DD27C6EBF700325407 /* NativeColor.cpp */; };
+		49BDF4E227C7CF7A00325407 /* NativeCore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49BDF4E027C7CF7A00325407 /* NativeCore.cpp */; };
 		49DAA647278B212E00F67EEB /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49DAA646278B212E00F67EEB /* main.cpp */; };
 		49DAA651278B3AFE00F67EEB /* Compiler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49DAA64F278B3AFE00F67EEB /* Compiler.cpp */; };
 		49DAA657278CD00500F67EEB /* Scanner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49DAA656278CD00500F67EEB /* Scanner.cpp */; };
@@ -45,9 +47,13 @@
 		49BDF4D427C5B5BE00325407 /* Flash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Flash.h; path = ../Flash.h; sourceTree = "<group>"; };
 		49BDF4D527C5B5BE00325407 /* InterpretedEffect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InterpretedEffect.h; path = ../InterpretedEffect.h; sourceTree = "<group>"; };
 		49BDF4D627C5B5BE00325407 /* Effect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Effect.cpp; path = ../Effect.cpp; sourceTree = "<group>"; };
-		49BDF4D727C5B5BE00325407 /* PostLightController.ino */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = PostLightController.ino; path = ../PostLightController.ino; sourceTree = "<group>"; };
+		49BDF4D727C5B5BE00325407 /* PostLightController.ino */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = PostLightController.ino; path = ../PostLightController.ino; sourceTree = "<group>"; };
 		49BDF4D827C5B5BE00325407 /* Flash.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Flash.cpp; path = ../Flash.cpp; sourceTree = "<group>"; };
 		49BDF4D927C5B5BE00325407 /* Effect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Effect.h; path = ../Effect.h; sourceTree = "<group>"; };
+		49BDF4DD27C6EBF700325407 /* NativeColor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NativeColor.cpp; path = ../NativeColor.cpp; sourceTree = "<group>"; };
+		49BDF4DE27C6EBF700325407 /* NativeColor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NativeColor.h; path = ../NativeColor.h; sourceTree = "<group>"; };
+		49BDF4E027C7CF7A00325407 /* NativeCore.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NativeCore.cpp; path = ../Clover/Runtime/NativeCore.cpp; sourceTree = "<group>"; };
+		49BDF4E127C7CF7A00325407 /* NativeCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NativeCore.h; path = ../Clover/Runtime/NativeCore.h; sourceTree = "<group>"; };
 		49DAA643278B212E00F67EEB /* CompileClover */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = CompileClover; sourceTree = BUILT_PRODUCTS_DIR; };
 		49DAA646278B212E00F67EEB /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		49DAA64E278B2E5500F67EEB /* PostLightEffects.arly */ = {isa = PBXFileReference; lastKnownFileType = text; path = PostLightEffects.arly; sourceTree = "<group>"; };
@@ -124,6 +130,10 @@
 				4963436A27A81DA200ABF09F /* CompileEngine.h */,
 				49DAA64F278B3AFE00F67EEB /* Compiler.cpp */,
 				49DAA650278B3AFE00F67EEB /* Compiler.h */,
+				49BDF4DD27C6EBF700325407 /* NativeColor.cpp */,
+				49BDF4DE27C6EBF700325407 /* NativeColor.h */,
+				49BDF4E027C7CF7A00325407 /* NativeCore.cpp */,
+				49BDF4E127C7CF7A00325407 /* NativeCore.h */,
 				49DAA65B2791B78A00F67EEB /* ArlyCompileEngine.cpp */,
 				49DAA65C2791B78A00F67EEB /* ArlyCompileEngine.h */,
 				49DAA65F2791C0A500F67EEB /* Decompiler.cpp */,
@@ -195,12 +205,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				49BDF4E227C7CF7A00325407 /* NativeCore.cpp in Sources */,
 				491DED29279385B700D007C2 /* Color.cpp in Sources */,
 				49DAA6602791C0A500F67EEB /* Decompiler.cpp in Sources */,
 				49DAA657278CD00500F67EEB /* Scanner.cpp in Sources */,
 				491A56E727B4946700AC5FBC /* CloverCompileEngine.cpp in Sources */,
 				491DED262793225B00D007C2 /* Interpreter.cpp in Sources */,
 				49DAA65D2791B78A00F67EEB /* ArlyCompileEngine.cpp in Sources */,
+				49BDF4DF27C6EBF700325407 /* NativeColor.cpp in Sources */,
 				4963436C27A81DA200ABF09F /* CompileEngine.cpp in Sources */,
 				49DAA647278B212E00F67EEB /* main.cpp in Sources */,
 				49DAA651278B3AFE00F67EEB /* Compiler.cpp in Sources */,

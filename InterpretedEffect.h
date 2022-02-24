@@ -7,6 +7,7 @@
 #pragma once
 
 #include "Effect.h"
+#include "NativeColor.h"
 #include <Clover.h>
 #include <EEPROM.h>
 #include <Adafruit_NeoPixel.h>
@@ -14,24 +15,16 @@
 class Device : public arly::Interpreter
 {
 public:
-	Device(Adafruit_NeoPixel* pixels) : _pixels(pixels) { }
+	Device(arly::NativeModule** mod, uint32_t modSize, Adafruit_NeoPixel* pixels)
+        : Interpreter(mod, modSize)
+        , _pixels(pixels)
+    { }
 	
     virtual uint8_t rom(uint16_t i) const override
     {
         return EEPROM[i];
     }
     
-    virtual void setLight(uint8_t i, uint32_t rgb) override
-    {
-        _pixels->setPixelColor(i, rgb);
-		_pixels->show();
-    }
-    
-    virtual uint8_t numPixels() const override
-    {
-        return _pixels->numPixels();
-    }
-
     void logAddr(uint16_t addr) const
 	{
 		Serial.print(F("["));
@@ -62,7 +55,7 @@ public:
 		Serial.print(i);
 		Serial.print(F("] = ("));
 		Serial.print(v, HEX);
-			Serial.println(F(")"));
+        Serial.println(F(")"));
     }
 
 private:
@@ -72,7 +65,7 @@ private:
 class InterpretedEffect : public Effect
 {
 public:
-	InterpretedEffect(Adafruit_NeoPixel* pixels);
+	InterpretedEffect(arly::NativeModule** mod, uint32_t modSize, Adafruit_NeoPixel* pixels);
 	virtual ~InterpretedEffect() {}
 	
 	virtual bool init(uint8_t cmd, const uint8_t* buf, uint32_t size) override;
