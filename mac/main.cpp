@@ -122,6 +122,7 @@ static void showError(arly::Compiler::Error error, arly::Token token, const std:
         case arly::Compiler::Error::StackTooBig: err = "stack too big"; break;
         case arly::Compiler::Error::MismatchedType: err = "mismatched type"; break;
         case arly::Compiler::Error::WrongNumberOfArgs: err = "wrong number of args"; break;
+        case arly::Compiler::Error::OnlyAllowedInLoop: err = "break/continue only allowed in loop"; break;
     }
     
     if (token == arly::Token::EndOfFile) {
