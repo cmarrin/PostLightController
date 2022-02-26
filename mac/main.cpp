@@ -311,7 +311,6 @@ int main(int argc, char * const argv[])
                 switch(sim.error()) {
                     case arly::Interpreter::Error::None: err = "internal error"; break;
                     case arly::Interpreter::Error::CmdNotFound: err = "command not found"; break;
-                    case arly::Interpreter::Error::NestedForEachNotAllowed: err = "nested foreach not allowed"; break;
                     case arly::Interpreter::Error::UnexpectedOpInIf: err = "unexpected op in if (internal error)"; break;
                     case arly::Interpreter::Error::InvalidOp: err = "invalid opcode"; break;
                     case arly::Interpreter::Error::InvalidNativeFunction: err = "invalid native function"; break;
@@ -320,7 +319,7 @@ int main(int argc, char * const argv[])
                     case arly::Interpreter::Error::StackUnderrun: err = "stack underrun"; break;
                     case arly::Interpreter::Error::StackOutOfRange: err = "stack access out of range"; break;
                     case arly::Interpreter::Error::AddressOutOfRange: err = "address out of range"; break;
-                    case arly::Interpreter::Error::InvalidColorComp: err = "invalid color component"; break;
+                    case arly::Interpreter::Error::InvalidModuleOp: err = "invalid operation in module"; break;
                     case arly::Interpreter::Error::ExpectedSetFrame: err = "expected SetFrame as first function op"; break;
                     case arly::Interpreter::Error::NotEnoughArgs: err = "not enough args on stack"; break;
                     case arly::Interpreter::Error::WrongNumberOfArgs: err = "wrong number of args"; break;

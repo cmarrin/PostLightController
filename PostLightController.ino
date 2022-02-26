@@ -108,7 +108,7 @@ public:
 	    _pixels.begin(); // This initializes the NeoPixel library.
 	    _pixels.setBrightness(255);
 		
-		Serial.println(F("Post Light Controller v0.1"));
+		Serial.println(F("Post Light Controller v0.2"));
 	
 		showStatus(StatusColor::Green, 3, 2);
 		
@@ -136,7 +136,7 @@ public:
 		if (_state != State::NotCapturing) {
 			if (newTime - _timeSinceLastChar > SerialTimeOut) {
 				_state = State::NotCapturing;
-				Serial.print(F("***** Too Long since last char, resetting\n"));
+				Serial.print(F("***** char timeout, rst\n"));
 				showStatus(StatusColor::Red, 3, 2);
 				_state = State::NotCapturing;
 			}
@@ -176,7 +176,7 @@ public:
 				case State::Size:
 					_bufSize = c - '0';
 					if (_bufSize > BufferSize) {
-						Serial.print(F("Buffer size too big. Size="));
+						Serial.print(F("Buf too big. Size="));
 						Serial.println(_bufSize);
 						showStatus(StatusColor::Red, 6, 1);
 						_state = State::NotCapturing;
@@ -202,7 +202,7 @@ public:
 				}
 				case State::LeadOut:
 					if (c != EndChar) {
-						Serial.println(F("Expected lead-out char"));
+						Serial.println(F("Exp lead-out"));
 						showStatus(StatusColor::Red, 6, 1);
 						_state = State::NotCapturing;
 					} else {
@@ -211,7 +211,7 @@ public:
 						_expectedChecksum = (_expectedChecksum & 0x3f) + 0x30;
 						
 						if (_expectedChecksum != _actualChecksum) {
-							Serial.print(F("CRC ERROR: expected="));
+							Serial.print(F("CRC ERROR: exp="));
 							Serial.print(_expectedChecksum);
 							Serial.print(F(", actual="));
 							Serial.print(_actualChecksum);
@@ -236,14 +236,14 @@ public:
 									
 									uint16_t startAddr = uint16_t(_buf[0]) + (uint16_t(_buf[1]) << 8);
 									if (startAddr + _bufSize - 2 > 1024) {
-										Serial.print(F("EEPROM buffer out of range: addr="));
+										Serial.print(F("inv EEPROM addr: addr="));
 										Serial.print(startAddr);
 										Serial.print(F(", size="));
 										Serial.println(_bufSize - 2);
 										showStatus(StatusColor::Red, 5, 5);
 										_state = State::NotCapturing;
 									} else {
-										Serial.print(F("Sending executable to EEPROM: addr="));
+										Serial.print(F("exec => EEPROM: addr="));
 										Serial.print(startAddr);
 										Serial.print(F(", size="));
 										Serial.println(_bufSize - 2);
@@ -260,37 +260,35 @@ public:
 									String errorMsg;
 									switch(_interpretedEffect.error()) {
 								        case Device::Error::None:
-										errorMsg = F("*** NONE ***");
+										errorMsg = F("???");
 										break;
 								        case Device::Error::CmdNotFound:
-										errorMsg = String(F("unrecognized command: '")) + String(char(_cmd)) + String(F("'"));
+										errorMsg = String(F("bad cmd: '")) + String(char(_cmd)) + String(F("'"));
 										break;
-								        case Device::Error::NestedForEachNotAllowed:
-										errorMsg = F("nested foreach not allowed");
 										break;
 								        case Device::Error::UnexpectedOpInIf:
-										errorMsg = F("unexpected op in If");
+										errorMsg = F("bad op in if");
 										break;
 										case Device::Error::InvalidOp:
-										errorMsg = F("invalid op");
+										errorMsg = F("inv op");
 										break;
 								        case Device::Error::OnlyMemAddressesAllowed:
-										errorMsg = F("only memory addresses allowed");
+										errorMsg = F("mem addrs only");
 										break;
 								        case Device::Error::AddressOutOfRange:
-										errorMsg = F("address out of range");
+										errorMsg = F("addr out of rng");
 										break;
-								        case Device::Error::InvalidColorComp:
-										errorMsg = F("invalid color component");
+								        case Device::Error::InvalidModuleOp:
+										errorMsg = F("inv mod op");
 										break;
 								        case Device::Error::ExpectedSetFrame:
-										errorMsg = F("expected SetFrame as first function op");
+										errorMsg = F("SetFrame needed");
 										break;
 								        case Device::Error::InvalidNativeFunction:
-										errorMsg = F("invalid native function");
+										errorMsg = F("inv native func");
 										break;
 								        case Device::Error::NotEnoughArgs:
-										errorMsg = F("not enough args on stack");
+										errorMsg = F("not enough args");
 										break;
 								        case Device::Error::StackOverrun:
 										errorMsg = F("can't call, stack full");
@@ -299,14 +297,14 @@ public:
 										errorMsg = F("stack underrun");
 										break;
 								        case Device::Error::StackOutOfRange:
-										errorMsg = F("stack access out of range");
+										errorMsg = F("stack out of range");
 										break;
                                         case Device::Error::WrongNumberOfArgs:
-										errorMsg = F("wrong number of args to init");
+										errorMsg = F("wrong arg cnt");
 										break;
 									}
 
-									Serial.print(F("Interpreted effect error: "));
+									Serial.print(F("Interp fx err: "));
 									Serial.println(errorMsg);
 									showStatus(StatusColor::Red, 5, 1);
 									_state = State::NotCapturing;

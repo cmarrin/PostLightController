@@ -112,7 +112,7 @@ NativeColor::call(Interpreter* interp, uint8_t id)
                 case 1: comp = _c[c].sat(); break;
                 case 2: comp = _c[c].val(); break;
                 default:
-                    interp->setError(Interpreter::Error::InvalidColorComp);
+                    interp->setError(Interpreter::Error::InvalidModuleOp);
                     return 0;
             }
             return floatToInt(comp);
@@ -126,7 +126,7 @@ NativeColor::call(Interpreter* interp, uint8_t id)
                 case 1: _c[c].setSat(v); break;
                 case 2: _c[c].setVal(v); break;
                 default:
-                    interp->setError(Interpreter::Error::InvalidColorComp);
+                    interp->setError(Interpreter::Error::InvalidModuleOp);
                     break;
             }
             return 0;
