@@ -77,15 +77,15 @@ private:
 
 struct Test
 {
-    char _cmd;
+    const char* _cmd;
     std::vector<uint8_t> _buf;
 };
 
 static std::vector<Test> Tests = {
-    { 'p', { 40, 224, 250, 7, 7 } },
-    { 'c', { 240, 224, 64 } },
-    { 'f', { 20, 224, 200, 0 } },
-    { 'm', { 40, 224, 250,  80, 224, 250,  120, 224, 250,  180, 224, 250, 1 } },
+    { "p", { 40, 224, 250, 7, 7 } },
+    { "c", { 240, 224, 64 } },
+    { "f", { 20, 224, 200, 0 } },
+    { "m", { 40, 224, 250,  80, 224, 250,  120, 224, 250,  180, 224, 250, 1 } },
 };
 
 static void showError(arly::Compiler::Error error, arly::Token token, const std::string& str, uint32_t lineno, uint32_t charno)
@@ -102,7 +102,6 @@ static void showError(arly::Compiler::Error error, arly::Token token, const std:
         case arly::Compiler::Error::ExpectedOpcode: err = "expected opcode"; break;
         case arly::Compiler::Error::ExpectedEnd: err = "expected 'end'"; break;
         case arly::Compiler::Error::ExpectedIdentifier: err = "expected identifier"; break;
-        case arly::Compiler::Error::ExpectedCommandId: err = "expected command"; break;
         case arly::Compiler::Error::ExpectedExpr: err = "expected expression"; break;
         case arly::Compiler::Error::ExpectedLHSExpr: err = "expected left-hand side expression"; break;
         case arly::Compiler::Error::ExpectedArgList: err = "expected arg list"; break;
@@ -130,6 +129,7 @@ static void showError(arly::Compiler::Error error, arly::Token token, const std:
         case arly::Compiler::Error::WrongType: err = "wrong type"; break;
         case arly::Compiler::Error::WrongNumberOfArgs: err = "wrong number of args"; break;
         case arly::Compiler::Error::OnlyAllowedInLoop: err = "break/continue only allowed in loop"; break;
+        case arly::Compiler::Error::DuplicateCmd: err = "duplicate command"; break;
     }
     
     if (token == arly::Token::EndOfFile) {
