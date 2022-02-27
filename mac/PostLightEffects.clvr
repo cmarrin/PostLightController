@@ -1,4 +1,4 @@
-// Arly script for different Post Light Controller effects
+// Clover script for different Post Light Controller effects
 //
 
 struct FlickerSpeedEntry
@@ -45,6 +45,24 @@ var int durationMax; // Number of counts between fade (based on Delay)
 var int durationCur;
 var int multiColorIndex;
 var int isCrossfading;
+
+//
+// Constant effect
+//
+
+function constantInit()
+{
+	LoadColorParam(0, 0, 1);
+    log("Value = (%i, %f)\n", NumPixels, IncMax);
+}
+
+function int constantLoop()
+{
+	SetAllLights(0);
+    return 20;
+}
+
+command c 3 constantInit constantLoop;
 
 // Multicolor - pass 4 colors and cross fade between them
 //
@@ -124,24 +142,7 @@ function int multicolorLoop()
     return Delay;
 }
 
-effect m 13 multicolorInit multicolorLoop;
-
-//
-// Constant effect
-//
-
-function constantInit()
-{
-	LoadColorParam(0, 0, 1);
-}
-
-function int constantLoop()
-{
-	SetAllLights(0);
-    return 20;
-}
-
-effect c 3 constantInit constantLoop;
+command m 13 multicolorInit multicolorLoop;
 
 //
 // Pulse effect
@@ -170,7 +171,7 @@ function int pulseLoop()
     return Delay;
 }
 
-effect p 5 pulseInit pulseLoop;
+command p 5 pulseInit pulseLoop;
 
 //
 // Flicker effect
@@ -213,4 +214,4 @@ function int flickerLoop()
     return loopDelay;
 }
 
-effect f 4 flickerInit flickerLoop;
+command f 4 flickerInit flickerLoop;

@@ -266,6 +266,6 @@ function pulseLoop
     Return
 end
 
-effect c 3 constantInit constantLoop
-effect f 4 flickerInit flickerLoop
-effect p 5 pulseInit pulseLoop
+command c 3 constantInit constantLoop
+command f 4 flickerInit flickerLoop
+command p 5 pulseInit pulseLoop
