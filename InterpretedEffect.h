@@ -25,40 +25,7 @@ public:
         return EEPROM[i];
     }
     
-    void logAddr(uint16_t addr) const
-	{
-		Serial.print(F("["));
-		Serial.print(addr);
-		Serial.print(F("]"));
-	}
-    
-    virtual void logInt(uint16_t addr, int8_t, int32_t v) const override
-    {
-		Serial.print(F("*** LogInt at addr "));
-        logAddr(addr);
-		Serial.print(F(": "));
-		Serial.println(v);
-    }
-    virtual void logFloat(uint16_t addr, int8_t, float v) const override
-    {
-		Serial.print(F("*** LogFloat at addr "));
-        logAddr(addr);
-		Serial.print(F(": "));
-		Serial.println(v);
-    }
-
-    virtual void logHex(uint16_t addr, int8_t i, uint32_t v) const override
-    {
-		Serial.print(F("*** LogHex at addr "));
-        logAddr(addr);
-        Serial.print(F(": v["));
-		Serial.print(i);
-		Serial.print(F("] = ("));
-		Serial.print(v, HEX);
-        Serial.println(F(")"));
-    }
-
-    virtual void logString(const char* s) const override
+    virtual void log(const char* s) const override
     {
         Serial.print(s);
     }

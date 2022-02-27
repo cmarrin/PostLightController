@@ -28,29 +28,7 @@ public:
         return (i < 1024) ? _rom[i] : 0;
     }
     
-    void logAddr(uint16_t addr) const { std::cout << "[" << addr << "]"; }
-    
-    virtual void logInt(uint16_t addr, int8_t i, int32_t v) const override
-    {
-        std::cout << "*** LogInt at addr ";
-        logAddr(addr);
-        std::cout << ": " << v << std::endl;
-    }
-    virtual void logFloat(uint16_t addr, int8_t i, float v) const override
-    {
-        std::cout << "*** LogFloat at addr ";
-        logAddr(addr);
-        std::cout << ": " << v << std::endl;
-    }
-
-    virtual void logHex(uint16_t addr, int8_t i, uint32_t v) const override
-    {
-        std::cout << "*** LogHex at addr ";
-        logAddr(addr);
-        std::cout << ": v[" << uint32_t(i) << "] = (0x" << std::setfill('0') << std::setw(8) << std::right << std::hex << ")" << std::endl;
-    }
-
-    virtual void logString(const char* s) const override
+    virtual void log(const char* s) const override
     {
         std::cout << s;
     }
