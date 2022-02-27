@@ -15,7 +15,10 @@ InterpretedEffect::init(uint8_t cmd, const uint8_t* buf, uint32_t size)
 {
 	Effect::init(cmd, buf, size);
 	
-	if (!_device.init(cmd, buf, size)) {
+    char c[2];
+    c[0] = cmd;
+    c[1] = '\0';
+	if (!_device.init(c, buf, size)) {
 		return false;
 	}
 
