@@ -58,6 +58,11 @@ public:
         Serial.println(F(")"));
     }
 
+    virtual void logString(const char* s) const override
+    {
+        Serial.print(s);
+    }
+
 private:
 	Adafruit_NeoPixel* _pixels;
 };

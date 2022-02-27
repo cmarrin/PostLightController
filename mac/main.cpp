@@ -50,6 +50,11 @@ public:
         std::cout << ": v[" << uint32_t(i) << "] = (0x" << std::setfill('0') << std::setw(8) << std::right << std::hex << ")" << std::endl;
     }
 
+    virtual void logString(const char* s) const override
+    {
+        std::cout << s;
+    }
+
     void setROM(const std::vector<uint8_t>& buf)
     {
         size_t size = buf.size();
@@ -92,7 +97,7 @@ static void showError(arly::Compiler::Error error, arly::Token token, const std:
         case arly::Compiler::Error::ExpectedToken: err = "expected token"; break;
         case arly::Compiler::Error::ExpectedType: err = "expected type"; break;
         case arly::Compiler::Error::ExpectedValue: err = "expected value"; break;
-        case arly::Compiler::Error::ExpectedInt: err = "expected int"; break;
+        case arly::Compiler::Error::ExpectedString: err = "expected string"; break;
         case arly::Compiler::Error::ExpectedRef: err = "expected ref"; break;
         case arly::Compiler::Error::ExpectedOpcode: err = "expected opcode"; break;
         case arly::Compiler::Error::ExpectedEnd: err = "expected 'end'"; break;
@@ -112,6 +117,7 @@ static void showError(arly::Compiler::Error error, arly::Token token, const std:
         case arly::Compiler::Error::JumpTooBig: err = "tried to jump too far"; break;
         case arly::Compiler::Error::IfTooBig: err = "too many instructions in if"; break;
         case arly::Compiler::Error::ElseTooBig: err = "too many instructions in else"; break;
+        case arly::Compiler::Error::StringTooLong: err = "string too long"; break;
         case arly::Compiler::Error::TooManyConstants: err = "too many constants"; break;
         case arly::Compiler::Error::TooManyVars: err = "too many vars"; break;
         case arly::Compiler::Error::DefOutOfRange: err = "def out of range"; break;
@@ -121,6 +127,7 @@ static void showError(arly::Compiler::Error error, arly::Token token, const std:
         case arly::Compiler::Error::InternalError: err = "internal error"; break;
         case arly::Compiler::Error::StackTooBig: err = "stack too big"; break;
         case arly::Compiler::Error::MismatchedType: err = "mismatched type"; break;
+        case arly::Compiler::Error::WrongType: err = "wrong type"; break;
         case arly::Compiler::Error::WrongNumberOfArgs: err = "wrong number of args"; break;
         case arly::Compiler::Error::OnlyAllowedInLoop: err = "break/continue only allowed in loop"; break;
     }

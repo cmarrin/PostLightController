@@ -40,7 +40,7 @@
 		491DED2A279462FE00D007C2 /* Opcodes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Opcodes.h; path = ../Clover/Runtime/Opcodes.h; sourceTree = "<group>"; };
 		4963436427A4BCC000ABF09F /* CloverCompileEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CloverCompileEngine.h; path = ../Clover/Compiler/CloverCompileEngine.h; sourceTree = "<group>"; };
 		4963436527A4BCC000ABF09F /* CloverCompileEngine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CloverCompileEngine.cpp; path = ../Clover/Compiler/CloverCompileEngine.cpp; sourceTree = "<group>"; };
-		4963436927A5DC6E00ABF09F /* PostLightEffects.clvr */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = PostLightEffects.clvr; sourceTree = "<group>"; };
+		4963436927A5DC6E00ABF09F /* PostLightEffects.clvr */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; fileEncoding = 4; path = PostLightEffects.clvr; sourceTree = "<group>"; };
 		4963436A27A81DA200ABF09F /* CompileEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CompileEngine.h; path = ../Clover/Compiler/CompileEngine.h; sourceTree = "<group>"; };
 		4963436B27A81DA200ABF09F /* CompileEngine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CompileEngine.cpp; path = ../Clover/Compiler/CompileEngine.cpp; sourceTree = "<group>"; };
 		49BDF4D327C5B5BE00325407 /* InterpretedEffect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = InterpretedEffect.cpp; path = ../InterpretedEffect.cpp; sourceTree = "<group>"; };
