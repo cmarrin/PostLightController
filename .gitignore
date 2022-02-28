@@ -10,3 +10,4 @@ mac/CompileClover.xcodeproj/project.xcworkspace/xcuserdata
 mac/PostLightEffects*.arlx
 .vscode/arduino.json
 .vscode/c_cpp_properties.json
+*.arlx
