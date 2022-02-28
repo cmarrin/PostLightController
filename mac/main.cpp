@@ -13,6 +13,7 @@
 #include <filesystem>
 #include <fstream>
 #include <getopt.h>
+#include <cstdio>
 
 // Simulator
 //
@@ -48,10 +49,19 @@ private:
 
 // compile [-o <output file>] [-x] <input file>
 //
-//      -o      output compiled binary root name (outputs to <name>0.arlx, <name<1>.arlx, etc.)
+//      -o      output compiled binary root name (.arly is appended)
+//      -s      output binary in 64 byte segments (named <root name>00.arly, etc.
+//      -h      output in include file format. Output file is <root name>.h
 //      -d      decompile and print result
 //      -x      simulate resulting binary
 //
+
+// Include file format
+//
+// This file can be included in an Arduino sketch to upload to EEPROM. The file
+// contains 'static const uint8_t PROGMEM EEPROM_Upload = {', followed by each
+// byte of the binary data as a hex value. It also has a
+// 'static constexpr uint16_t EEPROM_Upload_Size = ' with the number of bytes.
 
 struct Test
 {
@@ -135,15 +145,24 @@ int main(int argc, char * const argv[])
     int c;
     bool execute = false;
     bool decompile = false;
+    bool segmented = false;
+    bool headerFile = false;
     std::string outputFile;
     
-    while ((c = getopt(argc, argv, "dxo:")) != -1) {
+    while ((c = getopt(argc, argv, "dxsho:")) != -1) {
         switch(c) {
             case 'd': decompile = true; break;
             case 'x': execute = true; break;
+            case 's': segmented = true; break;
+            case 'h': headerFile = true; break;
             case 'o': outputFile = optarg; break;
             default: break;
         }
+    }
+    
+    // If headerFile is true, segmented is ignored.
+    if (headerFile) {
+        segmented = false;
     }
     
     if (optind >= argc) {
@@ -198,48 +217,88 @@ int main(int argc, char * const argv[])
     // Write executable if needed
     if (outputFile.size()) {
         // Delete any old copies
+        std::string name = outputFile + ".h";
+        remove(name.c_str());
+
+        name = outputFile + ".arlx";
+        remove(name.c_str());
+
         for (int i = 0; ; ++i) {
-            std::string name = outputFile + std::to_string(i) + ".arlx";
+            name = outputFile + std::to_string(i) + ".arlx";
             if (remove(name.c_str()) != 0) {
                 break;
             }
         }
-
+        
         std::cout << "\nEmitting executable to '" << outputFile << "'\n";
         std::fstream outStream;
         
-        // Break it up into 64 byte chunks, prefix each file with start addr byte
+        // If segmented break it up into 64 byte chunks, prefix each file with start addr byte
         size_t sizeRemaining = executable.size();
         
         for (uint8_t i = 0; ; i++) {
-            std::string name = outputFile + std::to_string(i) + ".arlx";
+            if (segmented) {
+                name = outputFile + std::to_string(i) + ".arlx";
+            } else if (headerFile) {
+                name = outputFile + ".h";
+            } else {
+                name = outputFile + ".arlx";
+            }
         
-            outStream.open(name.c_str(),
-                    std::fstream::out | std::fstream::binary | std::fstream::trunc);
+            std::ios_base::openmode mode = std::fstream::out;
+            if (!headerFile) {
+                mode|= std::fstream::binary;
+            }
+            
+            outStream.open(name.c_str(), mode);
             if (outStream.fail()) {
                 std::cout << "Can't open '" << outputFile << "'\n";
                 return 0;
             } else {
                 char* buf = reinterpret_cast<char*>(&(executable[i * 64]));
-                size_t sizeToWrite = (sizeRemaining > 64) ? 64 : sizeRemaining;
+                size_t sizeToWrite = sizeRemaining;
                 
-                // Write the 2 byte offset
-                uint16_t addr = uint16_t(i) * 64;
-                outStream.put(uint8_t(addr & 0xff));
-                outStream.put(uint8_t(addr >> 8));
+                if (segmented && sizeRemaining > 64) {
+                    sizeToWrite = 64;
+                }
                 
-                // Write the buffer
-                outStream.write(buf, sizeToWrite);
-                if (outStream.fail()) {
-                    std::cout << "Save failed\n";
-                    return 0;
-                } else {
-                    sizeRemaining -= sizeToWrite;
-                    outStream.close();
-                    std::cout << "    Saved " << name << "\n";
-                    if (sizeRemaining == 0) {
-                        break;
+                if (segmented) {
+                    // Write the 2 byte offset
+                    uint16_t addr = uint16_t(i) * 64;
+                    outStream.put(uint8_t(addr & 0xff));
+                    outStream.put(uint8_t(addr >> 8));
+                }
+                
+                if (!headerFile) {
+                    // Write the buffer
+                    outStream.write(buf, sizeToWrite);
+                    if (outStream.fail()) {
+                        std::cout << "Save failed\n";
+                        return 0;
+                    } else {
+                        sizeRemaining -= sizeToWrite;
+                        outStream.close();
+                        std::cout << "    Saved " << name << "\n";
+                        if (sizeRemaining == 0) {
+                            break;
+                        }
                     }
+                } else {
+                    outStream << "static constexpr uint16_t EEPROM_Upload_Size = " << sizeRemaining << "\n";
+                    outStream << "static const uint8_t PROGMEM EEPROM_Upload = {\n";
+                    
+                    for (size_t i = 0; i < sizeRemaining; ++i) {
+                        char hexbuf[5];
+                        sprintf(hexbuf, "0x%02x", executable[i]);
+                        outStream << hexbuf << ", ";
+                        if (i % 8 == 7) {
+                            outStream << std::endl;
+                        }
+                    }
+
+                    outStream << "};\n";
+                    
+                    break;
                 }
             }
         }
