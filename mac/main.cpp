@@ -1,9 +1,11 @@
-//
-//  main.cpp
-//  CompileArly
-//
-//  Created by Chris Marrin on 1/9/22.
-//
+/*-------------------------------------------------------------------------
+    This source file is a part of Clover
+    For the latest info, see https://github.com/cmarrin/Clover
+    Copyright (c) 2021-2022, Chris Marrin
+    All rights reserved.
+    Use of this source code is governed by the MIT license that can be
+    found in the LICENSE file.
+-------------------------------------------------------------------------*/
 
 #include "Compiler.h"
 #include "Decompiler.h"
@@ -18,10 +20,10 @@
 // Simulator
 //
 // Subclass of Interpreter that outputs device info to consolee
-class Simulator : public arly::Interpreter
+class Simulator : public clvr::Interpreter
 {
 public:
-    Simulator(arly::NativeModule** mod, uint32_t modSize) : Interpreter(mod, modSize) { }
+    Simulator(clvr::NativeModule** mod, uint32_t modSize) : Interpreter(mod, modSize) { }
     virtual ~Simulator() { }
     
     virtual uint8_t rom(uint16_t i) const override
@@ -49,8 +51,8 @@ private:
 
 // compile [-o <output file>] [-x] <input file>
 //
-//      -o      output compiled binary root name (.arly is appended)
-//      -s      output binary in 64 byte segments (named <root name>00.arly, etc.
+//      -o      output compiled binary root name
+//      -s      output binary in 64 byte segments (named <root name>00.{clvr,arly}, etc.
 //      -h      output in include file format. Output file is <root name>.h
 //      -d      decompile and print result
 //      -x      simulate resulting binary
@@ -76,51 +78,51 @@ static std::vector<Test> Tests = {
     { "m", { 40, 224, 250,  80, 224, 250,  120, 224, 250,  180, 224, 250, 1 } },
 };
 
-static void showError(arly::Compiler::Error error, arly::Token token, const std::string& str, uint32_t lineno, uint32_t charno)
+static void showError(clvr::Compiler::Error error, clvr::Token token, const std::string& str, uint32_t lineno, uint32_t charno)
 {
     const char* err = "unknown";
     switch(error) {
-        case arly::Compiler::Error::None: err = "internal error"; break;
-        case arly::Compiler::Error::UnrecognizedLanguage: err = "unrecognized language"; break;
-        case arly::Compiler::Error::ExpectedToken: err = "expected token"; break;
-        case arly::Compiler::Error::ExpectedType: err = "expected type"; break;
-        case arly::Compiler::Error::ExpectedValue: err = "expected value"; break;
-        case arly::Compiler::Error::ExpectedString: err = "expected string"; break;
-        case arly::Compiler::Error::ExpectedRef: err = "expected ref"; break;
-        case arly::Compiler::Error::ExpectedOpcode: err = "expected opcode"; break;
-        case arly::Compiler::Error::ExpectedEnd: err = "expected 'end'"; break;
-        case arly::Compiler::Error::ExpectedIdentifier: err = "expected identifier"; break;
-        case arly::Compiler::Error::ExpectedExpr: err = "expected expression"; break;
-        case arly::Compiler::Error::ExpectedLHSExpr: err = "expected left-hand side expression"; break;
-        case arly::Compiler::Error::ExpectedArgList: err = "expected arg list"; break;
-        case arly::Compiler::Error::ExpectedFormalParams: err = "expected formal params"; break;
-        case arly::Compiler::Error::ExpectedFunction: err = "expected function name"; break;
-        case arly::Compiler::Error::ExpectedStructType: err = "expected Struct type"; break;
-        case arly::Compiler::Error::AssignmentNotAllowedHere: err = "assignment not allowed here"; break;
-        case arly::Compiler::Error::InvalidStructId: err = "invalid Struct identifier"; break;
-        case arly::Compiler::Error::InvalidParamCount: err = "invalid param count"; break;
-        case arly::Compiler::Error::UndefinedIdentifier: err = "undefined identifier"; break;
-        case arly::Compiler::Error::ParamOutOfRange: err = "param must be 0..15"; break;
-        case arly::Compiler::Error::JumpTooBig: err = "tried to jump too far"; break;
-        case arly::Compiler::Error::IfTooBig: err = "too many instructions in if"; break;
-        case arly::Compiler::Error::ElseTooBig: err = "too many instructions in else"; break;
-        case arly::Compiler::Error::StringTooLong: err = "string too long"; break;
-        case arly::Compiler::Error::TooManyConstants: err = "too many constants"; break;
-        case arly::Compiler::Error::TooManyVars: err = "too many vars"; break;
-        case arly::Compiler::Error::DefOutOfRange: err = "def out of range"; break;
-        case arly::Compiler::Error::ExpectedDef: err = "expected def"; break;
-        case arly::Compiler::Error::NoMoreTemps: err = "no more temp variables available"; break;
-        case arly::Compiler::Error::TempNotAllocated: err = "temp not allocated"; break;
-        case arly::Compiler::Error::InternalError: err = "internal error"; break;
-        case arly::Compiler::Error::StackTooBig: err = "stack too big"; break;
-        case arly::Compiler::Error::MismatchedType: err = "mismatched type"; break;
-        case arly::Compiler::Error::WrongType: err = "wrong type"; break;
-        case arly::Compiler::Error::WrongNumberOfArgs: err = "wrong number of args"; break;
-        case arly::Compiler::Error::OnlyAllowedInLoop: err = "break/continue only allowed in loop"; break;
-        case arly::Compiler::Error::DuplicateCmd: err = "duplicate command"; break;
+        case clvr::Compiler::Error::None: err = "internal error"; break;
+        case clvr::Compiler::Error::UnrecognizedLanguage: err = "unrecognized language"; break;
+        case clvr::Compiler::Error::ExpectedToken: err = "expected token"; break;
+        case clvr::Compiler::Error::ExpectedType: err = "expected type"; break;
+        case clvr::Compiler::Error::ExpectedValue: err = "expected value"; break;
+        case clvr::Compiler::Error::ExpectedString: err = "expected string"; break;
+        case clvr::Compiler::Error::ExpectedRef: err = "expected ref"; break;
+        case clvr::Compiler::Error::ExpectedOpcode: err = "expected opcode"; break;
+        case clvr::Compiler::Error::ExpectedEnd: err = "expected 'end'"; break;
+        case clvr::Compiler::Error::ExpectedIdentifier: err = "expected identifier"; break;
+        case clvr::Compiler::Error::ExpectedExpr: err = "expected expression"; break;
+        case clvr::Compiler::Error::ExpectedLHSExpr: err = "expected left-hand side expression"; break;
+        case clvr::Compiler::Error::ExpectedArgList: err = "expected arg list"; break;
+        case clvr::Compiler::Error::ExpectedFormalParams: err = "expected formal params"; break;
+        case clvr::Compiler::Error::ExpectedFunction: err = "expected function name"; break;
+        case clvr::Compiler::Error::ExpectedStructType: err = "expected Struct type"; break;
+        case clvr::Compiler::Error::AssignmentNotAllowedHere: err = "assignment not allowed here"; break;
+        case clvr::Compiler::Error::InvalidStructId: err = "invalid Struct identifier"; break;
+        case clvr::Compiler::Error::InvalidParamCount: err = "invalid param count"; break;
+        case clvr::Compiler::Error::UndefinedIdentifier: err = "undefined identifier"; break;
+        case clvr::Compiler::Error::ParamOutOfRange: err = "param must be 0..15"; break;
+        case clvr::Compiler::Error::JumpTooBig: err = "tried to jump too far"; break;
+        case clvr::Compiler::Error::IfTooBig: err = "too many instructions in if"; break;
+        case clvr::Compiler::Error::ElseTooBig: err = "too many instructions in else"; break;
+        case clvr::Compiler::Error::StringTooLong: err = "string too long"; break;
+        case clvr::Compiler::Error::TooManyConstants: err = "too many constants"; break;
+        case clvr::Compiler::Error::TooManyVars: err = "too many vars"; break;
+        case clvr::Compiler::Error::DefOutOfRange: err = "def out of range"; break;
+        case clvr::Compiler::Error::ExpectedDef: err = "expected def"; break;
+        case clvr::Compiler::Error::NoMoreTemps: err = "no more temp variables available"; break;
+        case clvr::Compiler::Error::TempNotAllocated: err = "temp not allocated"; break;
+        case clvr::Compiler::Error::InternalError: err = "internal error"; break;
+        case clvr::Compiler::Error::StackTooBig: err = "stack too big"; break;
+        case clvr::Compiler::Error::MismatchedType: err = "mismatched type"; break;
+        case clvr::Compiler::Error::WrongType: err = "wrong type"; break;
+        case clvr::Compiler::Error::WrongNumberOfArgs: err = "wrong number of args"; break;
+        case clvr::Compiler::Error::OnlyAllowedInLoop: err = "break/continue only allowed in loop"; break;
+        case clvr::Compiler::Error::DuplicateCmd: err = "duplicate command"; break;
     }
     
-    if (token == arly::Token::EndOfFile) {
+    if (token == clvr::Token::EndOfFile) {
         err = "unexpected tokens after EOF";
     }
     
@@ -140,7 +142,7 @@ void setLight(uint8_t i, uint32_t rgb)
 
 int main(int argc, char * const argv[])
 {
-    std::cout << "Arly Compiler v0.1\n\n";
+    std::cout << "Clover Compiler v0.2\n\n";
     
     int c;
     bool execute = false;
@@ -179,7 +181,7 @@ int main(int argc, char * const argv[])
     
     std::vector<std::pair<int32_t, std::string>> annotations;
 
-    arly::Compiler compiler;
+    clvr::Compiler compiler;
     std::fstream stream;
     stream.open(inputFile.c_str(), std::fstream::in);
     if (stream.fail()) {
@@ -191,25 +193,25 @@ int main(int argc, char * const argv[])
     
     std::vector<uint8_t> executable;
     
-    std::cout << "\n\nTrying Arly...\n";
+    clvr::Compiler::Language lang;
+    std::string suffix = inputFile.substr(inputFile.find_last_of('c'));
+    if (suffix == "clvr") {
+        clvr::Compiler::Language::Clover;
+    } else if (suffix == "arly") {
+        clvr::Compiler::Language::Arly;
+    } else {
+        std::cout << "*** suffix '" << suffix << "' not recognized\n";
+        return -1;
+    }
     
     randomSeed(uint32_t(clock()));
 
-    arly::NativeColor nativeColor(setLight, 8);
+    clvr::NativeColor nativeColor(setLight, 8);
     
-    compiler.compile(&stream, arly::Compiler::Language::Arly, executable, { &nativeColor });
-    if (compiler.error() != arly::Compiler::Error::None) {
+    compiler.compile(&stream, lang, executable, { &nativeColor }, &annotations);
+    if (compiler.error() != clvr::Compiler::Error::None) {
         showError(compiler.error(), compiler.expectedToken(), compiler.expectedString(), compiler.lineno(), compiler.charno());
-        
-        std::cout << "\n\nTrying Clover...\n";
-        
-        stream.seekg(0);
-        compiler.compile(&stream, arly::Compiler::Language::Clover, executable, { &nativeColor }, &annotations);
-
-        if (compiler.error() != arly::Compiler::Error::None) {
-            showError(compiler.error(), compiler.expectedToken(), compiler.expectedString(), compiler.lineno(), compiler.charno());
-            return -1;
-        }
+        return -1;
     }
 
     std::cout << "Compile succeeded!\n";
@@ -308,16 +310,16 @@ int main(int argc, char * const argv[])
     // decompile if needed
     if (decompile) {
         std::string out;
-        arly::Decompiler decompiler(&executable, &out, annotations);
+        clvr::Decompiler decompiler(&executable, &out, annotations);
         bool success = decompiler.decompile();
         std::cout << "\nDecompiled executable:\n" << out << "\nEnd decompilation\n\n";
         if (!success) {
             const char* err = "unknown";
             switch(decompiler.error()) {
-                case arly::Decompiler::Error::None: err = "internal error"; break;
-                case arly::Decompiler::Error::InvalidSignature: err = "invalid signature"; break;
-                case arly::Decompiler::Error::InvalidOp: err = "invalid op"; break;
-                case arly::Decompiler::Error::PrematureEOF: err = "premature EOF"; break;
+                case clvr::Decompiler::Error::None: err = "internal error"; break;
+                case clvr::Decompiler::Error::InvalidSignature: err = "invalid signature"; break;
+                case clvr::Decompiler::Error::InvalidOp: err = "invalid op"; break;
+                case clvr::Decompiler::Error::PrematureEOF: err = "premature EOF"; break;
             }
             std::cout << "Decompile failed: " << err << "\n\n";
             return 0;
@@ -326,7 +328,7 @@ int main(int argc, char * const argv[])
     
     // Execute if needed
     if (execute) {
-        arly::NativeModule* mod = &nativeColor;
+        clvr::NativeModule* mod = &nativeColor;
         Simulator sim(&mod, 1);
         
         sim.setROM(executable);
@@ -353,20 +355,20 @@ int main(int argc, char * const argv[])
             if (!success) {
                 const char* err = "unknown";
                 switch(sim.error()) {
-                    case arly::Interpreter::Error::None: err = "internal error"; break;
-                    case arly::Interpreter::Error::CmdNotFound: err = "command not found"; break;
-                    case arly::Interpreter::Error::UnexpectedOpInIf: err = "unexpected op in if (internal error)"; break;
-                    case arly::Interpreter::Error::InvalidOp: err = "invalid opcode"; break;
-                    case arly::Interpreter::Error::InvalidNativeFunction: err = "invalid native function"; break;
-                    case arly::Interpreter::Error::OnlyMemAddressesAllowed: err = "only Mem addresses allowed"; break;
-                    case arly::Interpreter::Error::StackOverrun: err = "can't call, stack full"; break;
-                    case arly::Interpreter::Error::StackUnderrun: err = "stack underrun"; break;
-                    case arly::Interpreter::Error::StackOutOfRange: err = "stack access out of range"; break;
-                    case arly::Interpreter::Error::AddressOutOfRange: err = "address out of range"; break;
-                    case arly::Interpreter::Error::InvalidModuleOp: err = "invalid operation in module"; break;
-                    case arly::Interpreter::Error::ExpectedSetFrame: err = "expected SetFrame as first function op"; break;
-                    case arly::Interpreter::Error::NotEnoughArgs: err = "not enough args on stack"; break;
-                    case arly::Interpreter::Error::WrongNumberOfArgs: err = "wrong number of args"; break;
+                    case clvr::Interpreter::Error::None: err = "internal error"; break;
+                    case clvr::Interpreter::Error::CmdNotFound: err = "command not found"; break;
+                    case clvr::Interpreter::Error::UnexpectedOpInIf: err = "unexpected op in if (internal error)"; break;
+                    case clvr::Interpreter::Error::InvalidOp: err = "invalid opcode"; break;
+                    case clvr::Interpreter::Error::InvalidNativeFunction: err = "invalid native function"; break;
+                    case clvr::Interpreter::Error::OnlyMemAddressesAllowed: err = "only Mem addresses allowed"; break;
+                    case clvr::Interpreter::Error::StackOverrun: err = "can't call, stack full"; break;
+                    case clvr::Interpreter::Error::StackUnderrun: err = "stack underrun"; break;
+                    case clvr::Interpreter::Error::StackOutOfRange: err = "stack access out of range"; break;
+                    case clvr::Interpreter::Error::AddressOutOfRange: err = "address out of range"; break;
+                    case clvr::Interpreter::Error::InvalidModuleOp: err = "invalid operation in module"; break;
+                    case clvr::Interpreter::Error::ExpectedSetFrame: err = "expected SetFrame as first function op"; break;
+                    case clvr::Interpreter::Error::NotEnoughArgs: err = "not enough args on stack"; break;
+                    case clvr::Interpreter::Error::WrongNumberOfArgs: err = "wrong number of args"; break;
                 }
                 std::cout << "Interpreter failed: " << err;
                 

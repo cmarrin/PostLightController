@@ -40,7 +40,7 @@
 		491DED2A279462FE00D007C2 /* Opcodes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Opcodes.h; path = ../Clover/Runtime/Opcodes.h; sourceTree = "<group>"; };
 		4963436427A4BCC000ABF09F /* CloverCompileEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CloverCompileEngine.h; path = ../Clover/Compiler/CloverCompileEngine.h; sourceTree = "<group>"; };
 		4963436527A4BCC000ABF09F /* CloverCompileEngine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CloverCompileEngine.cpp; path = ../Clover/Compiler/CloverCompileEngine.cpp; sourceTree = "<group>"; };
-		4963436927A5DC6E00ABF09F /* PostLightEffects.clvr */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; fileEncoding = 4; path = PostLightEffects.clvr; sourceTree = "<group>"; };
+		4963436927A5DC6E00ABF09F /* PostLightEffects.clvr */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; fileEncoding = 4; name = PostLightEffects.clvr; path = ../PostLightEffects.clvr; sourceTree = "<group>"; };
 		4963436A27A81DA200ABF09F /* CompileEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CompileEngine.h; path = ../Clover/Compiler/CompileEngine.h; sourceTree = "<group>"; };
 		4963436B27A81DA200ABF09F /* CompileEngine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CompileEngine.cpp; path = ../Clover/Compiler/CompileEngine.cpp; sourceTree = "<group>"; };
 		49BDF4D327C5B5BE00325407 /* InterpretedEffect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = InterpretedEffect.cpp; path = ../InterpretedEffect.cpp; sourceTree = "<group>"; };
@@ -54,9 +54,11 @@
 		49BDF4DE27C6EBF700325407 /* NativeColor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NativeColor.h; path = ../NativeColor.h; sourceTree = "<group>"; };
 		49BDF4E027C7CF7A00325407 /* NativeCore.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NativeCore.cpp; path = ../Clover/Runtime/NativeCore.cpp; sourceTree = "<group>"; };
 		49BDF4E127C7CF7A00325407 /* NativeCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NativeCore.h; path = ../Clover/Runtime/NativeCore.h; sourceTree = "<group>"; };
+		49BDF4E427CEA4F800325407 /* Test.clvr */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Test.clvr; path = ../Clover/Test/Test.clvr; sourceTree = "<group>"; };
+		49BDF4E527CEA4F800325407 /* Test.ino */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Test.ino; path = ../Clover/Test/Test.ino; sourceTree = "<group>"; };
 		49DAA643278B212E00F67EEB /* CompileClover */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = CompileClover; sourceTree = BUILT_PRODUCTS_DIR; };
 		49DAA646278B212E00F67EEB /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
-		49DAA64E278B2E5500F67EEB /* PostLightEffects.arly */ = {isa = PBXFileReference; lastKnownFileType = text; path = PostLightEffects.arly; sourceTree = "<group>"; };
+		49DAA64E278B2E5500F67EEB /* PostLightEffects.arly */ = {isa = PBXFileReference; lastKnownFileType = text; name = PostLightEffects.arly; path = ../PostLightEffects.arly; sourceTree = "<group>"; };
 		49DAA64F278B3AFE00F67EEB /* Compiler.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Compiler.cpp; path = ../Clover/Compiler/Compiler.cpp; sourceTree = "<group>"; };
 		49DAA650278B3AFE00F67EEB /* Compiler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Compiler.h; path = ../Clover/Compiler/Compiler.h; sourceTree = "<group>"; };
 		49DAA655278CD00500F67EEB /* Scanner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Scanner.h; path = ../Clover/Compiler/Scanner.h; sourceTree = "<group>"; };
@@ -92,9 +94,19 @@
 			name = Arduino;
 			sourceTree = "<group>";
 		};
+		49BDF4E327CEA4CE00325407 /* Test */ = {
+			isa = PBXGroup;
+			children = (
+				49BDF4E427CEA4F800325407 /* Test.clvr */,
+				49BDF4E527CEA4F800325407 /* Test.ino */,
+			);
+			name = Test;
+			sourceTree = "<group>";
+		};
 		49DAA63A278B212E00F67EEB = {
 			isa = PBXGroup;
 			children = (
+				49BDF4E327CEA4CE00325407 /* Test */,
 				49BDF4D227C5B56200325407 /* Arduino */,
 				49DAA652278B3B5B00F67EEB /* src */,
 				49DAA64D278B2DF200F67EEB /* Scripts */,
