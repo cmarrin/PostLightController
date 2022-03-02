@@ -196,9 +196,9 @@ int main(int argc, char * const argv[])
     clvr::Compiler::Language lang;
     std::string suffix = inputFile.substr(inputFile.find_last_of('c'));
     if (suffix == "clvr") {
-        clvr::Compiler::Language::Clover;
+        lang = clvr::Compiler::Language::Clover;
     } else if (suffix == "arly") {
-        clvr::Compiler::Language::Arly;
+        lang = clvr::Compiler::Language::Arly;
     } else {
         std::cout << "*** suffix '" << suffix << "' not recognized\n";
         return -1;
