@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "49DAA642278B212E00F67EEB"
-               BuildableName = "CompileClover"
-               BlueprintName = "CompileClover"
-               ReferencedContainer = "container:CompileClover.xcodeproj">
+               BuildableName = "Clover"
+               BlueprintName = "PostLightController"
+               ReferencedContainer = "container:PostLightController.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -36,7 +36,7 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       launchStyle = "0"
       useCustomWorkingDirectory = "YES"
-      customWorkingDirectory = "/Users/cmarrin/Projects/git/Pond/PostLightController"
+      customWorkingDirectory = "$(PROJECT_DIR)"
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
@@ -46,16 +46,12 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "49DAA642278B212E00F67EEB"
-            BuildableName = "CompileClover"
-            BlueprintName = "CompileClover"
-            ReferencedContainer = "container:CompileClover.xcodeproj">
+            BuildableName = "Clover"
+            BlueprintName = "PostLightController"
+            ReferencedContainer = "container:PostLightController.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <CommandLineArguments>
-         <CommandLineArgument
-            argument = "-o PostLightEffects"
-            isEnabled = "YES">
-         </CommandLineArgument>
          <CommandLineArgument
             argument = "-d"
             isEnabled = "YES">
@@ -73,11 +69,11 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "PostLightEffects.arly"
+            argument = "../PostLightEffects.arly"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "PostLightEffects.clvr"
+            argument = "../PostLightEffects.clvr"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>
@@ -93,9 +89,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "49DAA642278B212E00F67EEB"
-            BuildableName = "CompileClover"
-            BlueprintName = "CompileClover"
-            ReferencedContainer = "container:CompileClover.xcodeproj">
+            BuildableName = "Clover"
+            BlueprintName = "PostLightController"
+            ReferencedContainer = "container:PostLightController.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
