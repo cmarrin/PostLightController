@@ -32,6 +32,7 @@ const int NumPixels         8;
 const int NumLevels         8;
 const int Delay             25; // in ms
 const int PulseSpeedMult    35;
+const int RainbowSpeedMult  300;
 
 table FlickerSpeedEntry FlickerSpeedTable
 {
@@ -45,15 +46,15 @@ table FlickerSpeedEntry FlickerSpeedTable
     0.01 0.02 10
 }
 
-var LedEntry leds 8;
-var LedEntry* led;
-var float flickerStepsMin;
-var float flickerStepsMax;
-var int loopDelay;
-var int durationMax; // Number of counts between fade (based on Delay)
-var int durationCur;
-var int multiColorIndex;
-var int isCrossfading;
+LedEntry leds 8;
+LedEntry* led;
+float flickerStepsMin;
+float flickerStepsMax;
+int loopDelay;
+int durationMax; // Number of counts between fade (based on Delay)
+int durationCur;
+int multiColorIndex;
+int isCrossfading;
 
 //
 // Constant effect
@@ -114,7 +115,7 @@ function multicolorInit()
 
 function int multicolorLoop()
 {
-    var int animateResult;
+    int animateResult;
 
     if (isCrossfading) {
         animateResult = Animate(led);
@@ -186,7 +187,7 @@ command p 5 pulseInit pulseLoop;
 //
 function flickerInit()
 {
-    var int speed;
+    int speed;
 
 	LoadColorParam(0, 0, 1);
     InitArray(&leds, 0, NumPixels * 4);
@@ -199,7 +200,7 @@ function flickerInit()
 
 function int flickerLoop()
 {
-    var int i;
+    int i;
 
     i = 0;
     foreach (i : NumPixels) {
@@ -223,3 +224,56 @@ function int flickerLoop()
 }
 
 command f 4 flickerInit flickerLoop;
+
+//
+// Rainbow Effect
+//
+//      color, speed, range, mode       Change color through the rainbow by changing hue 
+//                                      from the passed color at the passed speed (0-15). Range
+//										is how far from the passed color to go, 0 (very little)
+//										to 7 (full range). If mode is 0 colors bounce 
+//										back and forth between start color through range. If
+//										it is 1 colors cycle the full color spectrum and
+//										range is ignored.
+
+function rainbowInit()
+{
+	LoadColorParam(0, 0, 1);
+
+    led = &leds[0];
+    
+    led.min = LoadColorComp(0, 0);
+    
+    float range;
+    range = 1.0 - led.min;
+    float r;
+    r = Float(Param(4) + 1) / 8;
+    if (r > 1) {
+        r = 1;
+    }
+    led.max = led.min + range * r;
+    
+    int speed;
+    speed = 16 - Param(3);
+    if (speed < 1 || speed > 16) {
+        speed = 16;
+    }
+    speed *= RainbowSpeedMult;
+log("***** speed=%i\n", speed);
+    led.inc = (led.max - led.min) / Float(speed);
+
+    // Start with a random value for cur
+    led.cur = RandomFloat(led.min, led.max);
+}
+
+function int rainbowLoop()
+{
+    Animate(led);
+
+    StoreColorComp(0, 0, led.cur);
+    SetAllLights(0);
+    return Delay;
+}
+
+command r 6 rainbowInit rainbowLoop;
+
