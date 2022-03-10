@@ -46,7 +46,7 @@ table FlickerSpeedEntry FlickerSpeedTable
     0.01 0.02 10
 }
 
-LedEntry leds 8;
+LedEntry leds[8];
 LedEntry* led;
 float flickerStepsMin;
 float flickerStepsMax;
