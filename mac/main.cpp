@@ -17,6 +17,8 @@
 #include <getopt.h>
 #include <cstdio>
 
+static constexpr uint32_t MaxExecutableSize = 1024;
+
 // Simulator
 //
 // Subclass of Interpreter that outputs device info to consolee
@@ -208,7 +210,7 @@ int main(int argc, char * const argv[])
 
     clvr::NativeColor nativeColor(setLight, 8);
     
-    compiler.compile(&stream, lang, executable, { &nativeColor }, &annotations);
+    compiler.compile(&stream, lang, executable, MaxExecutableSize, { &nativeColor }, &annotations);
     if (compiler.error() != clvr::Compiler::Error::None) {
         showError(compiler.error(), compiler.expectedToken(), compiler.expectedString(), compiler.lineno(), compiler.charno());
         return -1;
