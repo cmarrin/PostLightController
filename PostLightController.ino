@@ -48,12 +48,6 @@ Command List:
 	'X'		EEPROM[0]		addr, <data>				Write EEPROM starting at addr. Data can be
 														up to 64 bytes, due to buffering limitations.
 
-Proposed commands for later
-
-			Throb			color, speed, depth			Throb lights with passed color, dimming at passed
-														speed (0-7). Passed depth is amount of dimming
-														0 (slight dimming) to 7 (dimming to 0 brightness)
-
 			Rainbow			color, speed, range, mode	Change color through the rainbow by changing hue 
 														from the passed color at the passed speed. Range
 														is how far from the passed color to go, 0 (very little)
