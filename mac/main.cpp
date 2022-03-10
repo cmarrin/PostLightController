@@ -220,96 +220,101 @@ int main(int argc, char * const argv[])
 
     std::cout << "Compile succeeded!\n";
     
-    // Write executable if needed
-    if (outputFile.size()) {
-        // Delete any old copies
-        std::string name = outputFile + ".h";
-        remove(name.c_str());
+    // Write executable
+    // Use the same name as the input file for the output
+    std::string path = inputFile.substr(0, inputFile.find_last_of('.'));
+        
+    // Delete any old copies
+    std::string name = path + ".h";
+    remove(name.c_str());
 
-        name = outputFile + ".arlx";
-        remove(name.c_str());
+    name = path + ".arlx";
+    remove(name.c_str());
 
-        for (int i = 0; ; ++i) {
-            name = outputFile + std::to_string(i) + ".arlx";
-            if (remove(name.c_str()) != 0) {
+    for (int i = 0; ; ++i) {
+        char buf[3];
+        sprintf(buf, "%02u", i);
+        name = path + buf + ".arlx";
+        if (remove(name.c_str()) != 0) {
+            break;
+        }
+    }
+    
+    std::cout << "\nEmitting executable to '" << path << "'\n";
+    std::fstream outStream;
+    
+    // If segmented break it up into 64 byte chunks, prefix each file with start addr byte
+    size_t sizeRemaining = executable.size();
+    
+    for (uint8_t i = 0; ; i++) {
+        if (segmented) {
+            char buf[3];
+            sprintf(buf, "%02u", i);
+            name = path + buf + ".arlx";
+        } else if (headerFile) {
+            name = path + ".h";
+        } else {
+            name = path + ".arlx";
+        }
+    
+        std::ios_base::openmode mode = std::fstream::out;
+        if (!headerFile) {
+            mode|= std::fstream::binary;
+        }
+        
+        outStream.open(name.c_str(), mode);
+        if (outStream.fail()) {
+            std::cout << "Can't open '" << outputFile << "'\n";
+            return 0;
+        } else {
+            char* buf = reinterpret_cast<char*>(&(executable[i * 64]));
+            size_t sizeToWrite = sizeRemaining;
+            
+            if (segmented && sizeRemaining > 64) {
+                sizeToWrite = 64;
+            }
+            
+            if (segmented) {
+                // Write the 2 byte offset
+                uint16_t addr = uint16_t(i) * 64;
+                outStream.put(uint8_t(addr & 0xff));
+                outStream.put(uint8_t(addr >> 8));
+            }
+            
+            if (!headerFile) {
+                // Write the buffer
+                outStream.write(buf, sizeToWrite);
+                if (outStream.fail()) {
+                    std::cout << "Save failed\n";
+                    return 0;
+                } else {
+                    sizeRemaining -= sizeToWrite;
+                    outStream.close();
+                    std::cout << "    Saved " << name << "\n";
+                    if (sizeRemaining == 0) {
+                        break;
+                    }
+                }
+            } else {
+                outStream << "static constexpr uint16_t EEPROM_Upload_Size = " << sizeRemaining << "\n";
+                outStream << "static const uint8_t PROGMEM EEPROM_Upload = {\n";
+                
+                for (size_t i = 0; i < sizeRemaining; ++i) {
+                    char hexbuf[5];
+                    sprintf(hexbuf, "0x%02x", executable[i]);
+                    outStream << hexbuf << ", ";
+                    if (i % 8 == 7) {
+                        outStream << std::endl;
+                    }
+                }
+
+                outStream << "};\n";
+                
                 break;
             }
         }
-        
-        std::cout << "\nEmitting executable to '" << outputFile << "'\n";
-        std::fstream outStream;
-        
-        // If segmented break it up into 64 byte chunks, prefix each file with start addr byte
-        size_t sizeRemaining = executable.size();
-        
-        for (uint8_t i = 0; ; i++) {
-            if (segmented) {
-                name = outputFile + std::to_string(i) + ".arlx";
-            } else if (headerFile) {
-                name = outputFile + ".h";
-            } else {
-                name = outputFile + ".arlx";
-            }
-        
-            std::ios_base::openmode mode = std::fstream::out;
-            if (!headerFile) {
-                mode|= std::fstream::binary;
-            }
-            
-            outStream.open(name.c_str(), mode);
-            if (outStream.fail()) {
-                std::cout << "Can't open '" << outputFile << "'\n";
-                return 0;
-            } else {
-                char* buf = reinterpret_cast<char*>(&(executable[i * 64]));
-                size_t sizeToWrite = sizeRemaining;
-                
-                if (segmented && sizeRemaining > 64) {
-                    sizeToWrite = 64;
-                }
-                
-                if (segmented) {
-                    // Write the 2 byte offset
-                    uint16_t addr = uint16_t(i) * 64;
-                    outStream.put(uint8_t(addr & 0xff));
-                    outStream.put(uint8_t(addr >> 8));
-                }
-                
-                if (!headerFile) {
-                    // Write the buffer
-                    outStream.write(buf, sizeToWrite);
-                    if (outStream.fail()) {
-                        std::cout << "Save failed\n";
-                        return 0;
-                    } else {
-                        sizeRemaining -= sizeToWrite;
-                        outStream.close();
-                        std::cout << "    Saved " << name << "\n";
-                        if (sizeRemaining == 0) {
-                            break;
-                        }
-                    }
-                } else {
-                    outStream << "static constexpr uint16_t EEPROM_Upload_Size = " << sizeRemaining << "\n";
-                    outStream << "static const uint8_t PROGMEM EEPROM_Upload = {\n";
-                    
-                    for (size_t i = 0; i < sizeRemaining; ++i) {
-                        char hexbuf[5];
-                        sprintf(hexbuf, "0x%02x", executable[i]);
-                        outStream << hexbuf << ", ";
-                        if (i % 8 == 7) {
-                            outStream << std::endl;
-                        }
-                    }
-
-                    outStream << "};\n";
-                    
-                    break;
-                }
-            }
-        }
-        std::cout << "Executables saved\n";
     }
+    std::cout << "Executables saved\n";
 
     // decompile if needed
     if (decompile) {
