@@ -115,10 +115,8 @@ function multicolorInit()
 
 function int multicolorLoop()
 {
-    int animateResult;
-
     if (isCrossfading) {
-        animateResult = Animate(led);
+        int animateResult = Animate(led);
         if (animateResult < 0) {
             // The current light has faded out
             // Restore the Val of the current color
@@ -187,12 +185,10 @@ command p 5 pulseInit pulseLoop;
 //
 function flickerInit()
 {
-    int speed;
-
 	LoadColorParam(0, 0, 1);
     InitArray(&leds, 0, NumPixels * 4);
 
-    speed = Param(3);
+    int speed = Param(3);
     flickerStepsMin = FlickerSpeedTable[speed].min;
     flickerStepsMax = FlickerSpeedTable[speed].max;
     loopDelay = FlickerSpeedTable[speed].delay;
@@ -200,9 +196,7 @@ function flickerInit()
 
 function int flickerLoop()
 {
-    int i;
-
-    i = 0;
+    int i = 0;
     foreach (i : NumPixels) {
         led = &leds[i];
         if (Animate(led) == -1) {
@@ -244,17 +238,14 @@ function rainbowInit()
     
     led.min = LoadColorComp(0, 0);
     
-    float range;
-    range = 1.0 - led.min;
-    float r;
-    r = Float(Param(4) + 1) / 8;
+    float range = 1.0 - led.min;
+    float r = Float(Param(4) + 1) / 8;
     if (r > 1) {
         r = 1;
     }
     led.max = led.min + range * r;
     
-    int speed;
-    speed = 16 - Param(3);
+    int speed = 16 - Param(3);
     if (speed < 1 || speed > 16) {
         speed = 16;
     }
