@@ -32,23 +32,23 @@ out the EEPROM it is only written to with the 'X' command. All interpreted instr
 word RAM store.
 
 ### TODO
-- ☑︎ Get rid of color table
-- ☑︎ Create a Color class which takes rgb or hsv values and can give back color as uint32_t (0x00RRGGBB) or hsv (3 floats 0-1)
-- ☑︎ Make all effects use Color class
-- ☑︎ Make payload a binary array, colors are 3 bytes: hue, sat and val, all 0-255
-- ☑︎ Make node-red generate colors in new format
-- ☑︎ Get rid of new to create Effects. Create one of each and point to it as needed
-- ☑︎ Write Arly Compiler
-- ☑︎ Write Arly test file, implementing ConstantColor and Flicker commands
-- ☑︎ Write Decompiler to see what code is getting generated
-- ☑︎ Write Interpreter for code
-- ☑︎ Write Simulator on Mac, specializing Interpreter and printing out pixel values, etc.
-- ☑︎ Add Interpreter to Arduino as a subclass of Effect
-- ☑︎ Add command(s) to upload Arly executable to Arduino
-- ☑︎ Add interpreted commands to node-red
-- ☑︎ Once everything is working remove ConstantColor and Flicker classes
-- ☑︎ Change packet to be variable length: start ('('), device addr ('0' = all devices), cmd, payload len (0-63), checksum, end (')')
-- ☑︎ Make node-red use variable length format
+- [x] Get rid of color table
+- [x] Create a Color class which takes rgb or hsv values and can give back color as uint32_t (0x00RRGGBB) or hsv (3 floats 0-1)
+- [x] Make all effects use Color class
+- [x] Make payload a binary array, colors are 3 bytes: hue, sat and val, all 0-255
+- [x] Make node-red generate colors in new format
+- [x] Get rid of new to create Effects. Create one of each and point to it as needed
+- [x] Write Arly Compiler
+- [x] Write Arly test file, implementing ConstantColor and Flicker commands
+- [x] Write Decompiler to see what code is getting generated
+- [x] Write Interpreter for code
+- [x] Write Simulator on Mac, specializing Interpreter and printing out pixel values, etc.
+- [x] Add Interpreter to Arduino as a subclass of Effect
+- [x] Add command(s) to upload Arly executable to Arduino
+- [x] Add interpreted commands to node-red
+- [x] Once everything is working remove ConstantColor and Flicker classes
+- [x] Change packet to be variable length: start ('('), device addr ('0' = all devices), cmd, payload len (0-63), checksum, end (')')
+- [x] Make node-red use variable length format
 
 ## Board Fab
 To send PostLightController board to seeedstudio (https://www.seeedstudio.com/fusion_pcb.html):
