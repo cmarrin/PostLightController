@@ -16,7 +16,6 @@
 		49DAA647278B212E00F67EEB /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49DAA646278B212E00F67EEB /* main.cpp */; };
 		49DAA651278B3AFE00F67EEB /* Compiler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49DAA64F278B3AFE00F67EEB /* Compiler.cpp */; };
 		49DAA657278CD00500F67EEB /* Scanner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49DAA656278CD00500F67EEB /* Scanner.cpp */; };
-		49DAA65D2791B78A00F67EEB /* ArlyCompileEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49DAA65B2791B78A00F67EEB /* ArlyCompileEngine.cpp */; };
 		49DAA6602791C0A500F67EEB /* Decompiler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49DAA65F2791C0A500F67EEB /* Decompiler.cpp */; };
 /* End PBXBuildFile section */
 
@@ -211,7 +210,6 @@
 				49DAA657278CD00500F67EEB /* Scanner.cpp in Sources */,
 				491A56E727B4946700AC5FBC /* CloverCompileEngine.cpp in Sources */,
 				491DED262793225B00D007C2 /* Interpreter.cpp in Sources */,
-				49DAA65D2791B78A00F67EEB /* ArlyCompileEngine.cpp in Sources */,
 				49BDF4DF27C6EBF700325407 /* NativeColor.cpp in Sources */,
 				4963436C27A81DA200ABF09F /* CompileEngine.cpp in Sources */,
 				49DAA647278B212E00F67EEB /* main.cpp in Sources */,
