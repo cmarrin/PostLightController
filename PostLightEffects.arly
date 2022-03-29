@@ -106,7 +106,7 @@ function flickerLoop
     Push NumPixels
     
     // for (i = 0; i < NumPixels; ++i)
-    foreach i
+    for i
         // Set r0 to point at the current LED
         PushRef flickerLeds
 		Push i

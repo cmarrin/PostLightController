@@ -196,8 +196,8 @@ function flickerInit()
 
 function int flickerLoop()
 {
-    int i = 0;
-    foreach (i : NumPixels) {
+    int i;
+    for (i = 0; i < NumPixels; ++i) {
         led = &leds[i];
         if (Animate(led) == -1) {
             // We are done with the throb, select a new inc and lim
