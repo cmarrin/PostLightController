@@ -30,10 +30,10 @@ Commands are uploaded to the Aduino from the serial port in 64 byte binary chunk
 
 To install the Node-Red PostLightController project on Mac, follow these steps:
 
-	1) Install Node.js (https://phoenixnap.com/kb/install-npm-mac).
-	2) Use the npm package manager to install Node-Red (https://nodered.org/docs/getting-started/local).
-	3) Clone the Mac Node-Red project (https://github.com/cmarrin/PondController-node-red-mac) into ~/.node-red/projects/PondController-node-red-mac/
-	4) In a Terminal shell run 'node-red'
+1. Install Node.js (https://phoenixnap.com/kb/install-npm-mac).
+2. Use the npm package manager to install Node-Red (https://nodered.org/docs/getting-started/local).
+3. Clone the Mac Node-Red project (https://github.com/cmarrin/PondController-node-red-mac) into ~/.node-red/projects/PondController-node-red-mac/
+4. In a Terminal shell run 'node-red'
 	
 The Node-Red Serial Out node is set to /dev/tty.usbserial-AD02CUJ5 for use with my USB to Serial board, which is similar to this one: https://www.ebay.com/itm/223507758747. Yours may be different. You can 'ls /dev/tty.usbserial-*' to see the name on your machine. If you have more than one board connected disconnect the others so you can positively identify the board you're using. Note that if you're connected directly connected to your Arduino to program it, that serial port will show up. Unplug it temporarily so you can find the one for your serial board.
 	
