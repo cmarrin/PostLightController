@@ -33,8 +33,12 @@ To install the Node-Red PostLightController project on Mac, follow these steps:
 	1) Install Node.js (https://phoenixnap.com/kb/install-npm-mac).
 	2) Use the npm package manager to install Node-Red (https://nodered.org/docs/getting-started/local).
 	3) Clone the Mac Node-Red project (https://github.com/cmarrin/PondController-node-red-mac) into ~/.node-red/projects/PondController-node-red-mac/
-
+	4) In a Terminal shell run 'node-red'
 	
+The Node-Red Serial Out node is set to /dev/tty.usbserial-AD02CUJ5 for use with my USB to Serial board, which is similar to this one: https://www.ebay.com/itm/223507758747. Yours may be different. You can 'ls /dev/tty.usbserial-*' to see the name on your machine. If you have more than one board connected disconnect the others so you can positively identify the board you're using. Note that if you're connected directly connected to your Arduino to program it, that serial port will show up. Unplug it temporarily so you can find the one for your serial board.
+	
+Connect to the PostLightController board from your USB to Serial board by connecting Vcc and Gnd to the corresponding pins on the PostLightController input connector (pins 1 and 2), and the serial board's TXD output to the PostLightController input (pin 3). Then copy all the .arlx files to ~/ and hit the Send Executable button. Of course make sure you build and install PostLightController.ino to the Arduino first.
+
 ## TODO
 - [x] Get rid of color table
 - [x] Create a Color class which takes rgb or hsv values and can give back color as uint32_t (0x00RRGGBB) or hsv (3 floats 0-1)
