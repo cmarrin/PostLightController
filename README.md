@@ -18,18 +18,9 @@ saturation and value (brightness).
 ## Interpreter
 	
 In order to avoid having to reprogram each post light controller whenever a command is added or changed, the system has an interpreter
-for a custom language, Arly. This is a simple language, almost at the machine code level. The runtime engine has 4 registers that
-can hold an int32 or float and 4 color registers. Basic math functions are available for both ints and floats, as well as register
-moving and load/store of values, either direct or indexed. For loops and if-then statements are available. There are also special 
-instructions for setting the lights, generating a random number, etc. Read/write store of 64 ints or floats can be defined for each 
-command, single int or float constants and constant tables (int or float) can be defined. Constants and the binary program to be 
-interpreted are stored in EEPROM.
+for a custom language, Clover. See https://github.com/cmarrin/Clover. Clover uses the concepts of commands for calling functions to perform the various lighting effects. Because of the serial interface, commands for the post lights are a single character. You write a function for init and loop (in Arduino terms), indicate how many params are to be passed and associate it with a single character command string. The params passed to the serial interface must match the number of params specified in the command. The Interpreter init() function is called, passing the command and params. Those params are also available to the loop() function. The loop() function returns an int which is the number of milliseconds to delay before calling loop again. This allows accurate timing for the lighting effects.
 	
-The interpreter is very simple. For instance nested for loops are not allowed and loops and if-else clauses are limited to 64 bytes
-in length. Arly is written in a source format which is compiled into binary in 64 byte blocks. Each block is preceeded by a 2 byte
-address where that block is loaded in EEPROM. The controllers have an 'X' command to upload the blocks to EEPROM. To avoid wearing
-out the EEPROM it is only written to with the 'X' command. All interpreted instructions that store values, place them in the 64
-word RAM store.
+Clover has a mechanism for adding modules, custom native functions for specific functionality. The post lights use a circular NeoPixel array with 8 addressable RGB LEDs (https://www.ebay.com/itm/392044823820). So the PostLightController adds a NativeColor module. This adds the concept of 4 color "registers" which can be manipulated by the functions in the module. There are functions to load a color (3 byte HSV) from the Params into one of the registers, loading and storing one color component (HSV) in one of the registers, and setting one light or all lights from a color register.
 
 ### TODO
 - [x] Get rid of color table
