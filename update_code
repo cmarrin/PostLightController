@@ -1,0 +1,2 @@
+rm -rf ~/PostPostLightEffects??.arlx
+cp PostLightEffects??.arlx ~/
