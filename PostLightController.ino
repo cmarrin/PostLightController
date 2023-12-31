@@ -100,7 +100,8 @@ public:
 	void setup()
 	{
 	    Serial.begin(115200);
-	    _serial.begin(1200);
+        while (!Serial) ; // wait for Arduino Serial Monitor to open
+	    _serial.begin(300);
 		
 		delay(500);
 
