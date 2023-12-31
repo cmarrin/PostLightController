@@ -43,7 +43,9 @@ Command List:
 
    Command 	Name         	Params						Description
    -------  ----            ------    					-----------
-	'C'     Constant Color 	color						Set lights to passed color
+	'C'     Constant Color 	color, n, d					Set lights to passed color
+                                                        Flash n times, for d duration (in 100ms units)
+                                                        If n == 0, just turn lights on
 
 	'X'		EEPROM[0]		addr, <data>				Write EEPROM starting at addr. Data can be
 														up to 64 bytes, due to buffering limitations.
@@ -128,7 +130,7 @@ public:
 		
 		if (delayInMs < 0) {
 			// An effect has finished. End it and clear the display
-			showColor(0, 0, 0);
+			showColor(0, 0, 0, 0, 0);
 			_currentEffect = nullptr;
 			delayInMs = 0;
 		}
@@ -259,7 +261,7 @@ public:
 							
 							switch(_cmd) {
 								case 'C':
-								showColor(_buf[0], _buf[1], _buf[2]);
+								showColor(_buf[4], _buf[5], _buf[6], _buf[7], _buf[8]);
 								break;
 								
 								case 'X': {
@@ -370,10 +372,11 @@ private:
 
 	enum class StatusColor { Red, Green, Yellow };
 
-	void showColor(uint8_t h, uint8_t s, uint8_t v)
+	void showColor(uint8_t h, uint8_t s, uint8_t v, uint8_t n, uint8_t d)
 	{
-		uint8_t buf[ ] = { h, s, v, 0, 0 };
-		_flashEffect.init('0', buf, sizeof(buf));		
+		uint8_t buf[ ] = { h, s, v, n, d };
+        _currentEffect = &_flashEffect;
+        _currentEffect->init('0', buf, sizeof(buf));		
 	}
 	
 	void showStatus(StatusColor color, uint8_t numberOfBlinks = 0, uint8_t interval = 0)
