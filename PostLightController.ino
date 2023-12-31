@@ -11,16 +11,16 @@
 
 Pond Light Controller
 
-Each controller is a 5V Arduino Nano with serial data coming in on pin D5 and data out to
-an 8 pixel WS2812 ring on D6. Serial data, +5V and Gnd comes into each post and goes out to
-the next post.
+Each controller is a 5V Arduino Nano with serial data coming in on pin D11 and out on pin
+D10. Data is output to an 8 pixel WS2812 ring on D6. Serial data, +5V and Gnd comes into 
+each post and goes out to the next post.
 
 Serial Protocol
 
 Standard RS232 protocol is used with 1 start bit, 8 data bits and 1 stop bit. Bit rate is
-set by the protocol from 1200 bps to 57600 bps. Bit rate is currently fixed at 1200 baud.
+set by the protocol from 1200 bps to 57600 bps. Bit rate is currently fixed at 300 baud.
 
-Each command has the format:
+Each command has a series of bytes with the format:
 
 	Lead-in		'('
 	Address		Which controller this command is for (0 is all devices)
