@@ -70,7 +70,8 @@ Hue is an angle on the color wheel. A 0-360 degree value is obtained with hue / 
 
 constexpr int LEDPin = 6;
 constexpr int NumPixels = 8;
-constexpr int BufferSize = 66;
+constexpr int BufferSize = 240; // Must be less than 250
+constexpr int LeadInOutSize = 6;
 constexpr char StartChar = '(';
 constexpr char EndChar = ')';
 constexpr unsigned long SerialTimeOut = 2000; // ms
@@ -159,32 +160,58 @@ public:
 			switch(_state) {
 				case State::NotCapturing:
 					if (c == StartChar) {
+                        _bufIndex = 0;
+                        _buf[_bufIndex++] = c;
 						_state = State::DeviceAddr;
 						_expectedChecksum = c;
+                        _cmdPassThrough = false;
+                        _cmdExecute = false;
 					}
 					break;
 				case State::DeviceAddr:
-					if (c != '0') {
-						// FIXME: Handle commands for other devices
-					}
-					_state = State::Cmd;
+                    if (c == '0') {
+                        // If addr is '0' then this command is for all devices.
+                        // Execute it and pass it through.
+                        _cmdPassThrough = true;
+                        _cmdExecute = true;
+                    } else if (c == '1') {
+                        // If addr is '1' then this command is for this
+                        // device only. Execute but don't pass through.
+                        _cmdPassThrough = false;
+                        _cmdExecute = true;
+                    } else {
+                        // If addr is greater than '1' then this command
+                        // is for another device. decrement the address
+                        // and pass it along.
+                        _cmdPassThrough = true;
+                        _cmdExecute = false;
+                        c -= 1;
+                    }
+                    
+                    _buf[_bufIndex++] = c;
+                    _state = State::Cmd;
 					_expectedChecksum += c;
 					break;
 				case State::Cmd:
+                    _buf[_bufIndex++] = c;
 					_cmd = c;
 					_state = State::Size;
 					_expectedChecksum += c;
 					break;
 				case State::Size:
-					_bufSize = c - '0';
-					if (_bufSize > BufferSize) {
+                    _buf[_bufIndex++] = c;
+					_bufSize = c + LeadInOutSize;
+     
+                    Serial.print(F("Buffer size="));
+                    Serial.println(_bufSize);
+					
+                    if (_bufSize > BufferSize) {
 						Serial.print(F("Buf too big. Size="));
 						Serial.println(_bufSize);
 						showStatus(StatusColor::Red, 6, 1);
 						_state = State::NotCapturing;
 					} else {
 						_state = State::Data;
-						_bufIndex = 0;
 						_expectedChecksum += c;
 					}
 					break;
@@ -192,11 +219,12 @@ public:
 					_buf[_bufIndex++] = c;
 					_expectedChecksum += c;
 					
-					if (_bufIndex >= _bufSize) {
+					if (_bufIndex >= _bufSize - 2) {
 						_state = State::Checksum;
 					}
 					break;
 				case State::Checksum: {
+					_buf[_bufIndex++] = c;
 					_state = State::LeadOut;
 					_actualChecksum = c;
 					_expectedChecksum += '0';
@@ -208,6 +236,8 @@ public:
 						showStatus(StatusColor::Red, 6, 1);
 						_state = State::NotCapturing;
 					} else {
+                        _buf[_bufIndex++] = c;
+                        
 						// Make sure checksum is right
 						_expectedChecksum += c;
 						_expectedChecksum = (_expectedChecksum & 0x3f) + 0x30;
@@ -236,7 +266,7 @@ public:
 									// Cancel effect
 									_currentEffect = nullptr;
 									
-									uint16_t startAddr = uint16_t(_buf[0]) + (uint16_t(_buf[1]) << 8);
+									uint16_t startAddr = uint16_t(_buf[4]) + (uint16_t(_buf[5]) << 8);
 									if (startAddr + _bufSize - 2 > 1024) {
 										Serial.print(F("inv EEPROM addr: addr="));
 										Serial.print(startAddr);
@@ -251,14 +281,14 @@ public:
 										Serial.println(_bufSize - 2);
 
 										for (uint8_t i = 0; i < _bufSize - 2; ++i) {
-											EEPROM[i + startAddr] = _buf[i + 2];
+											EEPROM[i + startAddr] = _buf[i + 2 + 4];
 										}
 									}
 									break;
 								}
 								default:
 								// See if it's interpreted
-								if (!_interpretedEffect.init(_cmd, _buf, _bufSize)) {
+								if (!_interpretedEffect.init(_cmd, _buf + 4, _bufSize - 6)) {
 									String errorMsg;
 									switch(_interpretedEffect.error()) {
 								        case Device::Error::None:
@@ -376,6 +406,9 @@ private:
 	uint8_t _actualChecksum = 0;
 	
 	uint8_t _cmd = '0';
+ 
+    bool _cmdPassThrough = false;
+    bool _cmdExecute = true;
 	
 	// State machine
 	enum class State { NotCapturing, DeviceAddr, Cmd, Size, Data, Checksum, LeadOut };
