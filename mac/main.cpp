@@ -18,6 +18,7 @@
 #include <cstdio>
 
 static constexpr uint32_t MaxExecutableSize = 1024;
+static constexpr uint32_t SegmentSize = 240;
 
 // Simulator
 //
@@ -245,7 +246,7 @@ int main(int argc, char * const argv[])
     std::cout << "\nEmitting executable to '" << path << "'\n";
     std::fstream outStream;
     
-    // If segmented break it up into 64 byte chunks, prefix each file with start addr byte
+    // If segmented break it up into SegmentSize byte chunks, prefix each file with start addr byte
     size_t sizeRemaining = executable.size();
     
     for (uint8_t i = 0; ; i++) {
@@ -269,16 +270,16 @@ int main(int argc, char * const argv[])
             std::cout << "Can't open '" << outputFile << "'\n";
             return 0;
         } else {
-            char* buf = reinterpret_cast<char*>(&(executable[i * 64]));
+            char* buf = reinterpret_cast<char*>(&(executable[i * SegmentSize]));
             size_t sizeToWrite = sizeRemaining;
             
-            if (segmented && sizeRemaining > 64) {
-                sizeToWrite = 64;
+            if (segmented && sizeRemaining > SegmentSize) {
+                sizeToWrite = SegmentSize;
             }
             
             if (segmented) {
                 // Write the 2 byte offset
-                uint16_t addr = uint16_t(i) * 64;
+                uint16_t addr = uint16_t(i) * SegmentSize;
                 outStream.put(uint8_t(addr & 0xff));
                 outStream.put(uint8_t(addr >> 8));
             }
