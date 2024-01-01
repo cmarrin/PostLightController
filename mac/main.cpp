@@ -250,14 +250,12 @@ int main(int argc, char * const argv[])
     size_t sizeRemaining = executable.size();
     
     for (uint8_t i = 0; ; i++) {
-        if (segmented) {
+        if (!headerFile) {
             char buf[3];
             snprintf(buf, 3, "%02u", i);
             name = path + buf + ".arlx";
-        } else if (headerFile) {
-            name = path + ".h";
         } else {
-            name = path + ".arlx";
+            name = path + ".h";
         }
     
         std::ios_base::openmode mode = std::fstream::out;
@@ -277,14 +275,12 @@ int main(int argc, char * const argv[])
                 sizeToWrite = SegmentSize;
             }
             
-            if (segmented) {
+            if (!headerFile) {
                 // Write the 2 byte offset
                 uint16_t addr = uint16_t(i) * SegmentSize;
                 outStream.put(uint8_t(addr & 0xff));
                 outStream.put(uint8_t(addr >> 8));
-            }
             
-            if (!headerFile) {
                 // Write the buffer
                 outStream.write(buf, sizeToWrite);
                 if (outStream.fail()) {
