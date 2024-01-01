@@ -52,10 +52,10 @@ private:
     uint8_t _rom[1024];
 };
 
-// compile [-o <output file>] [-x] <input file>
+// compile [-o <output file>] [-shdx] <input file>
 //
 //      -o      output compiled binary root name
-//      -s      output binary in 64 byte segments (named <root name>00.{clvr,arly}, etc.
+//      -s      output binary in SegmentSize byte segments (named <root name>00.{clvr,arly}, etc.
 //      -h      output in include file format. Output file is <root name>.h
 //      -d      decompile and print result
 //      -x      simulate resulting binary
