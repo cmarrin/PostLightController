@@ -236,7 +236,7 @@ int main(int argc, char * const argv[])
 
     for (int i = 0; ; ++i) {
         char buf[3];
-        sprintf(buf, "%02u", i);
+        snprintf(buf, 3, "%02u", i);
         name = path + buf + ".arlx";
         if (remove(name.c_str()) != 0) {
             break;
@@ -252,7 +252,7 @@ int main(int argc, char * const argv[])
     for (uint8_t i = 0; ; i++) {
         if (segmented) {
             char buf[3];
-            sprintf(buf, "%02u", i);
+            snprintf(buf, 3, "%02u", i);
             name = path + buf + ".arlx";
         } else if (headerFile) {
             name = path + ".h";
@@ -304,7 +304,7 @@ int main(int argc, char * const argv[])
                 
                 for (size_t i = 0; i < sizeRemaining; ++i) {
                     char hexbuf[5];
-                    sprintf(hexbuf, "0x%02x", executable[i]);
+                    snprintf(hexbuf, 5, "0x%02x", executable[i]);
                     outStream << hexbuf << ", ";
                     if (i % 8 == 7) {
                         outStream << std::endl;
