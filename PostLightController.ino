@@ -72,8 +72,8 @@ Hue is an angle on the color wheel. A 0-360 degree value is obtained with hue / 
 
 constexpr int LEDPin = 6;
 constexpr int NumPixels = 8;
-constexpr int BufferSize = 240; // Must be less than 250
-constexpr int LeadInOutSize = 6;
+constexpr int MaxPayloadSize = 242; // Must be less than 250
+constexpr int CommandSize = 6;
 constexpr char StartChar = '(';
 constexpr char EndChar = ')';
 constexpr unsigned long SerialTimeOut = 2000; // ms
@@ -202,14 +202,15 @@ public:
 					break;
 				case State::Size:
                     _buf[_bufIndex++] = c;
-					_bufSize = c + LeadInOutSize;
+					_payloadSize = c;
+                    _payloadReceived = 0;
      
                     Serial.print(F("Buffer size="));
-                    Serial.println(_bufSize);
+                    Serial.println(_payloadSize);
 					
-                    if (_bufSize > BufferSize) {
+                    if (_payloadSize > MaxPayloadSize) {
 						Serial.print(F("Buf too big. Size="));
-						Serial.println(_bufSize);
+						Serial.println(_payloadSize);
 						showStatus(StatusColor::Red, 6, 1);
 						_state = State::NotCapturing;
 					} else {
@@ -219,9 +220,10 @@ public:
 					break;
 				case State::Data:
 					_buf[_bufIndex++] = c;
+                    _payloadReceived++;
 					_expectedChecksum += c;
 					
-					if (_bufIndex >= _bufSize - 2) {
+					if (_payloadReceived >= _payloadSize) {
 						_state = State::Checksum;
 					}
 					break;
@@ -269,28 +271,28 @@ public:
 									_currentEffect = nullptr;
 									
 									uint16_t startAddr = uint16_t(_buf[4]) + (uint16_t(_buf[5]) << 8);
-									if (startAddr + _bufSize - 2 > 1024) {
+									if (startAddr + _payloadSize - 2 > 1024) {
 										Serial.print(F("inv EEPROM addr: addr="));
 										Serial.print(startAddr);
 										Serial.print(F(", size="));
-										Serial.println(_bufSize - 2);
+										Serial.println(_payloadSize - 2);
 										showStatus(StatusColor::Red, 5, 5);
 										_state = State::NotCapturing;
 									} else {
 										Serial.print(F("exec => EEPROM: addr="));
 										Serial.print(startAddr);
 										Serial.print(F(", size="));
-										Serial.println(_bufSize - 2);
+										Serial.println(_payloadSize - 2);
 
-										for (uint8_t i = 0; i < _bufSize - 2; ++i) {
-											EEPROM[i + startAddr] = _buf[i + 2 + 4];
+										for (uint8_t i = 0; i < _payloadSize - 2; ++i) {
+											EEPROM[i + startAddr] = _buf[i + 2 + 4]; // Skip cmd chars and start addr
 										}
 									}
 									break;
 								}
 								default:
-								// See if it's interpreted
-								if (!_interpretedEffect.init(_cmd, _buf + 4, _bufSize - 6)) {
+								// See if it's interpreted, payload is after cmd bytes, offset it
+								if (!_interpretedEffect.init(_cmd, _buf + 4, _payloadSize)) {
 									String errorMsg;
 									switch(_interpretedEffect.error()) {
 								        case Device::Error::None:
@@ -400,9 +402,12 @@ private:
     clvr::NativeModule* _modules;
 	InterpretedEffect _interpretedEffect;
 	
-	uint8_t _buf[BufferSize];
+	uint8_t _buf[MaxPayloadSize + CommandSize];
 	uint8_t _bufIndex = 0;
-	uint8_t _bufSize = 0;
+    
+    uint8_t _payloadReceived = 0;
+	uint8_t _payloadSize = 0;
+    
 	unsigned long _timeSinceLastChar = 0;
 	
 	uint8_t _expectedChecksum = 0;
