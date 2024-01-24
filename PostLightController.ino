@@ -227,10 +227,12 @@ public:
 						_state = State::Checksum;
 					}
 					break;
-				case State::Checksum: {
-					_buf[_bufIndex++] = c;
+				case State::Checksum: {     
+                    // If we're passing through and not executing, we've decremented
+                    //  the address so we have to decrement the checksum as well
+					_actualChecksum = (_cmdPassThrough && !_cmdExecute) ? (c - 1) : c;
+					_buf[_bufIndex++] = _actualChecksum;
 					_state = State::LeadOut;
-					_actualChecksum = c;
 					_expectedChecksum += '0';
 					break;
 				}
