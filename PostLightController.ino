@@ -302,6 +302,7 @@ public:
 											EEPROM[i + startAddr] = _buf[i + 2 + 4]; // Skip cmd chars and start addr
 										}
 									}
+                                    showStatus(StatusColor::Yellow, 0, 0);
 									break;
 								}
 								default:
