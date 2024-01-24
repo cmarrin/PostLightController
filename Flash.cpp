@@ -51,7 +51,8 @@ int32_t
 Flash::loop()
 {
 	if (_countCompleted >= _count) {
-		return -1;
+        // If count == 0 we leave the lights on forever
+		return _count ? -1 : 0;
 	}
 	
 	uint32_t t = millis();
