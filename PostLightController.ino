@@ -258,9 +258,21 @@ public:
 							showStatus(StatusColor::Red, 5, 5);
 							_state = State::NotCapturing;
 						} else {
-							// Have a good buffer, handle the command
+							// Have a good buffer
 							_state = State::NotCapturing;
-							
+
+                            // Pass through buffer if needed
+                            if (_cmdPassThrough) {
+                                for (uint8_t i = 0; i < _payloadSize + CommandSize; i++) {
+                                    _serial.write(_buf[i]);
+                                }
+                            }
+       
+                            if (!_cmdExecute) {
+                                break;
+                            }
+                            
+                            // Handle the command
 							_currentEffect = nullptr;
 							
 							switch(_cmd) {
