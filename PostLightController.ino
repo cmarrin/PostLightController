@@ -398,10 +398,10 @@ private:
 	
 	void showStatus(StatusColor color, uint8_t numberOfBlinks = 0, uint8_t interval = 0)
 	{
-		// Flash full bright red at 1 second interval, 10 times
-		uint8_t buf[ ] = { 0x00, 0xff, 0xff, numberOfBlinks, interval };
+		// Flash half bright red at 1 second interval, 10 times
+		uint8_t buf[ ] = { 0x00, 0xff, 0x80, numberOfBlinks, interval };
 		
-		buf[0] = (color == StatusColor::Red) ? 0 : ((color == StatusColor::Green) ? 85 : 42);			
+		buf[0] = (color == StatusColor::Red) ? 0 : ((color == StatusColor::Green) ? 85 : 30);			
 		
 		_currentEffect = &_flashEffect;
 		_currentEffect->init('0', buf, sizeof(buf));		
