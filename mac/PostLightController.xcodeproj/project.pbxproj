@@ -19,24 +19,16 @@
 		49DAA6602791C0A500F67EEB /* Decompiler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49DAA65F2791C0A500F67EEB /* Decompiler.cpp */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXCopyFilesBuildPhase section */
-		49DAA641278B212E00F67EEB /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = /usr/share/man/man1/;
-			dstSubfolderSpec = 0;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 1;
-		};
-/* End PBXCopyFilesBuildPhase section */
-
 /* Begin PBXFileReference section */
 		491DED242793225B00D007C2 /* Interpreter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Interpreter.cpp; path = ../Clover/Runtime/Interpreter.cpp; sourceTree = "<group>"; };
 		491DED252793225B00D007C2 /* Interpreter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Interpreter.h; path = ../Clover/Runtime/Interpreter.h; sourceTree = "<group>"; };
 		491DED27279385B700D007C2 /* Color.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Color.cpp; path = ../Color.cpp; sourceTree = "<group>"; };
 		491DED28279385B700D007C2 /* Color.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Color.h; path = ../Color.h; sourceTree = "<group>"; };
 		491DED2A279462FE00D007C2 /* Opcodes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Opcodes.h; path = ../Clover/Runtime/Opcodes.h; sourceTree = "<group>"; };
+		4941A0C72B867F7F00CE3C9E /* PostLightEffects02.arlx */ = {isa = PBXFileReference; lastKnownFileType = file; name = PostLightEffects02.arlx; path = ../PostLightEffects02.arlx; sourceTree = "<group>"; };
+		4941A0C82B867F7F00CE3C9E /* PostLightEffects01.arlx */ = {isa = PBXFileReference; lastKnownFileType = file; name = PostLightEffects01.arlx; path = ../PostLightEffects01.arlx; sourceTree = "<group>"; };
+		4941A0C92B867F7F00CE3C9E /* PostLightEffects03.arlx */ = {isa = PBXFileReference; lastKnownFileType = file; name = PostLightEffects03.arlx; path = ../PostLightEffects03.arlx; sourceTree = "<group>"; };
+		4941A0CA2B867F7F00CE3C9E /* PostLightEffects00.arlx */ = {isa = PBXFileReference; lastKnownFileType = file; name = PostLightEffects00.arlx; path = ../PostLightEffects00.arlx; sourceTree = "<group>"; };
 		4963436427A4BCC000ABF09F /* CloverCompileEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CloverCompileEngine.h; path = ../Clover/Compiler/CloverCompileEngine.h; sourceTree = "<group>"; };
 		4963436527A4BCC000ABF09F /* CloverCompileEngine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CloverCompileEngine.cpp; path = ../Clover/Compiler/CloverCompileEngine.cpp; sourceTree = "<group>"; };
 		4963436927A5DC6E00ABF09F /* PostLightEffects.clvr */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; fileEncoding = 4; name = PostLightEffects.clvr; path = ../PostLightEffects.clvr; sourceTree = "<group>"; };
@@ -77,6 +69,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4941A0C62B867F3800CE3C9E /* Executables */ = {
+			isa = PBXGroup;
+			children = (
+				4941A0CA2B867F7F00CE3C9E /* PostLightEffects00.arlx */,
+				4941A0C82B867F7F00CE3C9E /* PostLightEffects01.arlx */,
+				4941A0C72B867F7F00CE3C9E /* PostLightEffects02.arlx */,
+				4941A0C92B867F7F00CE3C9E /* PostLightEffects03.arlx */,
+			);
+			name = Executables;
+			sourceTree = "<group>";
+		};
 		49BDF4D227C5B56200325407 /* Arduino */ = {
 			isa = PBXGroup;
 			children = (
@@ -97,6 +100,7 @@
 				49BDF4D227C5B56200325407 /* Arduino */,
 				49DAA652278B3B5B00F67EEB /* src */,
 				49DAA64D278B2DF200F67EEB /* Scripts */,
+				4941A0C62B867F3800CE3C9E /* Executables */,
 				49DAA644278B212E00F67EEB /* Products */,
 			);
 			sourceTree = "<group>";
@@ -156,7 +160,7 @@
 			buildPhases = (
 				49DAA63F278B212E00F67EEB /* Sources */,
 				49DAA640278B212E00F67EEB /* Frameworks */,
-				49DAA641278B212E00F67EEB /* CopyFiles */,
+				4941A0D12B86820E00CE3C9E /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -198,6 +202,27 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		4941A0D12B86820E00CE3C9E /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "cp ../PostLightEffects0?.arlx ~/\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		49DAA63F278B212E00F67EEB /* Sources */ = {
