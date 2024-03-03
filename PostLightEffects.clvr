@@ -14,7 +14,6 @@ struct FlickerSpeedEntry
 {
     float min;
     float max;
-    int delay;
 }
 
 struct LedEntry
@@ -25,9 +24,11 @@ struct LedEntry
     float max;
 }
 
-const float IncMin          0.004;
-const float IncMax          0.04;
-const float BrightnessMin   0.3;
+const float FadeInc         0.04;
+const float PulseMin        0.3;
+const float BrightestMin    0.6;
+const float BrightestMax    1.0;
+const float FlickerMin      0.2;
 const int NumPixels         8;
 const int NumLevels         8;
 const int Delay             25; // in ms
@@ -36,25 +37,25 @@ const int RainbowSpeedMult  300;
 
 table FlickerSpeedEntry FlickerSpeedTable
 {
-    0.98 1.0  40
-    0.98 1.0  30
-    0.71 0.94 20
-    0.59 0.78 20
-    0.27 0.47 20
-    0.08 0.31 20
-    0.03 0.16 10
-    0.01 0.02 10
+    0.004 0.008
+    0.008 0.016
+    0.016 0.024
+    0.024 0.032
+    0.032 0.040
+    0.040 0.048
+    0.048 0.056
+    0.056 0.064
 }
 
 LedEntry leds[8];
 LedEntry* led;
 float flickerStepsMin;
 float flickerStepsMax;
-int loopDelay;
 int durationMax; // Number of counts between fade (based on Delay)
 int durationCur;
 int multiColorIndex;
 int isCrossfading;
+float brightnessMod;
 
 //
 // Constant effect
@@ -68,7 +69,7 @@ function constantInit()
 function int constantLoop()
 {
 	SetAllLights(0);
-    return 20;
+    return Delay;
 }
 
 command c 3 constantInit constantLoop;
@@ -86,7 +87,7 @@ function initFade(int c, int fadeIn)
     led.min = 0.0;
     led.max = LoadColorComp(c, 2);
     led.cur = 0.0;
-    led.inc = IncMax;
+    led.inc = FadeInc;
 
     if (!fadeIn) {
         led.cur = led.max;
@@ -99,6 +100,7 @@ function multicolorInit()
     LoadColorParam(0, 0, 4);
 
     durationMax = Param(12) * 1000 / Delay;
+    
     led = &leds[0];
 
     // Start on a random color
@@ -146,6 +148,10 @@ function int multicolorLoop()
 
     // We've hit the desired duration, transition
     isCrossfading = 1;
+    
+    // Add random amount to duration
+    durationMax = Int(Float(Param(12) * 1000) * RandomFloat(1, 1.5)) / Delay;
+
     return Delay;
 }
 
@@ -161,8 +167,10 @@ function pulseInit()
     led = &leds[0];
     
     led.max = LoadColorComp(0, 2);
-    led.min = led.max - (Float(Param(4) + 1) / 8.0 * (led.max - BrightnessMin));
-    led.inc = (led.max - led.min) / Float((NumLevels - Param(3)) * PulseSpeedMult);
+    led.min = led.max - (Float(Param(4) + 1) / 8.0 * (led.max - PulseMin));
+    
+    // add some randomization to the duration
+    led.inc = (led.max - led.min) / (Float((NumLevels - Param(3)) * PulseSpeedMult) * RandomFloat(1, 2));
 
     // Start with a random value for cur
     led.cur = RandomFloat(led.min, led.max);
@@ -183,6 +191,10 @@ command p 5 pulseInit pulseLoop;
 //
 // Flicker effect
 //
+// Pass HSV color and a speed value (0-7).
+// Speed indexes into a table with a min, max and delay value.
+// 
+//
 function flickerInit()
 {
 	LoadColorParam(0, 0, 1);
@@ -191,7 +203,9 @@ function flickerInit()
     int speed = Param(3);
     flickerStepsMin = FlickerSpeedTable[speed].min;
     flickerStepsMax = FlickerSpeedTable[speed].max;
-    loopDelay = FlickerSpeedTable[speed].delay;
+    
+    // Modify the brightness to make it between 0.5 and 1.0
+    brightnessMod = LoadColorComp(0, 2) / 2.0 + 0.5;
 }
 
 function int flickerLoop()
@@ -200,21 +214,26 @@ function int flickerLoop()
     for (i = 0; i < NumPixels; ++i) {
         led = &leds[i];
         if (Animate(led) == -1) {
-            // We are done with the throb, select a new inc and lim
-            // Increment inc value for each step a random amount
-            led.cur = BrightnessMin;
-            led.inc = RandomFloat(IncMin, IncMax);
-        
-            // Random number of steps to throb up and down
-            led.min = BrightnessMin;
-            led.max = led.inc + RandomFloat(flickerStepsMin, flickerStepsMax);
+            // We are done with the throb. We always start at BrightnessMin.
+            // Select a new inc (how fast it pulses), and  max (how bright it
+            // gets) based on the speed value.
+            led.cur = FlickerMin;
+            led.min = FlickerMin;
+            
+            led.inc = RandomFloat(flickerStepsMin, flickerStepsMax);
+            
+            // Adjust max by brightness
+            led.max = RandomFloat(BrightestMin, BrightestMax);
+log("***** brightness before=%f\n", led.max);
+            led.max  *= brightnessMod;
+log("***** brightness mod=%f\n", brightnessMod);
         }
 
         StoreColorComp(0, 2, led.cur);
         SetLight(i, 0);
     }
     
-    return loopDelay;
+    return Delay;
 }
 
 command f 4 flickerInit flickerLoop;
@@ -250,7 +269,6 @@ function rainbowInit()
         speed = 16;
     }
     speed *= RainbowSpeedMult;
-log("***** speed=%i\n", speed);
     led.inc = (led.max - led.min) / Float(speed);
 
     // Start with a random value for cur
