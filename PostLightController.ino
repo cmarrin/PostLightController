@@ -70,6 +70,8 @@ Hue is an angle on the color wheel. A 0-360 degree value is obtained with hue / 
 #include "InterpretedEffect.h"
 #include "NativeColor.h"
 
+#include "Formatter.h"
+
 constexpr int LEDPin = 6;
 constexpr int NumPixels = 8;
 constexpr int MaxPayloadSize = 242; // Must be less than 250
@@ -447,6 +449,8 @@ static void setLight(uint8_t i, uint32_t rgb)
 
 void setup()
 {
+    char buf[20];
+    Formatter::toString(Generator(buf, 19), 1234);
 	controller.setup();
 }
 

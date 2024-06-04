@@ -10,6 +10,9 @@
 		491A56E727B4946700AC5FBC /* CloverCompileEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4963436527A4BCC000ABF09F /* CloverCompileEngine.cpp */; };
 		491DED262793225B00D007C2 /* Interpreter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 491DED242793225B00D007C2 /* Interpreter.cpp */; };
 		491DED29279385B700D007C2 /* Color.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 491DED27279385B700D007C2 /* Color.cpp */; };
+		49279C222C0E859100294992 /* FloatFormatter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49279C182C0E859100294992 /* FloatFormatter.cpp */; };
+		49279C242C0E859100294992 /* Formatter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49279C1A2C0E859100294992 /* Formatter.cpp */; };
+		49279C262C0E859100294992 /* fpconv.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49279C1F2C0E859100294992 /* fpconv.cpp */; };
 		4963436C27A81DA200ABF09F /* CompileEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4963436B27A81DA200ABF09F /* CompileEngine.cpp */; };
 		49BDF4DF27C6EBF700325407 /* NativeColor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49BDF4DD27C6EBF700325407 /* NativeColor.cpp */; };
 		49BDF4E227C7CF7A00325407 /* NativeCore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49BDF4E027C7CF7A00325407 /* NativeCore.cpp */; };
@@ -25,6 +28,16 @@
 		491DED27279385B700D007C2 /* Color.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Color.cpp; path = ../Color.cpp; sourceTree = "<group>"; };
 		491DED28279385B700D007C2 /* Color.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Color.h; path = ../Color.h; sourceTree = "<group>"; };
 		491DED2A279462FE00D007C2 /* Opcodes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Opcodes.h; path = ../Clover/Runtime/Opcodes.h; sourceTree = "<group>"; };
+		49279C182C0E859100294992 /* FloatFormatter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FloatFormatter.cpp; path = ../Clover/Runtime/FloatFormatter.cpp; sourceTree = "<group>"; };
+		49279C192C0E859100294992 /* bare.cppxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = bare.cppxx; path = ../Clover/Runtime/bare.cppxx; sourceTree = "<group>"; };
+		49279C1A2C0E859100294992 /* Formatter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Formatter.cpp; path = ../Clover/Runtime/Formatter.cpp; sourceTree = "<group>"; };
+		49279C1B2C0E859100294992 /* fpconv.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = fpconv.h; path = ../Clover/Runtime/fpconv.h; sourceTree = "<group>"; };
+		49279C1C2C0E859100294992 /* bare.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = bare.h; path = ../Clover/Runtime/bare.h; sourceTree = "<group>"; };
+		49279C1D2C0E859100294992 /* Formatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Formatter.h; path = ../Clover/Runtime/Formatter.h; sourceTree = "<group>"; };
+		49279C1E2C0E859100294992 /* printf-emb_tiny.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "printf-emb_tiny.cpp"; path = "../Clover/Runtime/printf-emb_tiny.cpp"; sourceTree = "<group>"; };
+		49279C1F2C0E859100294992 /* fpconv.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = fpconv.cpp; path = ../Clover/Runtime/fpconv.cpp; sourceTree = "<group>"; };
+		49279C202C0E859100294992 /* powers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = powers.h; path = ../Clover/Runtime/powers.h; sourceTree = "<group>"; };
+		49279C212C0E859100294992 /* Float.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Float.h; path = ../Clover/Runtime/Float.h; sourceTree = "<group>"; };
 		4941A0C72B867F7F00CE3C9E /* PostLightEffects02.arlx */ = {isa = PBXFileReference; lastKnownFileType = file; name = PostLightEffects02.arlx; path = ../PostLightEffects02.arlx; sourceTree = "<group>"; };
 		4941A0C82B867F7F00CE3C9E /* PostLightEffects01.arlx */ = {isa = PBXFileReference; lastKnownFileType = file; name = PostLightEffects01.arlx; path = ../PostLightEffects01.arlx; sourceTree = "<group>"; };
 		4941A0C92B867F7F00CE3C9E /* PostLightEffects03.arlx */ = {isa = PBXFileReference; lastKnownFileType = file; name = PostLightEffects03.arlx; path = ../PostLightEffects03.arlx; sourceTree = "<group>"; };
@@ -125,6 +138,16 @@
 		49DAA652278B3B5B00F67EEB /* src */ = {
 			isa = PBXGroup;
 			children = (
+				49279C192C0E859100294992 /* bare.cppxx */,
+				49279C1C2C0E859100294992 /* bare.h */,
+				49279C212C0E859100294992 /* Float.h */,
+				49279C182C0E859100294992 /* FloatFormatter.cpp */,
+				49279C1A2C0E859100294992 /* Formatter.cpp */,
+				49279C1D2C0E859100294992 /* Formatter.h */,
+				49279C1F2C0E859100294992 /* fpconv.cpp */,
+				49279C1B2C0E859100294992 /* fpconv.h */,
+				49279C202C0E859100294992 /* powers.h */,
+				49279C1E2C0E859100294992 /* printf-emb_tiny.cpp */,
 				4963436527A4BCC000ABF09F /* CloverCompileEngine.cpp */,
 				4963436427A4BCC000ABF09F /* CloverCompileEngine.h */,
 				491DED27279385B700D007C2 /* Color.cpp */,
@@ -178,7 +201,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastUpgradeCheck = 1320;
+				LastUpgradeCheck = 1340;
 				TargetAttributes = {
 					49DAA642278B212E00F67EEB = {
 						CreatedOnToolsVersion = 13.2.1;
@@ -207,7 +230,7 @@
 		4941A0D12B86820E00CE3C9E /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
-			buildActionMask = 2147483647;
+			buildActionMask = 8;
 			files = (
 			);
 			inputFileListPaths = (
@@ -218,7 +241,7 @@
 			);
 			outputPaths = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
+			runOnlyForDeploymentPostprocessing = 1;
 			shellPath = /bin/sh;
 			shellScript = "cp ../PostLightEffects0?.arlx ~/\n";
 		};
@@ -232,8 +255,11 @@
 				49BDF4E227C7CF7A00325407 /* NativeCore.cpp in Sources */,
 				491DED29279385B700D007C2 /* Color.cpp in Sources */,
 				49DAA6602791C0A500F67EEB /* Decompiler.cpp in Sources */,
+				49279C262C0E859100294992 /* fpconv.cpp in Sources */,
 				49DAA657278CD00500F67EEB /* Scanner.cpp in Sources */,
 				491A56E727B4946700AC5FBC /* CloverCompileEngine.cpp in Sources */,
+				49279C242C0E859100294992 /* Formatter.cpp in Sources */,
+				49279C222C0E859100294992 /* FloatFormatter.cpp in Sources */,
 				491DED262793225B00D007C2 /* Interpreter.cpp in Sources */,
 				49BDF4DF27C6EBF700325407 /* NativeColor.cpp in Sources */,
 				4963436C27A81DA200ABF09F /* CompileEngine.cpp in Sources */,
@@ -359,6 +385,7 @@
 		49DAA64B278B212E00F67EEB /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -367,6 +394,7 @@
 		49DAA64C278B212E00F67EEB /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
