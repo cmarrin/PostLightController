@@ -72,6 +72,8 @@ Hue is an angle on the color wheel. A 0-360 degree value is obtained with hue / 
 
 #include "Formatter.h"
 
+int  emb_snprintf(char *s, size_t n, const char *fmt, ...);
+
 constexpr int LEDPin = 6;
 constexpr int NumPixels = 8;
 constexpr int MaxPayloadSize = 242; // Must be less than 250
@@ -116,6 +118,16 @@ public:
 	    _pixels.setBrightness(255);
 		
 		Serial.println(F("Post Light Controller v0.2"));
+
+        char buf[50] = "";
+        emb_snprintf(buf, 49, "******** i=%d", 1234);
+//        fmt::Float i(1.5);
+//        Serial.print("******** i=");
+//        fmt::Formatter::toString(buf, 19, i);
+//        Serial.println(buf);
+//        fmt::Formatter::Generator g(buf, 19);
+//        fmt::Formatter::format(g, "******** i=%f", i.toArg());
+        Serial.println(buf);
 	
 		showStatus(StatusColor::Green, 3, 2);
 		
@@ -449,8 +461,6 @@ static void setLight(uint8_t i, uint32_t rgb)
 
 void setup()
 {
-    char buf[20];
-    Formatter::toString(Generator(buf, 19), 1234);
 	controller.setup();
 }
 

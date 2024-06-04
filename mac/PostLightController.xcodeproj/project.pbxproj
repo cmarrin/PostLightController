@@ -12,7 +12,7 @@
 		491DED29279385B700D007C2 /* Color.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 491DED27279385B700D007C2 /* Color.cpp */; };
 		49279C222C0E859100294992 /* FloatFormatter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49279C182C0E859100294992 /* FloatFormatter.cpp */; };
 		49279C242C0E859100294992 /* Formatter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49279C1A2C0E859100294992 /* Formatter.cpp */; };
-		49279C262C0E859100294992 /* fpconv.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49279C1F2C0E859100294992 /* fpconv.cpp */; };
+		49279C272C0F8D1A00294992 /* printf-emb_tiny.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49279C1E2C0E859100294992 /* printf-emb_tiny.cpp */; };
 		4963436C27A81DA200ABF09F /* CompileEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4963436B27A81DA200ABF09F /* CompileEngine.cpp */; };
 		49BDF4DF27C6EBF700325407 /* NativeColor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49BDF4DD27C6EBF700325407 /* NativeColor.cpp */; };
 		49BDF4E227C7CF7A00325407 /* NativeCore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49BDF4E027C7CF7A00325407 /* NativeCore.cpp */; };
@@ -255,9 +255,9 @@
 				49BDF4E227C7CF7A00325407 /* NativeCore.cpp in Sources */,
 				491DED29279385B700D007C2 /* Color.cpp in Sources */,
 				49DAA6602791C0A500F67EEB /* Decompiler.cpp in Sources */,
-				49279C262C0E859100294992 /* fpconv.cpp in Sources */,
 				49DAA657278CD00500F67EEB /* Scanner.cpp in Sources */,
 				491A56E727B4946700AC5FBC /* CloverCompileEngine.cpp in Sources */,
+				49279C272C0F8D1A00294992 /* printf-emb_tiny.cpp in Sources */,
 				49279C242C0E859100294992 /* Formatter.cpp in Sources */,
 				49279C222C0E859100294992 /* FloatFormatter.cpp in Sources */,
 				491DED262793225B00D007C2 /* Interpreter.cpp in Sources */,

@@ -17,6 +17,10 @@
 #include <getopt.h>
 #include <cstdio>
 
+#include "Formatter.h"
+
+int  emb_snprintf(char *s, size_t n, const char *fmt, ...);
+
 static constexpr uint32_t MaxExecutableSize = 1024;
 static constexpr uint32_t SegmentSize = 240;
 
@@ -390,6 +394,15 @@ int main(int argc, char * const argv[])
         }
         
     }
+
+    char buf[50];
+    
+    emb_snprintf(buf, 49, "******** i=%d", 1234);
+
+//    fmt::Float i(1.5);
+//    fmt::Formatter::Generator g(buf, 19);
+//    fmt::Formatter::format(g, "******** i=%f", i.toArg());
+    std::cout << buf << "\n";
 
     return 1;
 }
