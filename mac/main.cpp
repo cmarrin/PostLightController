@@ -396,12 +396,11 @@ int main(int argc, char * const argv[])
     }
 
     char buf[50];
+    flt::Float i(1.5);
     
-    emb_snprintf(buf, 49, "******** i=%d", 1234);
 
-//    fmt::Float i(1.5);
-//    fmt::Formatter::Generator g(buf, 19);
-//    fmt::Formatter::format(g, "******** i=%f", i.toArg());
+    fmt::Formatter::Generator g(buf, 19);
+    fmt::Formatter::format(g, "******** i=%f", i.toArg());
     std::cout << buf << "\n";
 
     return 1;

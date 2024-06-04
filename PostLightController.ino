@@ -103,7 +103,20 @@ public:
         _pixels.setPixelColor(i, rgb);
 		_pixels.show();
     }
-    
+
+String floatToString(float val, int8_t places)
+{
+    uint32_t mul = 1;
+    if (places > 0 && places < 10) {
+        while (places--) {
+            mul *= 10;
+        }
+    }
+    int32_t intPart = int32_t(val);
+    int32_t fracPart = (val - float(intPart)) * mul;
+    return String(intPart) + "." + String(fracPart);
+}
+
 	void setup()
 	{
 	    Serial.begin(115200);
@@ -119,15 +132,20 @@ public:
 		
 		Serial.println(F("Post Light Controller v0.2"));
 
-        char buf[50] = "";
-        emb_snprintf(buf, 49, "******** i=%d", 1234);
-//        fmt::Float i(1.5);
-//        Serial.print("******** i=");
+        float i = 1.5;
+//        char buf[50] = "";
+//        emb_snprintf(buf, 49, "******** i=%f", i);
 //        fmt::Formatter::toString(buf, 19, i);
+//        Serial.print(String("******** i=") + buf + "\n");
 //        Serial.println(buf);
 //        fmt::Formatter::Generator g(buf, 19);
 //        fmt::Formatter::format(g, "******** i=%f", i.toArg());
-        Serial.println(buf);
+
+//      dtostrf(1.5, 6, 3, buf);
+//        Serial.println(String("******** i=") + floatToString(i, 3));
+        int32_t intPart = int32_t(i);
+        int32_t fracPart = (i - float(intPart)) * 1000;
+        Serial.println(String("******** i=") + floatToString(i, 3));
 	
 		showStatus(StatusColor::Green, 3, 2);
 		
