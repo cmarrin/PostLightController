@@ -9,46 +9,27 @@
 
 // NativeColor
 //
-// static color specific methods for Interpreter
+// static color specific methods
 
 #pragma once
 
-#include "Color.h"
+#include "Defines.h"
 #include "Interpreter.h"
+
+#include <stdint.h>
 
 namespace clvr {
 
-constexpr uint8_t ColorPrefix = 0x20;
-
-class NativeColor : public NativeModule
+class NativeColor
 {
 public:
-    using SetLight = void(uint8_t i, uint32_t rgb);
-    
     enum class Id {
-        LoadColorParam  = ColorPrefix | 0x00,
-        SetAllLights    = ColorPrefix | 0x01,
-        SetLight        = ColorPrefix | 0x02,
-        LoadColorComp   = ColorPrefix | 0x03,
-        StoreColorComp  = ColorPrefix | 0x04,
+        SetLight      = 0,
     };
     
-    NativeColor(SetLight* setLightFun, uint8_t numPixels) : _setLightFun(setLightFun) , _numPixels(numPixels) { }
+    static const FunctionList create();
     
-    virtual bool hasId(uint8_t id) const override;
-    virtual uint8_t numParams(uint8_t id) const override;
-    virtual int32_t call(Interpreter*, uint8_t id) override;
-
-#ifndef ARDUINO
-    virtual void addFunctions(CompileEngine*) override;
-#endif
-
-private:
-    void setAllLights(uint8_t i);
-    
-    Color _c[4];
-    SetLight* _setLightFun = nullptr;
-    uint8_t _numPixels = 0;
+    static void callNative(uint16_t id, InterpreterBase*);
 };
 
 }

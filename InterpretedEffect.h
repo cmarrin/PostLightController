@@ -13,45 +13,36 @@
 
 #pragma once
 
-#include "Effect.h"
-#include "NativeColor.h"
 #include <Clover.h>
-#include <EEPROM.h>
+
 #include <Adafruit_NeoPixel.h>
 
-class Device : public clvr::Interpreter
+static constexpr uint32_t StackSize = 1024;
+
+class MyInterpreter : public clvr::Interpreter<StackSize>
 {
 public:
-	Device(clvr::NativeModule** mod, uint32_t modSize, Adafruit_NeoPixel* pixels)
-        : Interpreter(mod, modSize)
-        , _pixels(pixels)
+	MyInterpreter(Adafruit_NeoPixel* pixels)
+        : _pixels(pixels)
     { }
-	
-    virtual uint8_t rom(uint16_t i) const override
-    {
-        return EEPROM[i];
-    }
-    
-    virtual void log(const char* s) const override
-    {
-        Serial.print(s);
-    }
+
+    static void  callNativeColor(uint16_t id, clvr::InterpreterBase*);
 
 private:
 	Adafruit_NeoPixel* _pixels;
 };
 
-class InterpretedEffect : public Effect
+class InterpretedEffect
 {
 public:
-	InterpretedEffect(clvr::NativeModule** mod, uint32_t modSize, Adafruit_NeoPixel* pixels);
-	virtual ~InterpretedEffect() {}
+	InterpretedEffect(Adafruit_NeoPixel* pixels) : _interp(pixels) { }
 	
-	virtual bool init(uint8_t cmd, const uint8_t* buf, uint32_t size) override;
-	virtual int32_t loop() override;
+	bool init(uint8_t cmd, const uint8_t* buf, uint32_t size);
+	int32_t loop();
 	
-	Device::Error error() const { return _device.error(); }
-				
+	clvr::Memory::Error error() const { return _interp.error(); }
+
+    uint8_t* stackBase() { return &(_interp.memMgr()->stack().getAbs(0)); }
 private:
-	Device _device;
+	MyInterpreter _interp;
 };

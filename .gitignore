@@ -14,3 +14,4 @@ mac/PostLightEffects*.arlx
 mac/PostLightController.xcodeproj/project.xcworkspace/xcuserdata/cmarrin.xcuserdatad/IDEFindNavigatorScopes.plist
 mac/PostLightController.xcodeproj/project.xcworkspace/xcuserdata/cmarrin.xcuserdatad/UserInterfaceState.xcuserstate
 mac/PostLightController.xcodeproj/xcuserdata/cmarrin.xcuserdatad/xcdebugger/Breakpoints_v2.xcbkptlist
+PostLightEffects.clvx
