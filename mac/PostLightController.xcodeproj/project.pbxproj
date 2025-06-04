@@ -24,10 +24,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		4941A0C72B867F7F00CE3C9E /* PostLightEffects02.arlx */ = {isa = PBXFileReference; lastKnownFileType = file; name = PostLightEffects02.arlx; path = ../PostLightEffects02.arlx; sourceTree = "<group>"; };
-		4941A0C82B867F7F00CE3C9E /* PostLightEffects01.arlx */ = {isa = PBXFileReference; lastKnownFileType = file; name = PostLightEffects01.arlx; path = ../PostLightEffects01.arlx; sourceTree = "<group>"; };
-		4941A0C92B867F7F00CE3C9E /* PostLightEffects03.arlx */ = {isa = PBXFileReference; lastKnownFileType = file; name = PostLightEffects03.arlx; path = ../PostLightEffects03.arlx; sourceTree = "<group>"; };
-		4941A0CA2B867F7F00CE3C9E /* PostLightEffects00.arlx */ = {isa = PBXFileReference; lastKnownFileType = file; name = PostLightEffects00.arlx; path = ../PostLightEffects00.arlx; sourceTree = "<group>"; };
 		4963436927A5DC6E00ABF09F /* PostLightEffects.clvr */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; fileEncoding = 4; name = PostLightEffects.clvr; path = ../PostLightEffects.clvr; sourceTree = "<group>"; };
 		498F27DC2DF0983B00DFB022 /* Format.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Format.h; sourceTree = "<group>"; };
 		498F27DD2DF0983B00DFB022 /* Format.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Format.cpp; sourceTree = "<group>"; };
@@ -87,17 +83,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		4941A0C62B867F3800CE3C9E /* Executables */ = {
-			isa = PBXGroup;
-			children = (
-				4941A0CA2B867F7F00CE3C9E /* PostLightEffects00.arlx */,
-				4941A0C82B867F7F00CE3C9E /* PostLightEffects01.arlx */,
-				4941A0C72B867F7F00CE3C9E /* PostLightEffects02.arlx */,
-				4941A0C92B867F7F00CE3C9E /* PostLightEffects03.arlx */,
-			);
-			name = Executables;
-			sourceTree = "<group>";
-		};
 		498F233E2DEF75C800DFB022 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -196,7 +181,6 @@
 				49BDF4D227C5B56200325407 /* Arduino */,
 				49DAA652278B3B5B00F67EEB /* src */,
 				49DAA64D278B2DF200F67EEB /* Scripts */,
-				4941A0C62B867F3800CE3C9E /* Executables */,
 				498F233E2DEF75C800DFB022 /* Frameworks */,
 				49DAA644278B212E00F67EEB /* Products */,
 			);
