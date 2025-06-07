@@ -25,6 +25,7 @@
 
 /* Begin PBXFileReference section */
 		4963436927A5DC6E00ABF09F /* PostLightEffects.clvr */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; fileEncoding = 4; name = PostLightEffects.clvr; path = ../PostLightEffects.clvr; sourceTree = "<group>"; };
+		496613192DF3C61600296791 /* PostLightControllerESP.ino */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; path = PostLightControllerESP.ino; sourceTree = "<group>"; };
 		498F27DC2DF0983B00DFB022 /* Format.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Format.h; sourceTree = "<group>"; };
 		498F27DD2DF0983B00DFB022 /* Format.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Format.cpp; sourceTree = "<group>"; };
 		498F27DE2DF0983B00DFB022 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
@@ -168,6 +169,7 @@
 				49BDF4D327C5B5BE00325407 /* InterpretedEffect.cpp */,
 				49BDF4D527C5B5BE00325407 /* InterpretedEffect.h */,
 				49BDF4D727C5B5BE00325407 /* PostLightController.ino */,
+				496613192DF3C61600296791 /* PostLightControllerESP.ino */,
 			);
 			name = Arduino;
 			sourceTree = "<group>";
