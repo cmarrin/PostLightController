@@ -13,8 +13,6 @@
 
 #pragma once
 
-#include <Clover.h>
-
 #include <Adafruit_NeoPixel.h>
 
 static constexpr uint32_t StackSize = 1024;
