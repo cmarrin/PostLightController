@@ -15,6 +15,8 @@
 
 #include <Adafruit_NeoPixel.h>
 
+#include "Interpreter.h"
+
 static constexpr uint32_t StackSize = 1024;
 
 class MyInterpreter : public clvr::Interpreter<StackSize>
