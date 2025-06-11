@@ -107,7 +107,7 @@ public:
 	    _pixels.begin(); // This initializes the NeoPixel library.
 	    _pixels.setBrightness(255);
 		
-        fmt::printf("Post Light Controller v0.4\n");
+        cout << F("Post Light Controller v0.4\n");
       
 		showStatus(StatusColor::Green, 3, 2);
 		
