@@ -176,6 +176,9 @@ public:
 
         setTitle("<center>MarrinTech PostLightController</center>");
 
+        addHTTPHandler("/command", std::bind(&PostLightController::handleCommand, this));
+        addHTTPHandler("/upload", std::bind(&PostLightController::handleUploadDone, this), std::bind(&PostLightController::handleUploadReceive, this));
+
 	    _pixels.begin(); // This initializes the NeoPixel library.
 	    _pixels.setBrightness(255);
 		
@@ -183,6 +186,51 @@ public:
       
 		showStatus(StatusColor::Green, 3, 2);
 	}
+
+    void handleCommand()
+    {
+        CPString s = "cmd='";
+        s+= getHTTPArg("cmd");
+        s+= "'";
+        sendHTTPPage(s.c_str());
+    }
+
+    void handleUploadReceive()
+    {
+        const HTTPRaw& upload = getHTTPRaw();
+        
+        switch(upload.status) {
+            case RAW_START:
+                cout << F("****** Upload started\n");
+                break;
+            case RAW_WRITE: {
+                cout << F("****** Upload received ") << uint32_t(upload.currentSize) << F(" bytes\n");
+                cout << F("****** bytes:");
+                char buf[3] = "00";
+                for (uint8_t i = 0; i < 10; ++i) {
+                    mil::toHex(upload.buf[i], buf);
+                    cout << " 0x" << buf;
+                }
+                cout << F("\n");
+                break;
+            }
+            case RAW_END:
+                cout << F("****** Upload finished\n");
+                break;
+            case RAW_ABORTED:
+                cout << F("****** Upload ABORTED\n");
+                break;
+            default: {
+                cout << F("****** UNKNOWN ENUM:") << uint32_t(upload.status) << "\n";
+            }
+        }
+    }
+
+    void handleUploadDone()
+    {
+        cout << F("****** upload done\n");
+        sendHTTPPage("***** upload done *****");
+    }
 
 	void loop()
 	{
