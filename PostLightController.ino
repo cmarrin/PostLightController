@@ -7,6 +7,8 @@
     found in the LICENSE file.
 -------------------------------------------------------------------------*/
 
+#if !defined(ESP8266) && !defined(ESP32)
+
 /*
 
 Pond Light Controller
@@ -477,3 +479,5 @@ void loop()
 {
 	controller.loop();
 }
+
+#endif
