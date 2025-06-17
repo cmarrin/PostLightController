@@ -154,7 +154,137 @@ static constexpr int32_t MaxDelay = 1000; // ms
 
 
 
+// This handles uris of the form /<root>/*
+class HTTPPathHandler : public RequestHandler
+{
+  public:
+    HTTPPathHandler(const String& root) : _root(root) { }
+    
+    virtual bool canHandle(WebServer&, HTTPMethod method, const String& uri) override
+    {
+        return uri.startsWith(_root.c_str());
+    }
+    
+    virtual bool handle(WebServer& server, HTTPMethod method, const String& uri) override
+    {
+        if (method == HTTP_GET) {
+            // Handle an operation like list
+            CPString s = "Handled GET: filename='";
+            s += uri;
+            s += "', op='";
+            s+= server.arg("op");
+            s+= "'";
+            cout << F("***** ") << s.c_str() << F("\n");
+            server.send(200, "text/html", s.c_str());
+            return true;
+        }
+        
+        server.send(200);  // all done.
+        return true;
+    }
 
+    virtual bool canUpload(WebServer&, const String &uri) override
+    {
+        return uri.startsWith(_root.c_str());
+    }
+
+    virtual void upload(WebServer& server, const String &uri, HTTPUpload &upload) override
+    {
+        CPString s = F("upload (filename='");
+        s += upload.filename;
+        s += F("' ");
+        
+        if (upload.status == UPLOAD_FILE_START) {
+            s += F("START");
+            _uploadSize = 0;
+        } else if (upload.status == UPLOAD_FILE_WRITE) {
+            s += F("WRITE - received ");
+            s += uint32_t(upload.currentSize);
+            s += F(" bytes:");
+            char buf[3] = "00";
+            for (uint8_t i = 0; i < 10; ++i) {
+                mil::toHex(upload.buf[i], buf);
+                s += F(" 0x");
+                s += buf;
+            }
+        } else if (upload.status == UPLOAD_FILE_END) {
+            s += F("END");
+        }
+        
+        if (s.length() != 0) {
+            cout << s << "\n";
+            server.send(200, s.c_str());  // all done.
+        }
+    }
+    
+    virtual bool canRaw(WebServer&, const String &uri) override
+    {
+        cout << F("***** canRaw '") << uri.c_str() << F("'\n");
+        return uri.startsWith(_root.c_str());
+    }
+
+    virtual void raw(WebServer& server, const String &uri, HTTPRaw &raw) override
+    {
+        cout << F("***** raw '") << uri.c_str() << F("'\n");
+        CPString s = "During Raw: op='";
+        s+= server.arg("op");
+        s+= "'";
+        cout << F("***** ") << s.c_str() << F("\n");
+        
+        if (raw.status == RAW_START) {
+            //String fName = upload.filename;
+            cout << F("****** raw started\n");
+
+            // Open the file for writing
+//            if (!fName.startsWith("/")) {
+//                fName = "/" + fName;
+//            }
+
+    //            if (fsys->exists(fName)) {
+    //                fsys->remove(fName);
+    //            }
+    //            _fsUploadFile = fsys->open(fName, "w");
+            _uploadSize = 0;
+        } else if (raw.status == RAW_WRITE) {
+            cout << F("****** raw received ") << uint32_t(raw.currentSize) << F(" bytes\n");
+            cout << F("****** bytes:");
+            char buf[3] = "00";
+            for (uint8_t i = 0; i < 10; ++i) {
+                mil::toHex(raw.buf[i], buf);
+                cout << " 0x" << buf;
+            }
+            cout << F("\n");
+    //            if (_fsUploadFile) {
+    //                size_t written = _fsUploadFile.write(upload.buf, upload.currentSize);
+    //                
+    //                if (written < upload.currentSize) {
+    //                    // upload failed
+    //                    cout << F("***** write error!\n");
+    //                    _fsUploadFile.close();
+    //
+    //                    // delete file to free up space in filesystem
+    //                    String fName = upload.filename;
+    //                    if (!fName.startsWith("/")) {
+    //                        fName = "/" + fName;
+    //                    }
+    //                    fsys->remove(fName);
+    //                }
+    //                
+    //                _uploadSize += upload.currentSize;
+    //            }
+        } else if (raw.status == RAW_END) {
+            cout << F("****** raw finished\n");
+            server.send(200, "raw finished!!!");  // all done.
+    //            if (_fsUploadFile) {
+    //                _fsUploadFile.close();
+    //            }
+        }
+    }
+
+  private:
+    String _root;
+    size_t _uploadSize = 0;
+};
 
 class PostLightController : public mil::Application
 {
@@ -162,6 +292,7 @@ public:
 	PostLightController()
 		: mil::Application(LED_BUILTIN, ConfigPortalName)
 		, _pixels(NumPixels, LEDPin, NEO_GRB + NEO_KHZ800)
+        , _pathHandler("/fs")
 		, _interpretedEffect(&_pixels)
 	{
     }
@@ -177,7 +308,7 @@ public:
         setTitle("<center>MarrinTech PostLightController</center>");
 
         addHTTPHandler("/command", std::bind(&PostLightController::handleCommand, this));
-        addHTTPHandler("/upload", std::bind(&PostLightController::handleUploadDone, this), std::bind(&PostLightController::handleUploadReceive, this));
+        addCustomHTTPHandler(&_pathHandler);
 
 	    _pixels.begin(); // This initializes the NeoPixel library.
 	    _pixels.setBrightness(255);
@@ -189,47 +320,8 @@ public:
 
     void handleCommand()
     {
-        CPString s = "cmd='";
-        s+= getHTTPArg("cmd");
-        s+= "'";
-        sendHTTPPage(s.c_str());
-    }
-
-    void handleUploadReceive()
-    {
-        const HTTPRaw& upload = getHTTPRaw();
-        
-        switch(upload.status) {
-            case RAW_START:
-                cout << F("****** Upload started\n");
-                break;
-            case RAW_WRITE: {
-                cout << F("****** Upload received ") << uint32_t(upload.currentSize) << F(" bytes\n");
-                cout << F("****** bytes:");
-                char buf[3] = "00";
-                for (uint8_t i = 0; i < 10; ++i) {
-                    mil::toHex(upload.buf[i], buf);
-                    cout << " 0x" << buf;
-                }
-                cout << F("\n");
-                break;
-            }
-            case RAW_END:
-                cout << F("****** Upload finished\n");
-                break;
-            case RAW_ABORTED:
-                cout << F("****** Upload ABORTED\n");
-                break;
-            default: {
-                cout << F("****** UNKNOWN ENUM:") << uint32_t(upload.status) << "\n";
-            }
-        }
-    }
-
-    void handleUploadDone()
-    {
-        cout << F("****** upload done\n");
-        sendHTTPPage("***** upload done *****");
+        cout << F("cmd='") << getHTTPArg("cmd") << F("'\n");
+        sendHTTPPage("command processed");
     }
 
 	void loop()
@@ -283,6 +375,8 @@ private:
 	}
 	
 	Adafruit_NeoPixel _pixels;
+ 
+    HTTPPathHandler _pathHandler;
 	
     enum class Effect { None, Flash, Interp };
     Effect _effect = Effect::None;
