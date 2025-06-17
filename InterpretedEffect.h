@@ -13,7 +13,9 @@
 
 #pragma once
 
+#ifdef ARDUINO
 #include <Adafruit_NeoPixel.h>
+#endif
 
 #include "Interpreter.h"
 
