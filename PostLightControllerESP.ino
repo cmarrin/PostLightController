@@ -54,8 +54,6 @@ Hue is an angle on the color wheel. A 0-360 degree value is obtained with hue / 
 
 */
 
-#include <Adafruit_NeoPixel.h>
-
 #include "Application.h"
 #include "Flash.h"
 #include "InterpretedEffect.h"
@@ -109,9 +107,6 @@ static constexpr int32_t MaxDelay = 1000; // ms
 //                                        break;
 //                                        case clvr::Memory::Error::InvalidModuleOp:
 //                                        errorMsg = F("inv mod op");
-//                                        break;
-//                                        case clvr::Memory::Error::InvalidNativeFunction:
-//                                        errorMsg = F("inv native func");
 //                                        break;
 //                                        case clvr::Memory::Error::NotEnoughArgs:
 //                                        errorMsg = F("not enough args");
@@ -169,7 +164,7 @@ class HTTPPathHandler : public RequestHandler
     {
         if (method == HTTP_GET) {
             // Handle an operation like list
-            CPString s = "Handled GET: filename='";
+            String s = "Handled GET: filename='";
             s += uri;
             s += "', op='";
             s+= server.arg("op");
@@ -190,7 +185,7 @@ class HTTPPathHandler : public RequestHandler
 
     virtual void upload(WebServer& server, const String &uri, HTTPUpload &upload) override
     {
-        CPString s = F("upload (filename='");
+        String s = F("upload (filename='");
         s += upload.filename;
         s += F("' ");
         
@@ -226,7 +221,7 @@ class HTTPPathHandler : public RequestHandler
     virtual void raw(WebServer& server, const String &uri, HTTPRaw &raw) override
     {
         cout << F("***** raw '") << uri.c_str() << F("'\n");
-        CPString s = "During Raw: op='";
+        String s = "During Raw: op='";
         s+= server.arg("op");
         s+= "'";
         cout << F("***** ") << s.c_str() << F("\n");
@@ -291,7 +286,7 @@ class PostLightController : public mil::Application
 public:
 	PostLightController()
 		: mil::Application(LED_BUILTIN, ConfigPortalName)
-		, _pixels(NumPixels, LEDPin, NEO_GRB + NEO_KHZ800)
+		, _pixels(NumPixels, LEDPin)
         , _pathHandler("/fs")
 		, _interpretedEffect(&_pixels)
 	{
@@ -374,7 +369,7 @@ private:
         _flash.init(&_pixels, h, 0xff, 0x80, numberOfBlinks, interval);
 	}
 	
-	Adafruit_NeoPixel _pixels;
+	NeoPixel _pixels;
  
     HTTPPathHandler _pathHandler;
 	

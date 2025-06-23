@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4966134C2E00D2E700296791 /* PostLightController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4966134B2E00D2E400296791 /* PostLightController.cpp */; };
+		4966135A2E07192800296791 /* Flash.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49BDF4D827C5B5BE00325407 /* Flash.cpp */; };
+		4966135B2E07192F00296791 /* InterpretedEffect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49BDF4D327C5B5BE00325407 /* InterpretedEffect.cpp */; };
+		4966135E2E078C0500296791 /* Application.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4966131A2DF8ABE400296791 /* Application.cpp */; };
 		498F27E12DF0E86D00DFB022 /* Format.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 498F27DD2DF0983B00DFB022 /* Format.cpp */; };
 		498F28032DF0FF8000DFB022 /* AST.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 498F27E32DF0FB5500DFB022 /* AST.cpp */; };
 		498F28042DF0FF9300DFB022 /* Decompiler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 498F27EC2DF0FB5500DFB022 /* Decompiler.cpp */; };
@@ -50,6 +54,11 @@
 		4966132F2DF8ABE400296791 /* Font_8x8_8pt.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Font_8x8_8pt.h; sourceTree = "<group>"; };
 		496613302DF8ABE400296791 /* Font_Compact_5pt.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Font_Compact_5pt.h; sourceTree = "<group>"; };
 		496613312DF8ABE400296791 /* mil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mil.h; sourceTree = "<group>"; };
+		496613482DFF94A600296791 /* WebFileSystem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebFileSystem.h; sourceTree = "<group>"; };
+		496613492DFF94BC00296791 /* WebFileSystem.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = WebFileSystem.cpp; sourceTree = "<group>"; };
+		4966134A2E00D2D300296791 /* PostLightController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PostLightController.h; path = ../PostLightController.h; sourceTree = "<group>"; };
+		4966134B2E00D2E400296791 /* PostLightController.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PostLightController.cpp; path = ../PostLightController.cpp; sourceTree = "<group>"; };
+		4966135C2E0730E900296791 /* NeoPixel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NeoPixel.h; sourceTree = "<group>"; };
 		498F27DC2DF0983B00DFB022 /* Format.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Format.h; sourceTree = "<group>"; };
 		498F27DD2DF0983B00DFB022 /* Format.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Format.cpp; sourceTree = "<group>"; };
 		498F27DE2DF0983B00DFB022 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
@@ -91,7 +100,6 @@
 		49BDF4D527C5B5BE00325407 /* InterpretedEffect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InterpretedEffect.h; path = ../InterpretedEffect.h; sourceTree = "<group>"; };
 		49BDF4D727C5B5BE00325407 /* PostLightController.ino */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = PostLightController.ino; path = ../PostLightController.ino; sourceTree = "<group>"; };
 		49BDF4D827C5B5BE00325407 /* Flash.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Flash.cpp; path = ../Flash.cpp; sourceTree = "<group>"; };
-		49BDF4DE27C6EBF700325407 /* NativeColor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NativeColor.h; path = ../NativeColor.h; sourceTree = "<group>"; };
 		49DAA643278B212E00F67EEB /* PostLightController */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = PostLightController; sourceTree = BUILT_PRODUCTS_DIR; };
 		49DAA646278B212E00F67EEB /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -128,9 +136,12 @@
 				496613292DF8ABE400296791 /* Max7219Display.h */,
 				4966132A2DF8ABE400296791 /* MenuSystem.cpp */,
 				4966132B2DF8ABE400296791 /* MenuSystem.h */,
+				4966135C2E0730E900296791 /* NeoPixel.h */,
 				4966132C2DF8ABE400296791 /* StateMachine.h */,
 				4966132D2DF8ABE400296791 /* TimeWeatherServer.cpp */,
 				4966132E2DF8ABE400296791 /* TimeWeatherServer.h */,
+				496613492DFF94BC00296791 /* WebFileSystem.cpp */,
+				496613482DFF94A600296791 /* WebFileSystem.h */,
 				4966132F2DF8ABE400296791 /* Font_8x8_8pt.h */,
 				496613302DF8ABE400296791 /* Font_Compact_5pt.h */,
 				496613312DF8ABE400296791 /* mil.h */,
@@ -218,10 +229,6 @@
 		49BDF4D227C5B56200325407 /* Arduino */ = {
 			isa = PBXGroup;
 			children = (
-				49BDF4D827C5B5BE00325407 /* Flash.cpp */,
-				49BDF4D427C5B5BE00325407 /* Flash.h */,
-				49BDF4D327C5B5BE00325407 /* InterpretedEffect.cpp */,
-				49BDF4D527C5B5BE00325407 /* InterpretedEffect.h */,
 				49BDF4D727C5B5BE00325407 /* PostLightController.ino */,
 				496613192DF3C61600296791 /* PostLightControllerESP.ino */,
 			);
@@ -262,7 +269,12 @@
 		49DAA652278B3B5B00F67EEB /* src */ = {
 			isa = PBXGroup;
 			children = (
-				49BDF4DE27C6EBF700325407 /* NativeColor.h */,
+				49BDF4D827C5B5BE00325407 /* Flash.cpp */,
+				49BDF4D427C5B5BE00325407 /* Flash.h */,
+				49BDF4D327C5B5BE00325407 /* InterpretedEffect.cpp */,
+				49BDF4D527C5B5BE00325407 /* InterpretedEffect.h */,
+				4966134B2E00D2E400296791 /* PostLightController.cpp */,
+				4966134A2E00D2D300296791 /* PostLightController.h */,
 				49DAA646278B212E00F67EEB /* main.cpp */,
 			);
 			name = src;
@@ -275,6 +287,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 49DAA64A278B212E00F67EEB /* Build configuration list for PBXNativeTarget "PostLightController" */;
 			buildPhases = (
+				496613592E021A1300296791 /* Compile PostLightEffects.clvr */,
 				49DAA63F278B212E00F67EEB /* Sources */,
 				49DAA640278B212E00F67EEB /* Frameworks */,
 			);
@@ -319,6 +332,29 @@
 		};
 /* End PBXProject section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		496613592E021A1300296791 /* Compile PostLightEffects.clvr */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/PostLightEffects.clvr",
+			);
+			name = "Compile PostLightEffects.clvr";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n/usr/local/bin/clvr $SRCROOT/../PostLightEffects.clvr\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		49DAA63F278B212E00F67EEB /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -326,11 +362,14 @@
 			files = (
 				498F28032DF0FF8000DFB022 /* AST.cpp in Sources */,
 				498F28102DF0FFF800DFB022 /* Interpreter.cpp in Sources */,
+				4966135E2E078C0500296791 /* Application.cpp in Sources */,
 				498F28042DF0FF9300DFB022 /* Decompiler.cpp in Sources */,
+				4966134C2E00D2E700296791 /* PostLightController.cpp in Sources */,
 				498F28052DF0FF9300DFB022 /* NativeCore.cpp in Sources */,
 				498F28062DF0FF9300DFB022 /* CodeGen6809.cpp in Sources */,
 				498F28072DF0FF9300DFB022 /* CodeGenStackVM.cpp in Sources */,
 				498F28082DF0FF9300DFB022 /* Scanner.cpp in Sources */,
+				4966135A2E07192800296791 /* Flash.cpp in Sources */,
 				498F28092DF0FF9300DFB022 /* Compiler.cpp in Sources */,
 				498F28112DF1000000DFB022 /* NativeCoreRuntime.cpp in Sources */,
 				498F280F2DF0FFCA00DFB022 /* simplecpp.cpp in Sources */,
@@ -338,6 +377,7 @@
 				498F280B2DF0FF9300DFB022 /* Function.cpp in Sources */,
 				49DAA647278B212E00F67EEB /* main.cpp in Sources */,
 				498F27E12DF0E86D00DFB022 /* Format.cpp in Sources */,
+				4966135B2E07192F00296791 /* InterpretedEffect.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -350,7 +390,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -409,7 +449,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
