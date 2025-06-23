@@ -66,7 +66,6 @@ Hue is an angle on the color wheel. A 0-360 degree value is obtained with hue / 
 */
 
 #include <SoftwareSerial.h>
-#include <Adafruit_NeoPixel.h>
 
 #include "Flash.h"
 #include "InterpretedEffect.h"
@@ -85,7 +84,7 @@ class PostLightController
 {
 public:
 	PostLightController()
-		: _pixels(NumPixels, LEDPin, NEO_GRB + NEO_KHZ800)
+		: _pixels(NumPixels, LEDPin)
 		, _serial(11, 10)
 		, _interpretedEffect(&_pixels)
 	{
@@ -104,9 +103,6 @@ public:
 
         randomSeed(millis());
 
-	    _pixels.begin(); // This initializes the NeoPixel library.
-	    _pixels.setBrightness(255);
-		
         cout << F("Post Light Controller v0.4\n");
       
 		showStatus(StatusColor::Green, 3, 2);
@@ -357,9 +353,6 @@ public:
                                         case clvr::Memory::Error::InvalidModuleOp:
                                         errorMsg = F("inv mod op");
                                         break;
-                                        case clvr::Memory::Error::InvalidNativeFunction:
-                                        errorMsg = F("inv native func");
-                                        break;
                                         case clvr::Memory::Error::NotEnoughArgs:
                                         errorMsg = F("not enough args");
                                         break;
@@ -438,7 +431,7 @@ private:
         _flash.init(&_pixels, h, 0xff, 0x80, numberOfBlinks, interval);
 	}
 	
-	Adafruit_NeoPixel _pixels;
+	NeoPixel _pixels;
 	SoftwareSerial _serial;
 	
     enum class Effect { None, Flash, Interp };

@@ -13,18 +13,18 @@
 
 #pragma once
 
-#include <stdint.h>
+#include "NeoPixel.h"
 
-class Adafruit_NeoPixel;
+#include <stdint.h>
 
 class Flash
 {
 public:
-	bool init(Adafruit_NeoPixel* pixels, uint8_t h, uint8_t s, uint8_t v, uint8_t count, uint16_t duration);
-	int32_t loop(Adafruit_NeoPixel* pixels);
+	bool init(mil::NeoPixel* pixels, uint8_t h, uint8_t s, uint8_t v, uint8_t count, uint16_t duration);
+	int32_t loop(mil::NeoPixel* pixels);
 		
 private:
-	void setAllLights(Adafruit_NeoPixel* pixels, uint32_t color);
+	void setAllLights(mil::NeoPixel* pixels, uint32_t color);
 	
     uint32_t _color;
 	uint8_t _count;

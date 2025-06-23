@@ -9,27 +9,21 @@
 
 #include "InterpretedEffect.h"
 
-#include "NativeColor.h"
+#include "mil.h"
 
 void
-MyInterpreter::callNativeColor(uint16_t id, InterpreterBase* interp)
+InterpretedEffect::setLight(uint16_t id, clvr::InterpreterBase* interp, void* data)
 {
-    MyInterpreter* self = reinterpret_cast<MyInterpreter*>(interp);
-    switch (clvr::NativeColor::Id(id)) {
-        case clvr::NativeColor::Id::SetLight: {
-            // First arg is byte index of light to set. Next is a ptr to a struct of
-            // h, s, v byte values (0-255)
-            uint8_t i = interp->memMgr()->getArg(0, 1);
-            clvr::AddrNativeType addr = interp->memMgr()->getArg(1, clvr::AddrSize);
-            uint8_t h = interp->memMgr()->getAbs(addr, 1);
-            uint8_t s = interp->memMgr()->getAbs(addr + 1, 1);
-            uint8_t v = interp->memMgr()->getAbs(addr + 2, 1);
-            
-            self->_pixels->setPixelColor(i, Adafruit_NeoPixel::gamma32(Adafruit_NeoPixel::ColorHSV(uint16_t(h) * 256, s, v)));
-            self->_pixels->show();
-            break;
-        }
-    }
+    // First arg is byte index of light to set. Next is a ptr to a struct of
+    // h, s, v byte values (0-255)
+    uint8_t i = interp->memMgr()->getArg(2, clvr::VarArgSize);
+    clvr::AddrNativeType addr = interp->memMgr()->getArg(clvr::VarArgSize + 2, clvr::AddrSize);
+    uint8_t h = interp->memMgr()->getAbs(addr, 1);
+    uint8_t s = interp->memMgr()->getAbs(addr + 1, 1);
+    uint8_t v = interp->memMgr()->getAbs(addr + 2, 1);
+    
+    InterpretedEffect* effect = reinterpret_cast<InterpretedEffect*>(data);
+    effect->_pixels->setPixelColor(i, effect->_pixels->color(h, s, v));
 }
 
 bool
@@ -40,7 +34,7 @@ InterpretedEffect::init(uint8_t cmd, const uint8_t* buf, uint32_t size)
         return false;
     }
     
-    _interp.addModule(MyInterpreter::callNativeColor);
+    _interp.addUserFunction(3, setLight, this);
 
     for (int i = size - 1; i >= 0; --i) {
         _interp.addArg(buf[i], clvr::Type::UInt8);

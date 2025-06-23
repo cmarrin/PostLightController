@@ -36,6 +36,9 @@
 struct PostLightEffects
 {
 
+// This is an id which will call an installed function. The value must agree with the runtime
+const uint16_t SetLight = 3;
+
 struct FlickerSpeedEntry
 {
     uint8_t min;
@@ -149,7 +152,7 @@ function setAllLights(uint8_t colorIndex)
 {
     Color* color = &colors[colorIndex];
     for (uint8_t i = 0; i < NumLights; ++i) {
-        clr.setLight(i, color);
+        core.userCall(SetLight, i, color);
     }
 }
 
@@ -352,9 +355,9 @@ function int16_t flickerLoop()
             led.max = core.irand(FlickerBrightestMin, FlickerBrightestMax) * 128;
         }
 
-//core.printf("[%d] led.min=%d, led.max=%d, led.inc=%d, led.cur=%d\n", i, led.min, led.max, led.inc, led.cur);
         colors[0].v = led.cur / 128;
-        clr.setLight(i, colors[0]);
+    core.printf("***** setting light %d to %d, %d, %d\n", i, colors[0].h, colors[0].s, colors[0].v);
+        core.userCall(SetLight, i, colors[0]);
     }
     
     return Delay;

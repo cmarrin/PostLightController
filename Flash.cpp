@@ -11,27 +11,25 @@
 
 #include "Defines.h"
 
-#include <Adafruit_NeoPixel.h>
-
 bool
-Flash::init(Adafruit_NeoPixel* pixels, uint8_t h, uint8_t s, uint8_t v, uint8_t count, uint16_t duration)
+Flash::init(mil::NeoPixel* pixels, uint8_t h, uint8_t s, uint8_t v, uint8_t count, uint16_t duration)
 {
 	_countCompleted = 0;
 	
-    _color = Adafruit_NeoPixel::gamma32(Adafruit_NeoPixel::ColorHSV(uint16_t(h) * 256, s, v));
+    _color = pixels->color(h, s, v);
     _count = count;
     _duration = uint16_t(duration) * 100;
     _lastFlash = millis();
 
     // If we will be flashing (count != 0) then start with the lights off.
     // Otherwise set the lights to the passed color
-    setAllLights(pixels, _count ? 0 : _color);
+    setAllLights(pixels, _count ? 0 : pixels->color(h, s, v));
 
 	return true;
 }
 	
 int32_t
-Flash::loop(Adafruit_NeoPixel* pixels)
+Flash::loop(mil::NeoPixel* pixels)
 {
 	if (_countCompleted >= _count) {
         // If count == 0 we leave the lights on forever
@@ -67,7 +65,7 @@ Flash::loop(Adafruit_NeoPixel* pixels)
 }
 
 void
-Flash::setAllLights(Adafruit_NeoPixel* pixels, uint32_t color)
+Flash::setAllLights(mil::NeoPixel* pixels, uint32_t color)
 {
     for (uint32_t i = 0; i < pixels->numPixels(); i++) {
         pixels->setPixelColor(i, color);

@@ -13,38 +13,30 @@
 
 #pragma once
 
-#ifdef ARDUINO
-#include <Adafruit_NeoPixel.h>
-#endif
-
 #include "Interpreter.h"
+#include "NeoPixel.h"
 
 static constexpr uint32_t StackSize = 1024;
 
 class MyInterpreter : public clvr::Interpreter<StackSize>
 {
-public:
-	MyInterpreter(Adafruit_NeoPixel* pixels)
-        : _pixels(pixels)
-    { }
-
-    static void  callNativeColor(uint16_t id, clvr::InterpreterBase*);
-
-private:
-	Adafruit_NeoPixel* _pixels;
 };
 
 class InterpretedEffect
 {
 public:
-	InterpretedEffect(Adafruit_NeoPixel* pixels) : _interp(pixels) { }
+	InterpretedEffect(mil::NeoPixel* pixels) : _pixels(pixels) { }
 	
 	bool init(uint8_t cmd, const uint8_t* buf, uint32_t size);
 	int32_t loop();
 	
 	clvr::Memory::Error error() const { return _interp.error(); }
+    int16_t errorAddr() const { return _interp.errorAddr(); }
 
     uint8_t* stackBase() { return &(_interp.memMgr()->stack().getAbs(0)); }
+
 private:
+    static void setLight(uint16_t id, clvr::InterpreterBase*, void* data);
 	MyInterpreter _interp;
+    mil::NeoPixel* _pixels;
 };
