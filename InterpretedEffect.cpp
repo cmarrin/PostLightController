@@ -55,7 +55,7 @@ InterpretedEffect::init(uint8_t cmd, const uint8_t* buf, uint32_t size)
 
     cout << F("InterpretedEffect started: cmd='");
     cout << char(cmd);
-    cout << F("'");
+    cout << F("'\n");
 
 	return true;
 }
