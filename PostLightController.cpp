@@ -165,5 +165,7 @@ PostLightController::sendCmd(const uint8_t* cmd, uint16_t size)
     if (size < 1) {
         return false;
     }
+    
+    _effect = Effect::Interp;
     return _interpretedEffect.init(cmd[0], cmd + 1, size - 1);
 }
