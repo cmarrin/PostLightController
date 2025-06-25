@@ -24,8 +24,6 @@ public:
 	int32_t loop(mil::NeoPixel* pixels);
 		
 private:
-	void setAllLights(mil::NeoPixel* pixels, uint32_t color);
-	
     uint32_t _color;
 	uint8_t _count;
 	uint16_t _duration; // in ms

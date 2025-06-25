@@ -11,30 +11,52 @@
 
 #include "mil.h"
 
+// These must match values in Clover code
+static constexpr int SetLight = 1;
+static constexpr int SetAllLights = 2;
+
 void
-InterpretedEffect::setLight(uint16_t id, clvr::InterpreterBase* interp, void* data)
+InterpretedEffect::userCall(uint16_t id, clvr::InterpreterBase* interp, void* data)
 {
-    // First arg is byte index of light to set. Next is a ptr to a struct of
+    // If this is SetLight first arg is byte index of light to set. Next is a ptr to a struct of
     // h, s, v byte values (0-255)
-    uint8_t i = interp->memMgr()->getArg(2, clvr::VarArgSize);
-    clvr::AddrNativeType addr = interp->memMgr()->getArg(clvr::VarArgSize + 2, clvr::AddrSize);
+    clvr::AddrNativeType addr = 0;
+    uint8_t i = 0;
+    
+    if (id == SetLight) {
+        i = interp->memMgr()->getArg(2, clvr::VarArgSize);
+        addr = interp->memMgr()->getArg(clvr::VarArgSize + 2, clvr::AddrSize);
+    } else {
+        addr = interp->memMgr()->getArg(2, clvr::AddrSize);
+    }
+    
     uint8_t h = interp->memMgr()->getAbs(addr, 1);
     uint8_t s = interp->memMgr()->getAbs(addr + 1, 1);
     uint8_t v = interp->memMgr()->getAbs(addr + 2, 1);
     
     InterpretedEffect* effect = reinterpret_cast<InterpretedEffect*>(data);
-    effect->_pixels->setPixelColor(i, effect->_pixels->color(h, s, v));
+    
+    if (id == SetLight) {
+        effect->_pixels->setLight(i, effect->_pixels->color(h, s, v));
+    } else {
+        effect->_pixels->setAllLights(effect->_pixels->color(h, s, v));
+    }
 }
 
 bool
 InterpretedEffect::init(uint8_t cmd, const uint8_t* buf, uint32_t size)
 {
+    cout << F("InterpretedEffect started: cmd='");
+    cout << char(cmd);
+    cout << F("'\n");
+
     _interp.instantiate();
     if (_interp.error() != clvr::Memory::Error::None) {
         return false;
     }
     
-    _interp.addUserFunction(3, setLight, this);
+    _interp.addUserFunction(SetLight, userCall, this);
+    _interp.addUserFunction(SetAllLights, userCall, this);
 
     for (int i = size - 1; i >= 0; --i) {
         _interp.addArg(buf[i], clvr::Type::UInt8);
@@ -52,10 +74,6 @@ InterpretedEffect::init(uint8_t cmd, const uint8_t* buf, uint32_t size)
 	if (_interp.error() != clvr::Memory::Error::None) {
 		return false;
 	}
-
-    cout << F("InterpretedEffect started: cmd='");
-    cout << char(cmd);
-    cout << F("'\n");
 
 	return true;
 }

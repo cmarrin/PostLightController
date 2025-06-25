@@ -36,7 +36,7 @@ public:
     uint8_t* stackBase() { return &(_interp.memMgr()->stack().getAbs(0)); }
 
 private:
-    static void setLight(uint16_t id, clvr::InterpreterBase*, void* data);
+    static void userCall(uint16_t id, clvr::InterpreterBase*, void* data);
 	MyInterpreter _interp;
     mil::NeoPixel* _pixels;
 };

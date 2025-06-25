@@ -23,7 +23,7 @@ Flash::init(mil::NeoPixel* pixels, uint8_t h, uint8_t s, uint8_t v, uint8_t coun
 
     // If we will be flashing (count != 0) then start with the lights off.
     // Otherwise set the lights to the passed color
-    setAllLights(pixels, _count ? 0 : pixels->color(h, s, v));
+    pixels->setAllLights(_count ? 0 : pixels->color(h, s, v));
 
 	return true;
 }
@@ -58,17 +58,8 @@ Flash::loop(mil::NeoPixel* pixels)
 	}
 	
 	if (showColor) {
-		setAllLights(pixels, color);
+		pixels->setAllLights(color);
 	}
 	
     return 0;
-}
-
-void
-Flash::setAllLights(mil::NeoPixel* pixels, uint32_t color)
-{
-    for (uint32_t i = 0; i < pixels->numPixels(); i++) {
-        pixels->setPixelColor(i, color);
-        pixels->show();
-    }
 }
