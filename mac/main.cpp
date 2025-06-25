@@ -64,23 +64,35 @@ int main(int argc, char * const argv[])
     bool haveSentROM = false;
     bool haveSentCmd = false;
 
+    // Loop a few times
+    int loopCount = -1;
     while (true) {
-        controller.loop();
-        
-        if (!haveSentROM) {
-            haveSentROM = true;
-            controller.uploadExecutable(reinterpret_cast<uint8_t*>(buf), size);
+        if (loopCount == 0) {
+            break;
+        }
+        else if (loopCount > 0) {
+            --loopCount;
         }
         
-        if (!haveSentCmd) {
-            haveSentCmd = true;
-            uint8_t cmd[5];
-            cmd[0] = 'f';
-            cmd[1] = 25; // h
-            cmd[1] = 200; // s
-            cmd[1] = 100; // v
-            cmd[1] = 7; // speed
-            controller.sendCmd(cmd, 5);
+        controller.loop();
+        
+        if (controller.isIdle()) {
+            if (!haveSentROM) {
+                haveSentROM = true;
+                controller.uploadExecutable(reinterpret_cast<uint8_t*>(buf), size);
+            }
+            
+            if (!haveSentCmd) {
+                haveSentCmd = true;
+                uint8_t cmd[5];
+                cmd[0] = 'f';
+                cmd[1] = 25; // h
+                cmd[1] = 200; // s
+                cmd[1] = 100; // v
+                cmd[1] = 7; // speed
+                controller.sendCmd(cmd, 5);
+                loopCount = 20;
+            }
         }
     }
                         
