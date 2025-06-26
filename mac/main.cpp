@@ -15,24 +15,7 @@
 
 #include "PostLightController.h"
 
-static constexpr int ExecutableSize = 2048;
-static uint8_t executable[ExecutableSize];
-uint8_t* clvr::ROMBase = executable;
-
 // main <.clvx file>
-
-class MyPostLightController : public PostLightController
-{
-  public:
-    virtual bool uploadExecutable(const uint8_t* buf, uint16_t size) override
-    {
-        if (size > ExecutableSize) {
-            return false;
-        }
-        memcpy(executable, buf, size);
-        return true;
-    }
-};
 
 int main(int argc, char * const argv[])
 {
@@ -57,7 +40,7 @@ int main(int argc, char * const argv[])
         return 0;
     }
         
-    MyPostLightController controller;
+    PostLightController controller;
     
     controller.setup();
     
