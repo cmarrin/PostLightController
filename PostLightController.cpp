@@ -126,7 +126,7 @@ PostLightController::setup()
 {
     delay(500);
     Application::setup();
-    clvr::randomSeed(millis());
+    randomSeed(millis());
 
     setTitle("<center>MarrinTech Post Light Controller</center>");
 
