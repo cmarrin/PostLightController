@@ -59,6 +59,8 @@
 		4966134A2E00D2D300296791 /* PostLightController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PostLightController.h; path = ../PostLightController.h; sourceTree = "<group>"; };
 		4966134B2E00D2E400296791 /* PostLightController.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PostLightController.cpp; path = ../PostLightController.cpp; sourceTree = "<group>"; };
 		4966135C2E0730E900296791 /* NeoPixel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NeoPixel.h; sourceTree = "<group>"; };
+		4966135F2E0DC2BC00296791 /* partitions.csv */ = {isa = PBXFileReference; lastKnownFileType = text; name = partitions.csv; path = ../partitions.csv; sourceTree = "<group>"; };
+		496613602E0DCCBD00296791 /* boards.local.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = boards.local.txt; path = ../boards.local.txt; sourceTree = SOURCE_ROOT; };
 		498F27DC2DF0983B00DFB022 /* Format.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Format.h; sourceTree = "<group>"; };
 		498F27DD2DF0983B00DFB022 /* Format.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Format.cpp; sourceTree = "<group>"; };
 		498F27DE2DF0983B00DFB022 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
@@ -229,6 +231,8 @@
 		49BDF4D227C5B56200325407 /* Arduino */ = {
 			isa = PBXGroup;
 			children = (
+				496613602E0DCCBD00296791 /* boards.local.txt */,
+				4966135F2E0DC2BC00296791 /* partitions.csv */,
 				49BDF4D727C5B5BE00325407 /* PostLightController.ino */,
 				496613192DF3C61600296791 /* PostLightControllerESP.ino */,
 			);
