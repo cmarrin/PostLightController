@@ -10,6 +10,9 @@
 #include "PostLightController.h"
 
 static constexpr int32_t MaxDelay = 1000; // ms
+static constexpr int ExecutableSize = 2048;
+static uint8_t executable[ExecutableSize];
+uint8_t* clvr::ROMBase = executable;
 
 bool
 HTTPPathHandler::handle(WebServer& server, HTTPMethod method, const String& uri)
@@ -65,6 +68,16 @@ PostLightController::PostLightController()
     , _pathHandler("/fs")
     , _interpretedEffect(&_pixels)
 {
+}
+
+bool
+PostLightController::uploadExecutable(const uint8_t* buf, uint16_t size)
+{
+    if (size > ExecutableSize) {
+        return false;
+    }
+    memcpy(executable, buf, size);
+    return true;
 }
 
 void
