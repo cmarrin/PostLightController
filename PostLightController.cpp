@@ -136,7 +136,7 @@ PostLightController::setup()
     _pixels.begin(); // This initializes the NeoPixel library.
     _pixels.setBrightness(255);
     
-    cout << F("Post Light Controller ESP v0.1\n");
+    cout << F("Post Light Controller v0.3\n");
   
     showStatus(StatusColor::Green, 3, 2);
 }
