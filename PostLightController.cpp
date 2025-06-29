@@ -77,6 +77,9 @@ PostLightController::uploadExecutable(const uint8_t* buf, uint16_t size)
         return false;
     }
     memcpy(executable, buf, size);
+    mil::File f = _wfs.fs().open("executable.clvx", "w");
+    f.write(buf, size);
+    f.close();
     return true;
 }
 
