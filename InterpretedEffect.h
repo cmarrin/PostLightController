@@ -20,12 +20,18 @@ static constexpr uint32_t StackSize = 1024;
 
 class MyInterpreter : public clvr::Interpreter<StackSize>
 {
+  public:
+    MyInterpreter(clvr::GetCodeByteCB cb, void* data) : clvr::Interpreter<StackSize>(cb, data) { }
 };
 
 class InterpretedEffect
 {
 public:
-	InterpretedEffect(mil::NeoPixel* pixels) : _pixels(pixels) { }
+	InterpretedEffect(mil::NeoPixel* pixels, clvr::GetCodeByteCB cb, void* data)
+        : _interp(cb, data)
+        , _pixels(pixels)
+    {
+    }
 	
 	bool init(uint8_t cmd, const uint8_t* buf, uint32_t size);
 	int32_t loop();

@@ -10,9 +10,6 @@
 #include "PostLightController.h"
 
 static constexpr int32_t MaxDelay = 1000; // ms
-static constexpr int ExecutableSize = 2048;
-static uint8_t executable[ExecutableSize];
-uint8_t* clvr::ROMBase = executable;
 
 bool
 HTTPPathHandler::handle(WebServer& server, HTTPMethod method, const String& uri)
@@ -62,21 +59,24 @@ HTTPPathHandler::upload(WebServer& server, const String &uri, HTTPUpload &upload
     }
 }
 
+static uint8_t getCodeByte(void* data, uint16_t addr)
+{
+    PostLightController* self = reinterpret_cast<PostLightController*>(data);
+    return self->getCodeByte(addr);
+}
+
 PostLightController::PostLightController()
     : mil::Application(LED_BUILTIN, ConfigPortalName)
     , _pixels(NumPixels, LEDPin)
     , _pathHandler("/fs")
-    , _interpretedEffect(&_pixels)
+    , _interpretedEffect(&_pixels, ::getCodeByte, this)
 {
+    memset(_executable, 0, MaxExecutableSize);
 }
 
 bool
 PostLightController::uploadExecutable(const uint8_t* buf, uint16_t size)
 {
-    if (size > ExecutableSize) {
-        return false;
-    }
-    memcpy(executable, buf, size);
     mil::File f = _wfs.fs().open("executable.clvx", "w");
     f.write(buf, size);
     f.close();
@@ -142,6 +142,12 @@ PostLightController::setup()
     cout << F("Post Light Controller v0.3\n");
   
     showStatus(StatusColor::Green, 3, 2);
+    
+    // Load the executable
+    mil::File f = _wfs.fs().open("executable.clvx", "r");
+    f.read(_executable, f.size());
+    f.close();
+    
 }
 	
 void
@@ -183,5 +189,11 @@ PostLightController::sendCmd(const uint8_t* cmd, uint16_t size)
     }
     
     _effect = Effect::Interp;
-    return _interpretedEffect.init(cmd[0], cmd + 1, size - 1);
+    _interpretedEffect.init(cmd[0], cmd + 1, size - 1);
+    if (_interpretedEffect.error() != clvr::Memory::Error::None) {
+        _effect = Effect::None;
+        showError(_interpretedEffect.error(), _interpretedEffect.errorAddr());
+        return false;
+    }
+    return true;
 }

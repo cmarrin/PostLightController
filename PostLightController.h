@@ -14,10 +14,12 @@
 #include "Application.h"
 #include "Flash.h"
 #include "InterpretedEffect.h"
+#include "WebFileSystem.h"
 
 static constexpr const char* ConfigPortalName = "MT Etherclock";
 static constexpr int LEDPin = 10;
 static constexpr int NumPixels = 8;
+static constexpr int MaxExecutableSize = 2048;
 
 // This handles uris of the form /<root>/*
 class HTTPPathHandler : public RequestHandler
@@ -55,6 +57,8 @@ class PostLightController : public mil::Application
     
     bool isIdle() const { return _effect == Effect::None; }
 
+    uint8_t getCodeByte(uint16_t addr) { return (addr < MaxExecutableSize) ? _executable[addr] : 0; }
+    
   private:	
     void handleCommand();
 
@@ -89,7 +93,11 @@ class PostLightController : public mil::Application
     Effect _effect = Effect::None;
 	Flash _flash;
 	InterpretedEffect _interpretedEffect;
+ 
+    mil::WFS _wfs;
 	
 	uint8_t _cmd = '0';
+ 
+    uint8_t _executable[MaxExecutableSize];
 };
 

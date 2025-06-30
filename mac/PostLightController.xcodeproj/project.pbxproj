@@ -11,6 +11,8 @@
 		4966135A2E07192800296791 /* Flash.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49BDF4D827C5B5BE00325407 /* Flash.cpp */; };
 		4966135B2E07192F00296791 /* InterpretedEffect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49BDF4D327C5B5BE00325407 /* InterpretedEffect.cpp */; };
 		4966135E2E078C0500296791 /* Application.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4966131A2DF8ABE400296791 /* Application.cpp */; };
+		496613632E0F5C3F00296791 /* FSMac.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 496613622E0F5C3F00296791 /* FSMac.cpp */; };
+		496613642E11C0BE00296791 /* WebFileSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 496613492DFF94BC00296791 /* WebFileSystem.cpp */; };
 		498F27E12DF0E86D00DFB022 /* Format.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 498F27DD2DF0983B00DFB022 /* Format.cpp */; };
 		498F28032DF0FF8000DFB022 /* AST.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 498F27E32DF0FB5500DFB022 /* AST.cpp */; };
 		498F28042DF0FF9300DFB022 /* Decompiler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 498F27EC2DF0FB5500DFB022 /* Decompiler.cpp */; };
@@ -61,6 +63,8 @@
 		4966135C2E0730E900296791 /* NeoPixel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NeoPixel.h; sourceTree = "<group>"; };
 		4966135F2E0DC2BC00296791 /* partitions.csv */ = {isa = PBXFileReference; lastKnownFileType = text; name = partitions.csv; path = ../partitions.csv; sourceTree = "<group>"; };
 		496613602E0DCCBD00296791 /* boards.local.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = boards.local.txt; path = ../boards.local.txt; sourceTree = SOURCE_ROOT; };
+		496613612E0F5C3F00296791 /* FSMac.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FSMac.h; sourceTree = "<group>"; };
+		496613622E0F5C3F00296791 /* FSMac.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FSMac.cpp; sourceTree = "<group>"; };
 		498F27DC2DF0983B00DFB022 /* Format.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Format.h; sourceTree = "<group>"; };
 		498F27DD2DF0983B00DFB022 /* Format.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Format.cpp; sourceTree = "<group>"; };
 		498F27DE2DF0983B00DFB022 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
@@ -131,6 +135,8 @@
 				496613222DF8ABE400296791 /* Clock.h */,
 				496613232DF8ABE400296791 /* DSP7S04B.cpp */,
 				496613242DF8ABE400296791 /* DSP7S04B.h */,
+				496613612E0F5C3F00296791 /* FSMac.h */,
+				496613622E0F5C3F00296791 /* FSMac.cpp */,
 				496613252DF8ABE400296791 /* JsonListener.h */,
 				496613262DF8ABE400296791 /* JsonStreamingParser.h */,
 				496613272DF8ABE400296791 /* JsonStreamingParser.cpp */,
@@ -373,6 +379,7 @@
 				498F28062DF0FF9300DFB022 /* CodeGen6809.cpp in Sources */,
 				498F28072DF0FF9300DFB022 /* CodeGenStackVM.cpp in Sources */,
 				498F28082DF0FF9300DFB022 /* Scanner.cpp in Sources */,
+				496613632E0F5C3F00296791 /* FSMac.cpp in Sources */,
 				4966135A2E07192800296791 /* Flash.cpp in Sources */,
 				498F28092DF0FF9300DFB022 /* Compiler.cpp in Sources */,
 				498F28112DF1000000DFB022 /* NativeCoreRuntime.cpp in Sources */,
@@ -380,6 +387,7 @@
 				498F280A2DF0FF9300DFB022 /* Module.cpp in Sources */,
 				498F280B2DF0FF9300DFB022 /* Function.cpp in Sources */,
 				49DAA647278B212E00F67EEB /* main.cpp in Sources */,
+				496613642E11C0BE00296791 /* WebFileSystem.cpp in Sources */,
 				498F27E12DF0E86D00DFB022 /* Format.cpp in Sources */,
 				4966135B2E07192F00296791 /* InterpretedEffect.cpp in Sources */,
 			);
