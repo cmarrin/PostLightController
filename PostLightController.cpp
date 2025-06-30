@@ -68,7 +68,7 @@ static uint8_t getCodeByte(void* data, uint16_t addr)
 PostLightController::PostLightController()
     : mil::Application(LED_BUILTIN, ConfigPortalName)
     , _pixels(NumPixels, LEDPin)
-    , _pathHandler("/fs")
+    , _pathHandler(this, "/fs")
     , _interpretedEffect(&_pixels, ::getCodeByte, this)
 {
     memset(_executable, 0, MaxExecutableSize);
@@ -131,6 +131,10 @@ PostLightController::setup()
     Application::setup();
     randomSeed(millis());
 
+    if (!LittleFS.begin(true)) {
+        cout << F("***** LittleFS initialization failed\n");
+    }
+
     setTitle("<center>MarrinTech Post Light Controller</center>");
 
     addHTTPHandler("/command", std::bind(&PostLightController::handleCommand, this));
@@ -144,8 +148,19 @@ PostLightController::setup()
     showStatus(StatusColor::Green, 3, 2);
     
     // Load the executable
-    mil::File f = _wfs.fs().open("executable.clvx", "r");
-    f.read(_executable, f.size());
+    cout << F("Loading executable...\n");
+    File f = LittleFS.open("/executable.clvx", "r");
+    if (!f) {
+        cout << F("***** failed to open 'executable.clvx' for read\n");
+    } else {
+        size_t size = f.size();
+        size_t r = f.read(_executable, size);
+        if (r != size) {
+            cout << F("***** failed to read 'executable.clvx', error=") << uint32_t(r) << F("\n");
+        } else {
+            cout << F("    load complete.\n");
+        }
+    }
     f.close();
     
 }

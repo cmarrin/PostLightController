@@ -21,11 +21,13 @@ static constexpr int LEDPin = 10;
 static constexpr int NumPixels = 8;
 static constexpr int MaxExecutableSize = 2048;
 
+class PostLightController;
+
 // This handles uris of the form /<root>/*
 class HTTPPathHandler : public RequestHandler
 {
   public:
-    HTTPPathHandler(const String& root) : _root(root) { }
+    HTTPPathHandler(PostLightController* controller, const String& root) : _controller(controller), _root(root) { }
     
     virtual bool canHandle(WebServer&, HTTPMethod method, const String& uri) override
     {
@@ -41,6 +43,7 @@ class HTTPPathHandler : public RequestHandler
     virtual void upload(WebServer& server, const String &uri, HTTPUpload &upload) override;
 
   private:
+    PostLightController* _controller;
     String _root;
 };
 

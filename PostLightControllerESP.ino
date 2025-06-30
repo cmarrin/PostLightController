@@ -56,6 +56,8 @@ void setup()
     controller.setup();
 }
 
+bool haveSentCmd = false;
+
 void loop()
 {
     controller.loop();
