@@ -49,6 +49,8 @@ HTTPPathHandler::upload(WebServer& server, const String &uri, HTTPUpload &upload
             s += F(" 0x");
             s += buf;
         }
+
+        _controller->uploadExecutable(upload.buf, upload.currentSize);
     } else if (upload.status == UPLOAD_FILE_END) {
         s += F("END");
     }
@@ -77,8 +79,18 @@ PostLightController::PostLightController()
 bool
 PostLightController::uploadExecutable(const uint8_t* buf, uint16_t size)
 {
-    mil::File f = _wfs.fs().open("executable.clvx", "w");
-    f.write(buf, size);
+    cout << F("Uploading executable, size=") << size << F("...\n");
+    File f = LittleFS.open("/executable.clvx", "w");
+    if (!f) {
+        cout << F("***** failed to open '/executable.clvx' for write\n");
+    } else {
+        size_t r = f.write(buf, size);
+        if (r != size) {
+            cout << F("***** failed to write 'executable.clvx', error=") << uint32_t(r) << F("\n");
+        } else {
+            cout << F("    upload complete.\n");
+        }
+    }
     f.close();
     return true;
 }
