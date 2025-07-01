@@ -266,6 +266,12 @@ PostLightController::sendCmd(const uint8_t* cmd, uint16_t size)
         return false;
     }
     
+    if (cmd[0] == 'C') {
+        // Built-in color command
+        showColor(cmd[1], cmd[2], cmd[3], cmd[4], cmd[5]);
+        return true;
+    }
+    
     _effect = Effect::Interp;
     _interpretedEffect.init(cmd[0], cmd + 1, size - 1);
     if (_interpretedEffect.error() != clvr::Memory::Error::None) {
