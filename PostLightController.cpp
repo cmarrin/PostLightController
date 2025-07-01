@@ -9,6 +9,7 @@
 
 #include "PostLightController.h"
 
+static constexpr uint16_t MaxCmdSize = 16;
 static constexpr int32_t MaxDelay = 1000; // ms
 
 bool
@@ -73,11 +74,83 @@ PostLightController::uploadExecutable(const uint8_t* buf, uint16_t size)
     return true;
 }
 
+static int16_t parseCmd(const String& cmd, uint8_t* buf, uint16_t size)
+{
+    // Cmd form is: <cmd char>,<param0 (0-255)>,<param1 (0-255)>,...<paramN (0-255)>
+    uint16_t strIndex = 0;
+    uint16_t bufIndex = 0;
+    bool parsingCmd = true;
+    
+    while (true) {
+        int16_t nextIndex = cmd.indexOf(',', strIndex);
+        if (nextIndex == -1) {
+            nextIndex = cmd.length();
+        }
+
+        if (parsingCmd) {
+            // Cmd must be a single char
+            if (nextIndex != 1) {
+                return -1;
+            }
+            buf[bufIndex++] = uint8_t(cmd.c_str()[0]);
+            parsingCmd = false;
+        } else {
+            // Parse param. Must be 1 to 3 digits <= 255
+            uint16_t paramSize = nextIndex - strIndex;
+            if (paramSize < 1 || paramSize > 3) {
+                return -1;
+            }
+            
+            uint16_t param = 0;
+            for (uint16_t i = 0; i < paramSize; ++i) {
+                uint16_t digit = uint16_t(cmd.c_str()[strIndex + i]) - '0';
+                if (digit > 9) {
+                    return -1;
+                }
+                
+                param = param * 10 + digit;
+            }
+            
+            if (param > 255) {
+                return -1;
+            }
+            
+            buf[bufIndex++] = uint8_t(param);
+        }
+        strIndex = nextIndex;
+        if (cmd[strIndex] == ',') {
+            strIndex += 1;
+        }
+        
+        if (cmd[strIndex] == '\0') {
+            return bufIndex;
+        }
+    }
+    return -1;
+}
+
+void
+PostLightController::processCommand(const String& cmd)
+{
+    cout << F("cmd='") << cmd << F("'\n");
+    
+    uint8_t buf[MaxCmdSize];
+    int16_t r = parseCmd(cmd, buf, MaxCmdSize);
+    if (r < 0) {
+        cout << F("**** parseCmd failed\n");
+    } else {
+        if (!sendCmd(buf, r)) {
+            cout << F("**** sendCmd failed\n");
+        }
+    }
+    
+    sendHTTPPage("command processed");
+}
+
 void
 PostLightController::handleCommand()
 {
-    cout << F("cmd='") << getHTTPArg("cmd") << F("'\n");
-    sendHTTPPage("command processed");
+    processCommand(getHTTPArg("cmd"));
 }
 
 static void showError(clvr::Memory::Error error, int16_t addr)

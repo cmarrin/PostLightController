@@ -57,6 +57,7 @@ class PostLightController : public mil::Application
     
     bool uploadExecutable(const uint8_t* buf, uint16_t size);
     bool sendCmd(const uint8_t* cmd, uint16_t size);
+    void processCommand(const String& cmd);
     
     bool isIdle() const { return _effect == Effect::None; }
 
