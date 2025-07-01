@@ -11,6 +11,7 @@
 
 static constexpr uint16_t MaxCmdSize = 16;
 static constexpr int32_t MaxDelay = 1000; // ms
+static constexpr int32_t IdleDelay = 100; // ms
 
 bool
 HTTPPathHandler::handle(WebServer& server, HTTPMethod method, const String& uri)
@@ -233,7 +234,7 @@ PostLightController::loop()
 {
     Application::loop();
 
-    int32_t delayInMs = 0;
+    int32_t delayInMs = IdleDelay;
     
     if (_effect == Effect::Flash) {
         delayInMs = _flash.loop(&_pixels);
@@ -253,7 +254,7 @@ PostLightController::loop()
         // An effect has finished. End it and clear the display
         showColor(0, 0, 0, 0, 0);
         _effect = Effect::None;
-        delayInMs = 0;
+        delayInMs = IdleDelay;
     }
     
     delay(delayInMs);
