@@ -67,13 +67,7 @@ int main(int argc, char * const argv[])
             
             if (!haveSentCmd) {
                 haveSentCmd = true;
-                uint8_t cmd[5];
-                cmd[0] = 'f';
-                cmd[1] = 25; // h
-                cmd[1] = 200; // s
-                cmd[1] = 100; // v
-                cmd[1] = 7; // speed
-                controller.sendCmd(cmd, 5);
+                controller.processCommand("f,25,200,100,7");
                 loopCount = 20;
             }
         }
