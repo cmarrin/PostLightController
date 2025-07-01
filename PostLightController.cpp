@@ -33,31 +33,9 @@ HTTPPathHandler::handle(WebServer& server, HTTPMethod method, const String& uri)
 void
 HTTPPathHandler::upload(WebServer& server, const String &uri, HTTPUpload &upload)
 {
-    String s = F("upload (filename='");
-    s += upload.filename;
-    s += F("' ");
-    
-    if (upload.status == UPLOAD_FILE_START) {
-        s += F("START");
-    } else if (upload.status == UPLOAD_FILE_WRITE) {
-        s += F("WRITE - received ");
-        s += uint32_t(upload.currentSize);
-        s += F(" bytes:");
-        char buf[3] = "00";
-        for (uint8_t i = 0; i < 10; ++i) {
-            mil::toHex(upload.buf[i], buf);
-            s += F(" 0x");
-            s += buf;
-        }
-
+    if (upload.status == UPLOAD_FILE_WRITE) {
+        cout << F("Received executable '") << upload.filename << F("'\n");
         _controller->uploadExecutable(upload.buf, upload.currentSize);
-    } else if (upload.status == UPLOAD_FILE_END) {
-        s += F("END");
-    }
-    
-    if (s.length() != 0) {
-        cout << s << "\n";
-        server.send(200, s.c_str());  // all done.
     }
 }
 
