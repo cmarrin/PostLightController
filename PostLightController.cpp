@@ -49,7 +49,7 @@ static uint8_t getCodeByte(void* data, uint16_t addr)
 
 PostLightController::PostLightController()
     : mil::Application(LED_BUILTIN, ConfigPortalName)
-    , _pixels(NumPixels, LEDPin)
+    , _pixels(TotalPixels, LEDPin)
     , _pathHandler(this, "/fs")
     , _interpretedEffect(&_pixels, ::getCodeByte, this)
 {

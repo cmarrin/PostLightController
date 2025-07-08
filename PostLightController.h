@@ -18,7 +18,9 @@
 
 static constexpr const char* ConfigPortalName = "MT Etherclock";
 static constexpr int LEDPin = 10;
-static constexpr int NumPixels = 8;
+static constexpr int PixelsPerPost = 8;
+static constexpr int NumPosts = 7;
+static constexpr int TotalPixels = PixelsPerPost * NumPosts;
 static constexpr int MaxExecutableSize = 2048;
 
 class PostLightController;
