@@ -10,6 +10,7 @@
 #include "Flash.h"
 
 #include "Defines.h"
+#include "PostLightController.h"
 
 bool
 Flash::init(mil::NeoPixel* pixels, uint8_t h, uint8_t s, uint8_t v, uint8_t count, uint16_t duration)
@@ -23,7 +24,8 @@ Flash::init(mil::NeoPixel* pixels, uint8_t h, uint8_t s, uint8_t v, uint8_t coun
 
     // If we will be flashing (count != 0) then start with the lights off.
     // Otherwise set the lights to the passed color
-    pixels->setAllLights(_count ? 0 : pixels->color(h, s, v));
+    pixels->setLights(0, TotalPixels - 1, _count ? 0 : pixels->color(h, s, v));
+    pixels->show();
 
 	return true;
 }
@@ -58,7 +60,8 @@ Flash::loop(mil::NeoPixel* pixels)
 	}
 	
 	if (showColor) {
-		pixels->setAllLights(color);
+		pixels->setLights(0, TotalPixels - 1, color);
+        pixels->show();
 	}
 	
     return 0;
