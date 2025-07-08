@@ -59,16 +59,20 @@ PostLightController::PostLightController()
 bool
 PostLightController::uploadExecutable(const uint8_t* buf, uint16_t size)
 {
+    showStatus(StatusColor::Blue, 0, 0);
     cout << F("Uploading executable, size=") << size << F("...\n");
     File f = LittleFS.open("/executable.clvx", "w");
     if (!f) {
         cout << F("***** failed to open '/executable.clvx' for write\n");
+        showStatus(StatusColor::Red, 5, 5);
     } else {
         size_t r = f.write(buf, size);
         if (r != size) {
             cout << F("***** failed to write 'executable.clvx', error=") << uint32_t(r) << F("\n");
+            showStatus(StatusColor::Red, 5, 5);
         } else {
             cout << F("    upload complete.\n");
+            showStatus(StatusColor::Green, 5, 1);
         }
     }
     f.close();
