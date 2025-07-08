@@ -76,6 +76,9 @@ PostLightController::uploadExecutable(const uint8_t* buf, uint16_t size)
         }
     }
     f.close();
+    
+    loadExecutable();
+
     return true;
 }
 
@@ -199,6 +202,26 @@ static void showError(clvr::Memory::Error error, int16_t addr)
 }
 
 void
+PostLightController::loadExecutable()
+{
+    cout << F("Loading executable...\n");
+    
+    File f = LittleFS.open("/executable.clvx", "r");
+    if (!f) {
+        cout << F("***** failed to open 'executable.clvx' for read\n");
+    } else {
+        size_t size = f.size();
+        size_t r = f.read(_executable, size);
+        if (r != size) {
+            cout << F("***** failed to read 'executable.clvx', error=") << uint32_t(r) << F("\n");
+        } else {
+            cout << F("    load complete.\n");
+        }
+    }
+    f.close();
+}
+
+void
 PostLightController::setup()
 {
     delay(500);
@@ -222,22 +245,7 @@ PostLightController::setup()
   
     showStatus(StatusColor::Green, 3, 2);
     
-    // Load the executable
-    cout << F("Loading executable...\n");
-    File f = LittleFS.open("/executable.clvx", "r");
-    if (!f) {
-        cout << F("***** failed to open 'executable.clvx' for read\n");
-    } else {
-        size_t size = f.size();
-        size_t r = f.read(_executable, size);
-        if (r != size) {
-            cout << F("***** failed to read 'executable.clvx', error=") << uint32_t(r) << F("\n");
-        } else {
-            cout << F("    load complete.\n");
-        }
-    }
-    f.close();
-    
+    loadExecutable();
 }
 	
 void
