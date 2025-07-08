@@ -431,7 +431,7 @@ function int16_t main()
         }
     }
     
-    return 0;
+    return result;
 }
 
 };
