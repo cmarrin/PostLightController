@@ -65,6 +65,7 @@ class PostLightController : public mil::Application
     
   private:	
     void handleCommand();
+    void handleGetIPAddr();
 
 	enum class StatusColor { Red, Green, Yellow, Blue };
 

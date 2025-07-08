@@ -158,6 +158,12 @@ PostLightController::handleCommand()
     processCommand(getHTTPArg("cmd"));
 }
 
+void
+PostLightController::handleGetIPAddr()
+{
+    sendHTTPPage(WiFi.localIP().toString().c_str());
+}
+
 static void showError(clvr::Memory::Error error, int16_t addr)
 {
     cout << F("Interpreter failed: ");
@@ -206,6 +212,7 @@ PostLightController::setup()
     setTitle("<center>MarrinTech Post Light Controller</center>");
 
     addHTTPHandler("/command", std::bind(&PostLightController::handleCommand, this));
+    addHTTPHandler("/getipaddr", std::bind(&PostLightController::handleGetIPAddr, this));
     addCustomHTTPHandler(&_pathHandler);
 
     _pixels.begin(); // This initializes the NeoPixel library.
