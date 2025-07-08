@@ -135,9 +135,9 @@ function initFade(uint8_t post, uint8_t c, bool fadeIn)
     LedEntry* led = &leds[post];
 
     led.min = 0.0;
-    led.max = colors[c].v;
+    led.max = int16_t(colors[c].v) * 128;
     led.cur = 0.0;
-    led.inc = FadeInc;
+    led.inc = FadeInc * 128;
 
     if (!fadeIn) {
         led.cur = led.max;
@@ -153,7 +153,7 @@ function multicolorInit(uint8_t post)
     multiColorIndex[post] = core.irand(0, 4);
 
     // Start by fading in the first color
-    initFade(multiColorIndex, true);
+    initFade(post, multiColorIndex, true);
 
     multiColorIsCrossfading[post] = true;
 
@@ -170,7 +170,7 @@ function int16_t multicolorLoop(uint8_t post)
         if (animateResult < 0) {
             // The current light has faded out
             // Restore the Val of the current color
-            colors[multiColorIndex[post]].v = led.max;
+            colors[multiColorIndex[post]].v = led.max / 128;
 
             if (++multiColorIndex[post] >= 4) {
                 multiColorIndex[post] = 0;
@@ -185,7 +185,7 @@ function int16_t multicolorLoop(uint8_t post)
             }
         }
 
-        colors[multiColorIndex[post]].v = led.cur;
+        colors[multiColorIndex[post]].v = led.cur / 128;
         setAllLights(post, multiColorIndex[post]);
         return Delay;
     }
@@ -305,8 +305,6 @@ function int16_t flickerLoop(uint8_t post)
 {
     LedEntry* led;
     uint16_t basePixel = post * PixelsPerPost;
-    
-    core.printf("******** flicker:post=%d, basePixel = %d\n", post, basePixel);
     
     for (uint16_t i = 0; i < PixelsPerPost; ++i) {
         led = &leds[basePixel + i];
