@@ -156,7 +156,7 @@ function multicolorInit(uint8_t post)
     multiColorIndex[post] = core.irand(0, 4);
 
     // Start by fading in the first color
-    initFade(post, multiColorIndex, true);
+    initFade(post, multiColorIndex[post], true);
 
     multiColorIsCrossfading[post] = true;
 }
@@ -176,7 +176,7 @@ function int16_t multicolorLoop(uint8_t post)
                 multiColorIndex[post] = 0;
             }
 
-            initFade(post, multiColorIndex, true);
+            initFade(post, multiColorIndex[post], true);
         } else if (animateResult > 0) {
             // The new light has completed fading in
             multiColorIsCrossfading[post] = false;
