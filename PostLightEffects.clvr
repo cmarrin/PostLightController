@@ -81,20 +81,22 @@ LedEntry leds[PixelsPerPost * NumPosts];
 
 function int16_t animate(LedEntry led)
 {
-    led.cur += led.inc;
+    // Watch for overflow
     if (led.inc > 0) {
-        if (led.cur >= led.max) {
+        if (led.cur >= led.max - led.inc) {
             led.inc = -led.inc;
             led.cur = led.max;
             return 1;
         }
     } else {
-        if (led.cur <= led.min) {
+        if (led.cur <= led.min - led.inc) {
             led.inc = -led.inc;
             led.cur = led.min;
             return -1;
         }
     }
+
+    led.cur += led.inc;
     return 0;
 }
 
