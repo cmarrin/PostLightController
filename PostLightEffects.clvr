@@ -65,6 +65,8 @@ struct Color
     uint8_t h;
     uint8_t s;
     uint8_t v;
+
+    Color(uint8_t hue, uint8_t sat, uint8_t val) { h = hue; s = sat; v = val; }
 };
 
 uint8_t speed;
@@ -100,10 +102,9 @@ function int16_t animate(LedEntry led)
     return 0;
 }
 
-function setAllLights(uint16_t from, uint8_t colorIndex)
+function setAllLights(uint16_t post, Color color)
 {
-    Color* color = &colors[colorIndex];
-    core.userCall(SetLights, from, PixelsPerPost, color);
+    core.userCall(SetLights, post * PixelsPerPost, PixelsPerPost, color);
 }
 
 function loadColorArg(Color color)
@@ -187,8 +188,9 @@ function int16_t multicolorLoop(uint8_t post)
             }
         }
 
-        colors[multiColorIndex[post]].v = led.cur / 128;
-        setAllLights(post, multiColorIndex[post]);
+        Color color(colors[multiColorIndex[post]].h, colors[multiColorIndex[post]].s, led.cur / 128);
+        setAllLights(post, color);
+        
         return Delay;
     }
 
@@ -248,8 +250,8 @@ function int16_t pulseLoop(uint8_t post)
 
     animate(led);
 
-    colors[0].v = led.cur / 128;
-    setAllLights(post, 0);
+    Color color(colors[0].h, colors[0].s, led.cur / 128);
+    setAllLights(post, color);
     return Delay;
 }
 
@@ -324,8 +326,8 @@ function int16_t flickerLoop(uint8_t post)
             led.max = core.irand(FlickerBrightestMin, FlickerBrightestMax) * 128;
         }
 
-        colors[0].v = led.cur / 128;
-        core.userCall(SetLight, basePixel + i, colors[0]);
+        Color color(colors[0].h, colors[0].s, led.cur / 128);
+        core.userCall(SetLight, basePixel + i, color);
     }
     
     return Delay;
@@ -376,8 +378,9 @@ function int16_t rainbowLoop(uint8_t post)
 
     animate(led);
 
-    colors[0].h = led.cur / 128;
-    setAllLights(post, 0);
+    Color color(led.cur / 128, colors[0].s, colors[0].v);
+    setAllLights(post, color);
+
     return Delay;
 }
 
