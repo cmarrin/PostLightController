@@ -126,8 +126,7 @@ function loadColorArg(Color color)
 //        9..11      Color 4
 //        12         Duration between cross fades in 1 second intervals (0-255)
 //
-uint16_t multiColorDurationMax[NumPosts]; // Number of counts between fade (based on Delay)
-uint16_t multiColorDurationCur[NumPosts];
+int16_t multiColorDurationCur[NumPosts];
 uint8_t multiColorIndex[NumPosts];
 bool multiColorIsCrossfading[NumPosts];
 
@@ -150,7 +149,8 @@ function initFade(uint8_t post, uint8_t c, bool fadeIn)
 
 function multicolorInit(uint8_t post)
 {
-    multiColorDurationMax[post] = uint16_t(speed) * 1000 / Delay;
+    // Add randomness to duration so the posts don't stay in sync (careful about 16 bit range)
+    multiColorDurationCur[post] = uint16_t(speed + 4 + core.irand(-3, 3)) * (1000 / Delay);
     
     // Start on a random color
     multiColorIndex[post] = core.irand(0, 4);
@@ -159,9 +159,6 @@ function multicolorInit(uint8_t post)
     initFade(post, multiColorIndex, true);
 
     multiColorIsCrossfading[post] = true;
-
-    // Start at a random place in the delay
-    multiColorDurationCur[post] = core.irand(0, multiColorDurationMax[post]);
 }
 
 function int16_t multicolorLoop(uint8_t post)
@@ -183,9 +180,6 @@ function int16_t multicolorLoop(uint8_t post)
         } else if (animateResult > 0) {
             // The new light has completed fading in
             multiColorIsCrossfading[post] = false;
-            if (multiColorDurationCur[post] >= multiColorDurationMax[post]) {
-                multiColorDurationCur[post] = 0;
-            }
         }
 
         Color color(colors[multiColorIndex[post]].h, colors[multiColorIndex[post]].s, led.cur / 128);
@@ -194,16 +188,15 @@ function int16_t multicolorLoop(uint8_t post)
         return Delay;
     }
 
-    if (++multiColorDurationCur[post] < multiColorDurationMax[post]) {
+    if (--multiColorDurationCur[post] > 0) {
         return Delay;
     }
 
     // We've hit the desired duration, transition
     multiColorIsCrossfading[post] = true;
     
-    // Add random amount to duration
-    multiColorDurationMax[post] = ((uint16_t(speed) * 1000) + core.irand(-1, 1)) / Delay;
-    multiColorDurationCur[post] = 0;
+    // Add randomness to duration so the posts don't stay in sync (careful about 16 bit range)
+    multiColorDurationCur[post] = uint16_t(speed + 4 + core.irand(-3, 3)) * (1000 / Delay);
     return Delay;
 }
 
