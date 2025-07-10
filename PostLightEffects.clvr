@@ -336,7 +336,7 @@ function int16_t flickerLoop(uint8_t post)
 //                                  0-6 colors bounce back and forth, 7 colors loop around
 //
 const int16_t MaxColorComp     = 32768; // This is the component value that equals 1.0
-const int16_t RainbowSpeedMult = 15;
+const int16_t RainbowSpeedMult = 1;
 
 function rainbowInit(uint8_t post)
 {
