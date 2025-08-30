@@ -24,3 +24,4 @@ data.bin
 data
 kicad/Passive/Passive-backups
 build
+PostLightController-esp-idf/managed_components/espressif__nghttp/nghttp2/fuzz
