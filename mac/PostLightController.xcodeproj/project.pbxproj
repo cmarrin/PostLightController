@@ -11,7 +11,7 @@
 		4966135A2E07192800296791 /* Flash.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49BDF4D827C5B5BE00325407 /* Flash.cpp */; };
 		4966135B2E07192F00296791 /* InterpretedEffect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49BDF4D327C5B5BE00325407 /* InterpretedEffect.cpp */; };
 		4966135E2E078C0500296791 /* Application.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4966131A2DF8ABE400296791 /* Application.cpp */; };
-		496613632E0F5C3F00296791 /* FSMac.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 496613622E0F5C3F00296791 /* FSMac.cpp */; };
+		496613632E0F5C3F00296791 /* LittleFSShim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 496613622E0F5C3F00296791 /* LittleFSShim.cpp */; };
 		496613642E11C0BE00296791 /* WebFileSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 496613492DFF94BC00296791 /* WebFileSystem.cpp */; };
 		498F27E12DF0E86D00DFB022 /* Format.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 498F27DD2DF0983B00DFB022 /* Format.cpp */; };
 		498F28032DF0FF8000DFB022 /* AST.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 498F27E32DF0FB5500DFB022 /* AST.cpp */; };
@@ -30,6 +30,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		493910E42E5D1DA50026FDA4 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = main/main.cpp; sourceTree = "<group>"; };
+		493910E62E5E4FB40026FDA4 /* CMakeLists.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
+		493910E92E61F5F40026FDA4 /* System.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = System.h; sourceTree = "<group>"; };
 		4963436927A5DC6E00ABF09F /* PostLightEffects.clvr */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; fileEncoding = 4; name = PostLightEffects.clvr; path = ../PostLightEffects.clvr; sourceTree = "<group>"; };
 		496613192DF3C61600296791 /* PostLightControllerESP.ino */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; name = PostLightControllerESP.ino; path = ../PostLightControllerESP.ino; sourceTree = "<group>"; };
 		4966131A2DF8ABE400296791 /* Application.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Application.cpp; path = ../../ESPlib/Application.cpp; sourceTree = SOURCE_ROOT; };
@@ -63,8 +66,8 @@
 		4966135C2E0730E900296791 /* NeoPixel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NeoPixel.h; sourceTree = "<group>"; };
 		4966135F2E0DC2BC00296791 /* partitions.csv */ = {isa = PBXFileReference; lastKnownFileType = text; name = partitions.csv; path = ../partitions.csv; sourceTree = "<group>"; };
 		496613602E0DCCBD00296791 /* boards.local.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = boards.local.txt; path = ../boards.local.txt; sourceTree = SOURCE_ROOT; };
-		496613612E0F5C3F00296791 /* FSMac.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FSMac.h; sourceTree = "<group>"; };
-		496613622E0F5C3F00296791 /* FSMac.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FSMac.cpp; sourceTree = "<group>"; };
+		496613612E0F5C3F00296791 /* LittleFSShim.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LittleFSShim.h; sourceTree = "<group>"; };
+		496613622E0F5C3F00296791 /* LittleFSShim.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = LittleFSShim.cpp; sourceTree = "<group>"; };
 		498F27DC2DF0983B00DFB022 /* Format.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Format.h; sourceTree = "<group>"; };
 		498F27DD2DF0983B00DFB022 /* Format.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Format.cpp; sourceTree = "<group>"; };
 		498F27DE2DF0983B00DFB022 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
@@ -121,9 +124,27 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		493910E12E5D1BE90026FDA4 /* esp-idf */ = {
+			isa = PBXGroup;
+			children = (
+				493910E42E5D1DA50026FDA4 /* main.cpp */,
+			);
+			name = "esp-idf";
+			path = "../PostLightController-esp-idf";
+			sourceTree = "<group>";
+		};
+		493910E22E5D1C510026FDA4 /* mac */ = {
+			isa = PBXGroup;
+			children = (
+				49DAA646278B212E00F67EEB /* main.cpp */,
+			);
+			name = mac;
+			sourceTree = "<group>";
+		};
 		496613322DF8ABE400296791 /* ESPLib */ = {
 			isa = PBXGroup;
 			children = (
+				493910E62E5E4FB40026FDA4 /* CMakeLists.txt */,
 				4966131A2DF8ABE400296791 /* Application.cpp */,
 				4966131B2DF8ABE400296791 /* Application.h */,
 				4966131C2DF8ABE400296791 /* Blinker.h */,
@@ -135,8 +156,8 @@
 				496613222DF8ABE400296791 /* Clock.h */,
 				496613232DF8ABE400296791 /* DSP7S04B.cpp */,
 				496613242DF8ABE400296791 /* DSP7S04B.h */,
-				496613612E0F5C3F00296791 /* FSMac.h */,
-				496613622E0F5C3F00296791 /* FSMac.cpp */,
+				496613612E0F5C3F00296791 /* LittleFSShim.h */,
+				496613622E0F5C3F00296791 /* LittleFSShim.cpp */,
 				496613252DF8ABE400296791 /* JsonListener.h */,
 				496613262DF8ABE400296791 /* JsonStreamingParser.h */,
 				496613272DF8ABE400296791 /* JsonStreamingParser.cpp */,
@@ -146,6 +167,7 @@
 				4966132B2DF8ABE400296791 /* MenuSystem.h */,
 				4966135C2E0730E900296791 /* NeoPixel.h */,
 				4966132C2DF8ABE400296791 /* StateMachine.h */,
+				493910E92E61F5F40026FDA4 /* System.h */,
 				4966132D2DF8ABE400296791 /* TimeWeatherServer.cpp */,
 				4966132E2DF8ABE400296791 /* TimeWeatherServer.h */,
 				496613492DFF94BC00296791 /* WebFileSystem.cpp */,
@@ -253,6 +275,8 @@
 				498F28022DF0FB5C00DFB022 /* Runtime */,
 				498F27E02DF0983B00DFB022 /* Format */,
 				49BDF4D227C5B56200325407 /* Arduino */,
+				493910E12E5D1BE90026FDA4 /* esp-idf */,
+				493910E22E5D1C510026FDA4 /* mac */,
 				49DAA652278B3B5B00F67EEB /* src */,
 				49DAA64D278B2DF200F67EEB /* Scripts */,
 				498F233E2DEF75C800DFB022 /* Frameworks */,
@@ -285,7 +309,6 @@
 				49BDF4D527C5B5BE00325407 /* InterpretedEffect.h */,
 				4966134B2E00D2E400296791 /* PostLightController.cpp */,
 				4966134A2E00D2D300296791 /* PostLightController.h */,
-				49DAA646278B212E00F67EEB /* main.cpp */,
 			);
 			name = src;
 			sourceTree = "<group>";
@@ -379,7 +402,7 @@
 				498F28062DF0FF9300DFB022 /* CodeGen6809.cpp in Sources */,
 				498F28072DF0FF9300DFB022 /* CodeGenStackVM.cpp in Sources */,
 				498F28082DF0FF9300DFB022 /* Scanner.cpp in Sources */,
-				496613632E0F5C3F00296791 /* FSMac.cpp in Sources */,
+				496613632E0F5C3F00296791 /* LittleFSShim.cpp in Sources */,
 				4966135A2E07192800296791 /* Flash.cpp in Sources */,
 				498F28092DF0FF9300DFB022 /* Compiler.cpp in Sources */,
 				498F28112DF1000000DFB022 /* NativeCoreRuntime.cpp in Sources */,
