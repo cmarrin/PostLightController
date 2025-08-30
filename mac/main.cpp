@@ -19,16 +19,16 @@
 
 int main(int argc, char * const argv[])
 {
-    cout << "PostLightController Simulator\n\n";
+    printf("PostLightController Simulator\n\n");
     
     if (argc < 2) {
-        cout << "No executable given\n";
+        printf("No executable given\n");
         return 0;
     }
         
     std::ifstream stream(argv[1], std::ios_base::binary | std::ios_base::ate);
     if (stream.fail()) {
-        cout << "Can't open '" << argv[1] << "'\n";
+        printf("Can't open '%s'\n", argv[1]);
         return 0;
     }
     
@@ -36,7 +36,7 @@ int main(int argc, char * const argv[])
     stream.seekg(0, std::ios::beg);
     char* buf = new char[size];
     if (!(stream.read(buf, size))) {
-        cout << "Error opening '" << argv[1] << "'\n";
+        printf("Error opening '%s'\n", argv[1]);
         return 0;
     }
         

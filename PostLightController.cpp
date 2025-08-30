@@ -23,7 +23,7 @@ HTTPPathHandler::handle(WebServer& server, HTTPMethod method, const String& uri)
         s += "', op='";
         s+= server.arg("op");
         s+= "'";
-        cout << F("***** ") << s.c_str() << F("\n");
+        printf("***** %s\n", s.c_str());
         server.send(200, "text/html", s.c_str());
         return true;
     }
@@ -36,7 +36,7 @@ void
 HTTPPathHandler::upload(WebServer& server, const String &uri, HTTPUpload &upload)
 {
     if (upload.status == UPLOAD_FILE_WRITE) {
-        cout << F("Received executable '") << upload.filename << F("'\n");
+        printf("Received executable '%s'\n", upload.filename.c_str());
         _controller->uploadExecutable(upload.buf, upload.currentSize);
     }
 }
@@ -60,18 +60,18 @@ bool
 PostLightController::uploadExecutable(const uint8_t* buf, uint16_t size)
 {
     showStatus(StatusColor::Blue, 0, 0);
-    cout << F("Uploading executable, size=") << size << F("...\n");
+    printf("Uploading executable, size=%u...\n", (unsigned int) size);
     File f = LittleFS.open("/executable.clvx", "w");
     if (!f) {
-        cout << F("***** failed to open '/executable.clvx' for write\n");
+        printf("***** failed to open '/executable.clvx' for write\n");
         showStatus(StatusColor::Red, 5, 5);
     } else {
         size_t r = f.write(buf, size);
         if (r != size) {
-            cout << F("***** failed to write 'executable.clvx', error=") << uint32_t(r) << F("\n");
+            printf("***** failed to write 'executable.clvx', error=%u\n", (unsigned int) r);
             showStatus(StatusColor::Red, 5, 5);
         } else {
-            cout << F("    upload complete.\n");
+            printf("    upload complete.\n");
             showStatus(StatusColor::Green, 5, 1);
         }
     }
@@ -140,15 +140,15 @@ static int16_t parseCmd(const String& cmd, uint8_t* buf, uint16_t size)
 void
 PostLightController::processCommand(const String& cmd)
 {
-    cout << F("cmd='") << cmd << F("'\n");
+    printf("cmd='%s'\n", cmd.c_str());
     
     uint8_t buf[MaxCmdSize];
     int16_t r = parseCmd(cmd, buf, MaxCmdSize);
     if (r < 0) {
-        cout << F("**** parseCmd failed\n");
+        printf("**** parseCmd failed\n");
     } else {
         if (!sendCmd(buf, r)) {
-            cout << F("**** sendCmd failed\n");
+            printf("**** sendCmd failed\n");
         }
     }
     
@@ -161,61 +161,57 @@ PostLightController::handleCommand()
     processCommand(getHTTPArg("cmd"));
 }
 
-void
-PostLightController::handleGetIPAddr()
-{
-    sendHTTPPage(WiFi.localIP().toString().c_str());
-}
-
 static void showError(clvr::Memory::Error error, int16_t addr)
 {
-    cout << F("Interpreter failed: ");
+    const char* reason = "";
     
     switch(error) {
-        case clvr::Memory::Error::None:                     cout << F("no error"); break;
-        case clvr::Memory::Error::InternalError:            cout << F("internal error"); break;
-        case clvr::Memory::Error::UnexpectedOpInIf:         cout << F("unexpected op in if (internal error)"); break;
-        case clvr::Memory::Error::InvalidOp:                cout << F("invalid opcode"); break;
-        case clvr::Memory::Error::OnlyMemAddressesAllowed:  cout << F("only Mem addresses allowed"); break;
-        case clvr::Memory::Error::StackOverrun:             cout << F("stack overrun"); break;
-        case clvr::Memory::Error::StackUnderrun:            cout << F("stack underrun"); break;
-        case clvr::Memory::Error::StackOutOfRange:          cout << F("stack access out of range"); break;
-        case clvr::Memory::Error::AddressOutOfRange:        cout << F("address out of range"); break;
-        case clvr::Memory::Error::InvalidModuleOp:          cout << F("invalid operation in module"); break;
-        case clvr::Memory::Error::InvalidUserFunction:      cout << F("invalid user function"); break;
-        case clvr::Memory::Error::ExpectedSetFrame:         cout << F("expected SetFrame as first function op"); break;
-        case clvr::Memory::Error::NotEnoughArgs:            cout << F("not enough args on stack"); break;
-        case clvr::Memory::Error::WrongNumberOfArgs:        cout << F("wrong number of args"); break;
-        case clvr::Memory::Error::InvalidSignature:         cout << F("invalid signature"); break;
-        case clvr::Memory::Error::InvalidVersion:           cout << F("invalid version"); break;
-        case clvr::Memory::Error::WrongAddressSize:         cout << F("wrong address size"); break;
-        case clvr::Memory::Error::NoEntryPoint:             cout << F("invalid entry point in executable"); break;
-        case clvr::Memory::Error::NotInstantiated:          cout << F("Need to call instantiate, then construct"); break;
-        case clvr::Memory::Error::ImmedNotAllowedHere:      cout << F("immediate not allowed here"); break;
+        case clvr::Memory::Error::None:                     reason = "no error"; break;
+        case clvr::Memory::Error::InternalError:            reason = "internal error"; break;
+        case clvr::Memory::Error::UnexpectedOpInIf:         reason = "unexpected op in if (internal error)"; break;
+        case clvr::Memory::Error::InvalidOp:                reason = "invalid opcode"; break;
+        case clvr::Memory::Error::OnlyMemAddressesAllowed:  reason = "only Mem addresses allowed"; break;
+        case clvr::Memory::Error::StackOverrun:             reason = "stack overrun"; break;
+        case clvr::Memory::Error::StackUnderrun:            reason = "stack underrun"; break;
+        case clvr::Memory::Error::StackOutOfRange:          reason = "stack access out of range"; break;
+        case clvr::Memory::Error::AddressOutOfRange:        reason = "address out of range"; break;
+        case clvr::Memory::Error::InvalidModuleOp:          reason = "invalid operation in module"; break;
+        case clvr::Memory::Error::InvalidUserFunction:      reason = "invalid user function"; break;
+        case clvr::Memory::Error::ExpectedSetFrame:         reason = "expected SetFrame as first function op"; break;
+        case clvr::Memory::Error::NotEnoughArgs:            reason = "not enough args on stack"; break;
+        case clvr::Memory::Error::WrongNumberOfArgs:        reason = "wrong number of args"; break;
+        case clvr::Memory::Error::InvalidSignature:         reason = "invalid signature"; break;
+        case clvr::Memory::Error::InvalidVersion:           reason = "invalid version"; break;
+        case clvr::Memory::Error::WrongAddressSize:         reason = "wrong address size"; break;
+        case clvr::Memory::Error::NoEntryPoint:             reason = "invalid entry point in executable"; break;
+        case clvr::Memory::Error::NotInstantiated:          reason = "Need to call instantiate, then construct"; break;
+        case clvr::Memory::Error::ImmedNotAllowedHere:      reason = "immediate not allowed here"; break;
     }
     
+    printf("Interpreter failed: %s", reason);
+
     if (addr >= 0) {
-        cout << F(" at addr ") << addr;
+        printf(" at addr %i", (int) addr);
     }
     
-    cout << "\n\n";
+    printf("\n\n");
 }
 
 void
 PostLightController::loadExecutable()
 {
-    cout << F("Loading executable...\n");
+    printf("Loading executable...\n");
     
     File f = LittleFS.open("/executable.clvx", "r");
     if (!f) {
-        cout << F("***** failed to open 'executable.clvx' for read\n");
+        printf("***** failed to open 'executable.clvx' for read\n");
     } else {
         size_t size = f.size();
         size_t r = f.read(_executable, size);
         if (r != size) {
-            cout << F("***** failed to read 'executable.clvx', error=") << uint32_t(r) << F("\n");
+            printf("***** failed to read 'executable.clvx', error=%i\n", (int) r);
         } else {
-            cout << F("    load complete.\n");
+            printf("    load complete.\n");
         }
     }
     f.close();
@@ -229,19 +225,18 @@ PostLightController::setup()
     randomSeed(millis());
 
     if (!LittleFS.begin(true)) {
-        cout << F("***** LittleFS initialization failed\n");
+        printf("***** LittleFS initialization failed\n");
     }
 
     setTitle("<center>MarrinTech Post Light Controller</center>");
 
     addHTTPHandler("/command", std::bind(&PostLightController::handleCommand, this));
-    addHTTPHandler("/getipaddr", std::bind(&PostLightController::handleGetIPAddr, this));
     addCustomHTTPHandler(&_pathHandler);
 
     _pixels.begin(); // This initializes the NeoPixel library.
     _pixels.setBrightness(255);
     
-    cout << F("Post Light Controller v0.3\n");
+    printf("Post Light Controller v0.3\n");
   
     showStatus(StatusColor::Green, 3, 2);
     

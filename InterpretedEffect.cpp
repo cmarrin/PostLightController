@@ -59,9 +59,7 @@ InterpretedEffect::userCall(uint16_t id, clvr::InterpreterBase* interp, void* da
 bool
 InterpretedEffect::init(uint8_t cmd, const uint8_t* buf, uint32_t size)
 {
-    cout << F("InterpretedEffect started: cmd='");
-    cout << char(cmd);
-    cout << F("'\n");
+    printf("InterpretedEffect started: cmd='%c'\n", char(cmd));
 
     _interp.instantiate();
     if (_interp.error() != clvr::Memory::Error::None) {

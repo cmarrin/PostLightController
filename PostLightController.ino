@@ -103,7 +103,7 @@ public:
 
         randomSeed(millis());
 
-        cout << F("Post Light Controller v0.4\n");
+        Serial.print(F("Post Light Controller v0.4\n"));
       
 		showStatus(StatusColor::Green, 3, 2);
 		
