@@ -61,7 +61,7 @@ PostLightController::uploadExecutable(const uint8_t* buf, uint16_t size)
 {
     showStatus(StatusColor::Blue, 0, 0);
     printf("Uploading executable, size=%u...\n", (unsigned int) size);
-    File f = LittleFS.open("/executable.clvx", "w");
+    File f = _wfs.open("/executable.clvx", "w");
     if (!f) {
         printf("***** failed to open '/executable.clvx' for write\n");
         showStatus(StatusColor::Red, 5, 5);
@@ -202,7 +202,7 @@ PostLightController::loadExecutable()
 {
     printf("Loading executable...\n");
     
-    File f = LittleFS.open("/executable.clvx", "r");
+    File f = _wfs.open("/executable.clvx", "r");
     if (!f) {
         printf("***** failed to open 'executable.clvx' for read\n");
     } else {
@@ -224,8 +224,8 @@ PostLightController::setup()
     Application::setup();
     randomSeed(millis());
 
-    if (!LittleFS.begin(true)) {
-        printf("***** LittleFS initialization failed\n");
+    if (!_wfs.begin(true)) {
+        printf("***** file system initialization failed\n");
     }
 
     setTitle("<center>MarrinTech Post Light Controller</center>");
