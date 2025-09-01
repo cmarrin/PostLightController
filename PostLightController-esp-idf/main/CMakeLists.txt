@@ -18,6 +18,7 @@ idf_component_register(
         ${ESPlibDir}/Clock.cpp
         ${ESPlibDir}/LittleFSShim.cpp
         ${ESPlibDir}/JsonStreamingParser.cpp
+        ${ESPlibDir}/System.cpp
         ${ESPlibDir}/TimeWeatherServer.cpp
         ${ESPlibDir}/WebFileSystem.cpp
         ${CloverDir}/Interpreter.cpp
