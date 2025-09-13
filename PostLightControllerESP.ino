@@ -48,7 +48,10 @@ Command List:
 
 #include "PostLightController.h"
 
-PostLightController controller;
+#include "ESPWiFiPortal.h"
+
+ESPWiFiPortal portal;
+PostLightController controller(&portal);
 
 void setup()
 {

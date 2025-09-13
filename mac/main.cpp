@@ -15,6 +15,8 @@
 
 #include "PostLightController.h"
 
+#include "WiFiPortal.h"
+
 // main <.clvx file>
 
 int main(int argc, char * const argv[])
@@ -39,8 +41,9 @@ int main(int argc, char * const argv[])
         printf("Error opening '%s'\n", argv[1]);
         return 0;
     }
-        
-    PostLightController controller;
+    
+    WiFiPortal portal;
+    PostLightController controller(&portal);
     
     controller.setup();
     
@@ -62,7 +65,7 @@ int main(int argc, char * const argv[])
         if (controller.isIdle()) {
             if (!haveSentROM) {
                 haveSentROM = true;
-                controller.uploadExecutable(reinterpret_cast<uint8_t*>(buf), size);
+                controller.uploadFile("/executable.clvx", reinterpret_cast<uint8_t*>(buf), size);
             }
             
             if (!haveSentCmd) {

@@ -25,39 +25,16 @@ static constexpr int MaxExecutableSize = 2048;
 
 class PostLightController;
 
-// This handles uris of the form /<root>/*
-class HTTPPathHandler : public RequestHandler
-{
-  public:
-    HTTPPathHandler(PostLightController* controller, const String& root) : _controller(controller), _root(root) { }
-    
-    virtual bool canHandle(WebServer&, HTTPMethod method, const String& uri) override
-    {
-        return uri.startsWith(_root.c_str());
-    }
-        
-    virtual bool canUpload(WebServer&, const String &uri) override
-    {
-        return uri.startsWith(_root.c_str());
-    }
-
-    virtual bool handle(WebServer& server, HTTPMethod method, const String& uri) override;
-    virtual void upload(WebServer& server, const String &uri, HTTPUpload &upload) override;
-
-  private:
-    PostLightController* _controller;
-    String _root;
-};
-
 class PostLightController : public mil::Application
 {
   public:
-    PostLightController();
+    PostLightController(WiFiPortal*);
 
     virtual void setup() override;
     virtual void loop() override;
     
-    bool uploadExecutable(const uint8_t* buf, uint16_t size);
+    bool uploadHTTPFile(const String& uri);
+    bool uploadFile(const String& filename, const uint8_t* buf, size_t size);
     bool sendCmd(const uint8_t* cmd, uint16_t size);
     void processCommand(const String& cmd);
     
@@ -66,7 +43,8 @@ class PostLightController : public mil::Application
     uint8_t getCodeByte(uint16_t addr) { return (addr < MaxExecutableSize) ? _executable[addr] : 0; }
     
   private:	
-    void handleCommand();
+    bool handleCommand(WiFiPortal*, WiFiPortal::HTTPMethod, const String& uri);
+    bool handleFileCommand(WiFiPortal*, WiFiPortal::HTTPMethod, const String& uri);
     void handleGetIPAddr();
     
     void loadExecutable();
@@ -96,8 +74,6 @@ class PostLightController : public mil::Application
 
 	mil::NeoPixel _pixels;
  
-    HTTPPathHandler _pathHandler;
-
     enum class Effect { None, Flash, Interp };
     Effect _effect = Effect::None;
 	Flash _flash;

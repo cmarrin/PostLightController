@@ -34,6 +34,11 @@
 		493910E42E5D1DA50026FDA4 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = main/main.cpp; sourceTree = "<group>"; };
 		493910E92E61F5F40026FDA4 /* System.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = System.h; sourceTree = "<group>"; };
 		493910ED2E63C9CF0026FDA4 /* System.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = System.cpp; sourceTree = "<group>"; };
+		493910EF2E679C140026FDA4 /* WiFiPortal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WiFiPortal.h; sourceTree = "<group>"; };
+		493910F02E679C3F0026FDA4 /* ESPWiFiPortal.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ESPWiFiPortal.cpp; sourceTree = "<group>"; };
+		493910F12E69F4E80026FDA4 /* IDFWiFiPortal.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = IDFWiFiPortal.cpp; sourceTree = "<group>"; };
+		493910F22E69F5030026FDA4 /* IDFWiFiPortal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IDFWiFiPortal.h; sourceTree = "<group>"; };
+		493910F32E69F50C0026FDA4 /* ESPWiFiPortal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ESPWiFiPortal.h; sourceTree = "<group>"; };
 		4963436927A5DC6E00ABF09F /* PostLightEffects.clvr */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; fileEncoding = 4; name = PostLightEffects.clvr; path = ../PostLightEffects.clvr; sourceTree = "<group>"; };
 		496613192DF3C61600296791 /* PostLightControllerESP.ino */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; name = PostLightControllerESP.ino; path = ../PostLightControllerESP.ino; sourceTree = "<group>"; };
 		4966131A2DF8ABE400296791 /* Application.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Application.cpp; path = ../../ESPlib/Application.cpp; sourceTree = SOURCE_ROOT; };
@@ -173,6 +178,11 @@
 				4966132E2DF8ABE400296791 /* TimeWeatherServer.h */,
 				496613492DFF94BC00296791 /* WebFileSystem.cpp */,
 				496613482DFF94A600296791 /* WebFileSystem.h */,
+				493910EF2E679C140026FDA4 /* WiFiPortal.h */,
+				493910F02E679C3F0026FDA4 /* ESPWiFiPortal.cpp */,
+				493910F32E69F50C0026FDA4 /* ESPWiFiPortal.h */,
+				493910F12E69F4E80026FDA4 /* IDFWiFiPortal.cpp */,
+				493910F22E69F5030026FDA4 /* IDFWiFiPortal.h */,
 				4966132F2DF8ABE400296791 /* Font_8x8_8pt.h */,
 				496613302DF8ABE400296791 /* Font_Compact_5pt.h */,
 				496613312DF8ABE400296791 /* mil.h */,

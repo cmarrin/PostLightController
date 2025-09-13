@@ -13,71 +13,71 @@ static constexpr uint16_t MaxCmdSize = 16;
 static constexpr int32_t MaxDelay = 1000; // ms
 static constexpr int32_t IdleDelay = 100; // ms
 
-bool
-HTTPPathHandler::handle(WebServer& server, HTTPMethod method, const String& uri)
-{
-    if (method == HTTP_GET) {
-        // Handle an operation like list
-        String s = "Handled GET: filename='";
-        s += uri;
-        s += "', op='";
-        s+= server.arg("op");
-        s+= "'";
-        printf("***** %s\n", s.c_str());
-        server.send(200, "text/html", s.c_str());
-        return true;
-    }
-    
-    server.send(200);  // all done.
-    return true;
-}
-
-void
-HTTPPathHandler::upload(WebServer& server, const String &uri, HTTPUpload &upload)
-{
-    if (upload.status == UPLOAD_FILE_WRITE) {
-        printf("Received executable '%s'\n", upload.filename.c_str());
-        _controller->uploadExecutable(upload.buf, upload.currentSize);
-    }
-}
-
 static uint8_t getCodeByte(void* data, uint16_t addr)
 {
     PostLightController* self = reinterpret_cast<PostLightController*>(data);
     return self->getCodeByte(addr);
 }
 
-PostLightController::PostLightController()
-    : mil::Application(LED_BUILTIN, ConfigPortalName)
+PostLightController::PostLightController(WiFiPortal* portal)
+    : mil::Application(portal, LED_BUILTIN, ConfigPortalName)
     , _pixels(TotalPixels, LEDPin)
-    , _pathHandler(this, "/fs")
     , _interpretedEffect(&_pixels, ::getCodeByte, this)
 {
     memset(_executable, 0, MaxExecutableSize);
 }
 
 bool
-PostLightController::uploadExecutable(const uint8_t* buf, uint16_t size)
+PostLightController::uploadHTTPFile(const String& uri)
 {
-    showStatus(StatusColor::Blue, 0, 0);
-    printf("Uploading executable, size=%u...\n", (unsigned int) size);
-    File f = _wfs.open("/executable.clvx", "w");
+    // Get filename, Name is the string past the "/fs" (assume string started with "/fs")
+    String filename = uri.substring(3);
+    size_t size = httpContentLength();
+    uint8_t* buf = new uint8_t[size + 1];
+    readHTTPContent(buf, size);
+    uploadFile(filename, buf, size);
+    delete [ ] buf;
+    return true;
+}
+
+bool
+PostLightController::uploadFile(const String& filename, const uint8_t* buf, size_t size)
+{
+    // If this is the executable, show status lights
+    bool show = filename == "/executable.clvx";
+    
+    if (show) {
+        showStatus(StatusColor::Blue, 0, 0);
+    }
+    
+    printf("Uploading file, size=%u...\n", (unsigned int) size);
+    File f = _wfs.open(filename.c_str(), "w");
     if (!f) {
-        printf("***** failed to open '/executable.clvx' for write\n");
-        showStatus(StatusColor::Red, 5, 5);
+        printf("***** failed to open '%s' for write\n", filename.c_str());
+        if (show) {
+            showStatus(StatusColor::Red, 5, 5);
+            show = false;
+        }
     } else {
         size_t r = f.write(buf, size);
         if (r != size) {
             printf("***** failed to write 'executable.clvx', error=%u\n", (unsigned int) r);
-            showStatus(StatusColor::Red, 5, 5);
+            if (show) {
+                showStatus(StatusColor::Red, 5, 5);
+                show = false;
+            }
         } else {
             printf("    upload complete.\n");
-            showStatus(StatusColor::Green, 5, 1);
+            if (show) {
+                showStatus(StatusColor::Green, 5, 1);
+            }
         }
     }
     f.close();
     
-    loadExecutable();
+    if (show) {
+        loadExecutable();
+    }
 
     return true;
 }
@@ -152,13 +152,44 @@ PostLightController::processCommand(const String& cmd)
         }
     }
     
-    sendHTTPPage("command processed");
+    sendHTTPResponse("command processed");
 }
 
-void
-PostLightController::handleCommand()
+bool
+PostLightController::handleCommand(WiFiPortal*, WiFiPortal::HTTPMethod, const String& uri)
 {
-    processCommand(getHTTPArg("cmd"));
+    processCommand(WiFiPortal::getHTTPArg(uri, "cmd"));
+    return true;
+}
+
+bool
+PostLightController::handleFileCommand(WiFiPortal* portal, WiFiPortal::HTTPMethod method, const String& uri)
+{
+    if (!uri.startsWith("/fs")) {
+        return false;
+    }
+    
+    if (method == WiFiPortal::HTTPMethod::Get) {
+        // Handle an operation like list
+        String s = "Handled GET: filename='";
+        s += uri;
+        s += "', op='";
+        s+= WiFiPortal::getHTTPArg(uri, "op");
+        s+= "'";
+        printf("***** %s\n", s.c_str());
+        portal->sendHTTPResponse(200, "text/html", s.c_str());
+        return true;
+    }
+    
+    if (method == WiFiPortal::HTTPMethod::Post) {
+        uploadHTTPFile(uri);
+        printf("Received file '%s'\n", uri.c_str());
+        portal->sendHTTPResponse(200, "text/html", uri.c_str());
+        return true;
+    }
+    
+    portal->sendHTTPResponse(405);  // method not allowed.
+    return false;
 }
 
 static void showError(clvr::Memory::Error error, int16_t addr)
@@ -230,8 +261,17 @@ PostLightController::setup()
 
     setTitle("<center>MarrinTech Post Light Controller</center>");
 
-    addHTTPHandler("/command", std::bind(&PostLightController::handleCommand, this));
-    addCustomHTTPHandler(&_pathHandler);
+    addHTTPHandler("/command", [this](WiFiPortal* p, WiFiPortal::HTTPMethod m, const String& uri) -> bool
+    {
+        handleCommand(p, m, uri);
+        return true;
+    });
+    
+    addHTTPHandler("/fs/*", [this](WiFiPortal* p, WiFiPortal::HTTPMethod m, const String& uri) -> bool
+    {
+        handleFileCommand(p, m, uri);
+        return true;
+    });
 
     _pixels.begin(); // This initializes the NeoPixel library.
     _pixels.setBrightness(255);
