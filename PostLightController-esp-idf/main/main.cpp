@@ -46,7 +46,8 @@ Command List:
 
 #include "PostLightController.h"
 
-PostLightController controller;
+WiFiPortal portal;
+PostLightController controller(&portal);
 
 extern "C" {
 void app_main(void)
