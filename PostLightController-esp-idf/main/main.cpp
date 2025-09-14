@@ -44,9 +44,11 @@ Command List:
     value is obtained with hue / 256 * 360.
 */
 
+#include "IDFWiFiPortal.h"
+
 #include "PostLightController.h"
 
-WiFiPortal portal;
+IDFWiFiPortal portal;
 PostLightController controller(&portal);
 
 extern "C" {
