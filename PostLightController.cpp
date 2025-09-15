@@ -28,10 +28,10 @@ PostLightController::PostLightController(WiFiPortal* portal)
 }
 
 bool
-PostLightController::uploadHTTPFile(const String& uri)
+PostLightController::uploadHTTPFile(const std::string& uri)
 {
     // Get filename, Name is the string past the "/fs" (assume string started with "/fs")
-    String filename = uri.substring(3);
+    std::string filename = uri.substr(3);
     size_t size = httpContentLength();
     uint8_t* buf = new uint8_t[size + 1];
     readHTTPContent(buf, size);
@@ -41,7 +41,7 @@ PostLightController::uploadHTTPFile(const String& uri)
 }
 
 bool
-PostLightController::uploadFile(const String& filename, const uint8_t* buf, size_t size)
+PostLightController::uploadFile(const std::string& filename, const uint8_t* buf, size_t size)
 {
     // If this is the executable, show status lights
     bool show = filename == "/executable.clvx";
@@ -82,7 +82,7 @@ PostLightController::uploadFile(const String& filename, const uint8_t* buf, size
     return true;
 }
 
-static int16_t parseCmd(const String& cmd, uint8_t* buf, uint16_t size)
+static int16_t parseCmd(const std::string& cmd, uint8_t* buf, uint16_t size)
 {
     // Cmd form is: <cmd char>,<param0 (0-255)>,<param1 (0-255)>,...<paramN (0-255)>
     uint16_t strIndex = 0;
@@ -90,8 +90,8 @@ static int16_t parseCmd(const String& cmd, uint8_t* buf, uint16_t size)
     bool parsingCmd = true;
     
     while (true) {
-        int16_t nextIndex = cmd.indexOf(',', strIndex);
-        if (nextIndex == -1) {
+        int16_t nextIndex = cmd.find(',', strIndex);
+        if (nextIndex == std::string::npos) {
             nextIndex = cmd.length();
         }
 
@@ -138,7 +138,7 @@ static int16_t parseCmd(const String& cmd, uint8_t* buf, uint16_t size)
 }
 
 void
-PostLightController::processCommand(const String& cmd)
+PostLightController::processCommand(const std::string& cmd)
 {
     printf("cmd='%s'\n", cmd.c_str());
     
@@ -156,22 +156,22 @@ PostLightController::processCommand(const String& cmd)
 }
 
 bool
-PostLightController::handleCommand(WiFiPortal*, WiFiPortal::HTTPMethod, const String& uri)
+PostLightController::handleCommand(WiFiPortal*, WiFiPortal::HTTPMethod, const std::string& uri)
 {
     processCommand(WiFiPortal::getHTTPArg(uri, "cmd"));
     return true;
 }
 
 bool
-PostLightController::handleFileCommand(WiFiPortal* portal, WiFiPortal::HTTPMethod method, const String& uri)
+PostLightController::handleFileCommand(WiFiPortal* portal, WiFiPortal::HTTPMethod method, const std::string& uri)
 {
-    if (!uri.startsWith("/fs")) {
+    if (!uri.starts_with("/fs")) {
         return false;
     }
     
     if (method == WiFiPortal::HTTPMethod::Get) {
         // Handle an operation like list
-        String s = "Handled GET: filename='";
+        std::string s = "Handled GET: filename='";
         s += uri;
         s += "', op='";
         s+= WiFiPortal::getHTTPArg(uri, "op");
@@ -261,13 +261,13 @@ PostLightController::setup()
 
     setTitle("<center>MarrinTech Post Light Controller</center>");
 
-    addHTTPHandler("/command", [this](WiFiPortal* p, WiFiPortal::HTTPMethod m, const String& uri) -> bool
+    addHTTPHandler("/command", [this](WiFiPortal* p, WiFiPortal::HTTPMethod m, const std::string& uri) -> bool
     {
         handleCommand(p, m, uri);
         return true;
     });
     
-    addHTTPHandler("/fs/*", [this](WiFiPortal* p, WiFiPortal::HTTPMethod m, const String& uri) -> bool
+    addHTTPHandler("/fs/*", [this](WiFiPortal* p, WiFiPortal::HTTPMethod m, const std::string& uri) -> bool
     {
         handleFileCommand(p, m, uri);
         return true;

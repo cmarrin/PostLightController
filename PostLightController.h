@@ -33,18 +33,18 @@ class PostLightController : public mil::Application
     virtual void setup() override;
     virtual void loop() override;
     
-    bool uploadHTTPFile(const String& uri);
-    bool uploadFile(const String& filename, const uint8_t* buf, size_t size);
+    bool uploadHTTPFile(const std::string& uri);
+    bool uploadFile(const std::string& filename, const uint8_t* buf, size_t size);
     bool sendCmd(const uint8_t* cmd, uint16_t size);
-    void processCommand(const String& cmd);
+    void processCommand(const std::string& cmd);
     
     bool isIdle() const { return _effect == Effect::None; }
 
     uint8_t getCodeByte(uint16_t addr) { return (addr < MaxExecutableSize) ? _executable[addr] : 0; }
     
   private:	
-    bool handleCommand(WiFiPortal*, WiFiPortal::HTTPMethod, const String& uri);
-    bool handleFileCommand(WiFiPortal*, WiFiPortal::HTTPMethod, const String& uri);
+    bool handleCommand(WiFiPortal*, WiFiPortal::HTTPMethod, const std::string& uri);
+    bool handleFileCommand(WiFiPortal*, WiFiPortal::HTTPMethod, const std::string& uri);
     void handleGetIPAddr();
     
     void loadExecutable();
