@@ -259,7 +259,7 @@ PostLightController::setup()
         printf("***** file system initialization failed\n");
     }
 
-    setTitle("<center>MarrinTech Post Light Controller</center>");
+    setTitle("<center>MarrinTech Post Light Controller v0.4</center>");
 
     addHTTPHandler("/command", [this](WiFiPortal* p, WiFiPortal::HTTPMethod m, const std::string& uri) -> bool
     {
@@ -276,7 +276,7 @@ PostLightController::setup()
     _pixels.begin(); // This initializes the NeoPixel library.
     _pixels.setBrightness(255);
     
-    printf("Post Light Controller v0.3\n");
+    printf("Post Light Controller v0.4\n");
   
     showStatus(StatusColor::Green, 3, 2);
     
