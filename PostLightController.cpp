@@ -156,9 +156,9 @@ PostLightController::processCommand(const std::string& cmd)
 }
 
 bool
-PostLightController::handleCommand(WiFiPortal*, WiFiPortal::HTTPMethod, const std::string& uri)
+PostLightController::handleCommand(WiFiPortal* portal, WiFiPortal::HTTPMethod, const std::string& uri)
 {
-    processCommand(WiFiPortal::getHTTPArg(uri, "cmd"));
+    processCommand(portal->getHTTPArg(uri, "cmd"));
     return true;
 }
 
@@ -174,7 +174,7 @@ PostLightController::handleFileCommand(WiFiPortal* portal, WiFiPortal::HTTPMetho
         std::string s = "Handled GET: filename='";
         s += uri;
         s += "', op='";
-        s+= WiFiPortal::getHTTPArg(uri, "op");
+        s+= portal->getHTTPArg(uri, "op");
         s+= "'";
         printf("***** %s\n", s.c_str());
         portal->sendHTTPResponse(200, "text/html", s.c_str());
