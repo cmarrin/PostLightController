@@ -11,6 +11,8 @@
 
 #include "mil.h"
 
+//#include "lua.hpp"
+
 // These must match values in Clover code
 static constexpr int SetLight = 1;
 static constexpr int SetLights = 2;
@@ -59,6 +61,39 @@ InterpretedEffect::userCall(uint16_t id, clvr::InterpreterBase* interp, void* da
 bool
 InterpretedEffect::init(uint8_t cmd, const uint8_t* buf, uint32_t size)
 {
+
+
+
+
+//    lua_State* L = luaL_newstate();
+// 	luaopen_string(L);
+//	luaL_openlibs(L);
+//
+//	std::string sample = "print(\"Hello World from Lua inside c++!\")";
+// 
+// 	int err = luaL_loadbuffer(L, sample.c_str(), sample.length(), "mysample");
+//	if (err) {
+//		printf("Error initializing lua with hello world script: %i, %s\n", err, lua_tostring(L, -1));
+//		lua_close(L);
+//		return(0);
+//	}
+//
+//	err = lua_pcall(L, 0, 0, 0);
+//	if (err) {
+//		printf("Error running lua hello world script: %i, %s\n", err, lua_tostring(L, -1));
+//		lua_close(L);
+//		return(0);
+//	}
+//
+//	printf("Success running hello world script\n");
+//	lua_close(L);
+    
+
+
+
+
+
+
     printf("InterpretedEffect started: cmd='%c'\n", char(cmd));
 
     _interp.instantiate();
@@ -93,7 +128,7 @@ InterpretedEffect::init(uint8_t cmd, const uint8_t* buf, uint32_t size)
 int32_t
 InterpretedEffect::loop()
 {
-    uint32_t result = _interp.interp(MyInterpreter::ExecMode::Start);
+    uint32_t result = 0; //_interp.interp(MyInterpreter::ExecMode::Start);
     _pixels->show();
     return (_interp.error() != clvr::Memory::Error::None) ? -1 : result;
 }
