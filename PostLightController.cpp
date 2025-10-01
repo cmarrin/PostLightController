@@ -152,44 +152,14 @@ PostLightController::processCommand(const std::string& cmd)
         }
     }
     
-    sendHTTPResponse("command processed");
+    _portal->sendHTTPResponse(200, "text/plain", "command processed");
 }
 
 bool
 PostLightController::handleCommand(WiFiPortal* portal, WiFiPortal::HTTPMethod, const std::string& uri)
 {
-    processCommand(portal->getHTTPArg(uri, "cmd"));
+    processCommand(portal->getHTTPArg("cmd"));
     return true;
-}
-
-bool
-PostLightController::handleFileCommand(WiFiPortal* portal, WiFiPortal::HTTPMethod method, const std::string& uri)
-{
-    if (!uri.starts_with("/fs")) {
-        return false;
-    }
-    
-    if (method == WiFiPortal::HTTPMethod::Get) {
-        // Handle an operation like list
-        std::string s = "Handled GET: filename='";
-        s += uri;
-        s += "', op='";
-        s+= portal->getHTTPArg(uri, "op");
-        s+= "'";
-        printf("***** %s\n", s.c_str());
-        portal->sendHTTPResponse(200, "text/html", s.c_str());
-        return true;
-    }
-    
-    if (method == WiFiPortal::HTTPMethod::Post) {
-        uploadHTTPFile(uri);
-        printf("Received file '%s'\n", uri.c_str());
-        portal->sendHTTPResponse(200, "text/html", uri.c_str());
-        return true;
-    }
-    
-    portal->sendHTTPResponse(405);  // method not allowed.
-    return false;
 }
 
 static void showError(clvr::Memory::Error error, int16_t addr)
@@ -255,10 +225,6 @@ PostLightController::setup()
     Application::setup();
     randomSeed(millis());
 
-    if (!_wfs.begin(true)) {
-        printf("***** file system initialization failed\n");
-    }
-
     setTitle("<center>MarrinTech Post Light Controller v0.4</center>");
 
     addHTTPHandler("/command", [this](WiFiPortal* p, WiFiPortal::HTTPMethod m, const std::string& uri) -> bool
@@ -267,12 +233,6 @@ PostLightController::setup()
         return true;
     });
     
-    addHTTPHandler("/fs/*", [this](WiFiPortal* p, WiFiPortal::HTTPMethod m, const std::string& uri) -> bool
-    {
-        handleFileCommand(p, m, uri);
-        return true;
-    });
-
     _pixels.begin(); // This initializes the NeoPixel library.
     _pixels.setBrightness(255);
     

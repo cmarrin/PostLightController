@@ -10,11 +10,9 @@
 // PostLightController runs on Mac and ESP32 (possibly ESP8266). It uses
 // HTTP to send commands and software updates to the unit.
 
-#include "mil.h"
 #include "Application.h"
 #include "Flash.h"
 #include "InterpretedEffect.h"
-#include "WebFileSystem.h"
 
 static constexpr const char* ConfigPortalName = "MT Etherclock";
 static constexpr int LEDPin = 10;
@@ -44,7 +42,6 @@ class PostLightController : public mil::Application
     
   private:	
     bool handleCommand(WiFiPortal*, WiFiPortal::HTTPMethod, const std::string& uri);
-    bool handleFileCommand(WiFiPortal*, WiFiPortal::HTTPMethod, const std::string& uri);
     void handleGetIPAddr();
     
     void loadExecutable();
@@ -79,8 +76,6 @@ class PostLightController : public mil::Application
 	Flash _flash;
 	InterpretedEffect _interpretedEffect;
  
-    mil::WFS _wfs;
-	
 	uint8_t _cmd = '0';
  
     uint8_t _executable[MaxExecutableSize];
