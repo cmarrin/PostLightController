@@ -50,7 +50,7 @@ Command List:
 
 #include "ESPWiFiPortal.h"
 
-ESPWiFiPortal portal;
+mil::ESPWiFiPortal portal;
 PostLightController controller(&portal);
 
 void setup()

@@ -19,7 +19,7 @@ static uint8_t getCodeByte(void* data, uint16_t addr)
     return self->getCodeByte(addr);
 }
 
-PostLightController::PostLightController(WiFiPortal* portal)
+PostLightController::PostLightController(mil::WiFiPortal* portal)
     : mil::Application(portal, LED_BUILTIN, ConfigPortalName)
     , _pixels(TotalPixels, LEDPin)
     , _interpretedEffect(&_pixels, ::getCodeByte, this)
@@ -155,11 +155,10 @@ PostLightController::processCommand(const std::string& cmd)
     _portal->sendHTTPResponse(200, "text/plain", "command processed");
 }
 
-bool
-PostLightController::handleCommand(WiFiPortal* portal, WiFiPortal::HTTPMethod, const std::string& uri)
+void
+PostLightController::handleCommand(mil::WiFiPortal* portal)
 {
     processCommand(portal->getHTTPArg("cmd"));
-    return true;
 }
 
 static void showError(clvr::Memory::Error error, int16_t addr)
@@ -227,9 +226,9 @@ PostLightController::setup()
 
     setTitle("<center>MarrinTech Post Light Controller v0.4</center>");
 
-    addHTTPHandler("/command", [this](WiFiPortal* p, WiFiPortal::HTTPMethod m, const std::string& uri) -> bool
+    addHTTPHandler("/command", [this](mil::WiFiPortal* p)
     {
-        handleCommand(p, m, uri);
+        handleCommand(p);
         return true;
     });
     

@@ -26,7 +26,7 @@ class PostLightController;
 class PostLightController : public mil::Application
 {
   public:
-    PostLightController(WiFiPortal*);
+    PostLightController(mil::WiFiPortal*);
 
     virtual void setup() override;
     virtual void loop() override;
@@ -41,7 +41,7 @@ class PostLightController : public mil::Application
     uint8_t getCodeByte(uint16_t addr) { return (addr < MaxExecutableSize) ? _executable[addr] : 0; }
     
   private:	
-    bool handleCommand(WiFiPortal*, WiFiPortal::HTTPMethod, const std::string& uri);
+    void handleCommand(mil::WiFiPortal*);
     void handleGetIPAddr();
     
     void loadExecutable();

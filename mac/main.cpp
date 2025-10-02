@@ -42,7 +42,7 @@ int main(int argc, char * const argv[])
         return 0;
     }
     
-    WiFiPortal portal;
+    mil::WiFiPortal portal;
     PostLightController controller(&portal);
     
     controller.setup();
