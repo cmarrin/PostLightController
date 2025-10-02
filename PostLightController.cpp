@@ -32,9 +32,9 @@ PostLightController::uploadHTTPFile(const std::string& uri)
 {
     // Get filename, Name is the string past the "/fs" (assume string started with "/fs")
     std::string filename = uri.substr(3);
-    size_t size = httpContentLength();
+    size_t size = 0; //httpContentLength();
     uint8_t* buf = new uint8_t[size + 1];
-    readHTTPContent(buf, size);
+    // readHTTPContent(buf, size);
     uploadFile(filename, buf, size);
     delete [ ] buf;
     return true;
