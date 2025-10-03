@@ -753,7 +753,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\ngzip -k ../../ESPlib/filemgr.html\nxxd -n filemgr_html -i ../../ESPlib/filemgr.html ../../ESPlib/filemgr.h\nxxd -n filemgr_html_gz -i ../../ESPlib/filemgr.html.gz ../../ESPlib/filemgr.gz.h\n";
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nrm ../../ESPlib/filemgr.html.gz ../../ESPlib/filemgr.h ../../ESPlib/filemgr.gz.h\ngzip -k ../../ESPlib/filemgr.html\nxxd -n filemgr_html -i ../../ESPlib/filemgr.html ../../ESPlib/filemgr.h\nxxd -n filemgr_html_gz -i ../../ESPlib/filemgr.html.gz ../../ESPlib/filemgr.gz.h\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
