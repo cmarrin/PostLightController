@@ -1,3 +1,3 @@
 nologo_esp32c3_super_mini.menu.PartitionScheme.custom=Custom
 nologo_esp32c3_super_mini.menu.PartitionScheme.custom.build.partitions=
-nologo_esp32c3_super_mini.menu.PartitionScheme.custom.upload.maximum_size=16777216
+nologo_esp32c3_super_mini.menu.PartitionScheme.custom.upload.maximum_size=4194304
