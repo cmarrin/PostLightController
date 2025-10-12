@@ -7,20 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		495AB4512E9C568D00C4C2C4 /* libESPlib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 49132D972E9C56260005AE5D /* libESPlib.a */; };
 		4966134C2E00D2E700296791 /* PostLightController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4966134B2E00D2E400296791 /* PostLightController.cpp */; };
 		4966135A2E07192800296791 /* Flash.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49BDF4D827C5B5BE00325407 /* Flash.cpp */; };
 		4966135B2E07192F00296791 /* InterpretedEffect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49BDF4D327C5B5BE00325407 /* InterpretedEffect.cpp */; };
 		498F27E12DF0E86D00DFB022 /* Format.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 498F27DD2DF0983B00DFB022 /* Format.cpp */; };
 		498F28032DF0FF8000DFB022 /* AST.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 498F27E32DF0FB5500DFB022 /* AST.cpp */; };
-		498F28042DF0FF9300DFB022 /* Decompiler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 498F27EC2DF0FB5500DFB022 /* Decompiler.cpp */; };
 		498F28052DF0FF9300DFB022 /* NativeCore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 498F27F32DF0FB5500DFB022 /* NativeCore.cpp */; };
-		498F28062DF0FF9300DFB022 /* CodeGen6809.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 498F27E62DF0FB5500DFB022 /* CodeGen6809.cpp */; };
-		498F28072DF0FF9300DFB022 /* CodeGenStackVM.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 498F27E82DF0FB5500DFB022 /* CodeGenStackVM.cpp */; };
-		498F28082DF0FF9300DFB022 /* Scanner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 498F27F72DF0FB5500DFB022 /* Scanner.cpp */; };
-		498F28092DF0FF9300DFB022 /* Compiler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 498F27EA2DF0FB5500DFB022 /* Compiler.cpp */; };
 		498F280A2DF0FF9300DFB022 /* Module.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 498F27F22DF0FB5500DFB022 /* Module.cpp */; };
 		498F280B2DF0FF9300DFB022 /* Function.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 498F27EF2DF0FB5500DFB022 /* Function.cpp */; };
-		498F280F2DF0FFCA00DFB022 /* simplecpp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 498F280D2DF0FFCA00DFB022 /* simplecpp.cpp */; };
 		498F28102DF0FFF800DFB022 /* Interpreter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 498F27FE2DF0FB5C00DFB022 /* Interpreter.cpp */; };
 		498F28112DF1000000DFB022 /* NativeCoreRuntime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 498F28012DF0FB5C00DFB022 /* NativeCoreRuntime.cpp */; };
 		49C249D12E862F8900C8C6D9 /* luaconf.h in Headers */ = {isa = PBXBuildFile; fileRef = 49502B752E862C4D00EE127D /* luaconf.h */; };
@@ -87,10 +82,23 @@
 		49C24A0E2E862F8900C8C6D9 /* ldo.c in Sources */ = {isa = PBXBuildFile; fileRef = 49502B4E2E862C4D00EE127D /* ldo.c */; };
 		49C24A112E870E9700C8C6D9 /* liblua.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 49C249CD2E862F6D00C8C6D9 /* liblua.a */; };
 		49DAA647278B212E00F67EEB /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49DAA646278B212E00F67EEB /* main.cpp */; };
-		49E65BBB2E9C3B3800D3C6C5 /* libESPlib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 49E65B172E9C374D00D3C6C5 /* libESPlib.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		49132D962E9C56260005AE5D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 49132D902E9C56260005AE5D /* ESPlib.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 49E65B012E9C36F800D3C6C5;
+			remoteInfo = ESPlib;
+		};
+		49132D982E9C563C0005AE5D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 49132D902E9C56260005AE5D /* ESPlib.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 49E65B002E9C36F800D3C6C5;
+			remoteInfo = ESPlib;
+		};
 		49C24A0F2E870E8700C8C6D9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 49DAA63B278B212E00F67EEB /* Project object */;
@@ -98,23 +106,10 @@
 			remoteGlobalIDString = 49C249CC2E862F6D00C8C6D9;
 			remoteInfo = lua;
 		};
-		49E65B162E9C374D00D3C6C5 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 49E65B102E9C374D00D3C6C5 /* ESPlib.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 49E65B012E9C36F800D3C6C5;
-			remoteInfo = ESPlib;
-		};
-		49E65BB92E9C3B2D00D3C6C5 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 49E65B102E9C374D00D3C6C5 /* ESPlib.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 49E65B002E9C36F800D3C6C5;
-			remoteInfo = ESPlib;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		49132D902E9C56260005AE5D /* ESPlib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ESPlib.xcodeproj; path = /Users/cmarrin/Projects/git/ESPlib/mac/ESPlib.xcodeproj; sourceTree = "<absolute>"; };
 		493910E42E5D1DA50026FDA4 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = main/main.cpp; sourceTree = "<group>"; };
 		49502B402E862C4D00EE127D /* lapi.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = lapi.h; path = "/Users/cmarrin/Projects/git/lua/lua-5.4.8/src/lapi.h"; sourceTree = "<absolute>"; };
 		49502B412E862C4D00EE127D /* lapi.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = lapi.c; path = "/Users/cmarrin/Projects/git/lua/lua-5.4.8/src/lapi.c"; sourceTree = "<absolute>"; };
@@ -226,10 +221,8 @@
 		49BDF4D727C5B5BE00325407 /* PostLightController.ino */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = PostLightController.ino; path = ../PostLightController.ino; sourceTree = "<group>"; };
 		49BDF4D827C5B5BE00325407 /* Flash.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Flash.cpp; path = ../Flash.cpp; sourceTree = "<group>"; };
 		49C249CD2E862F6D00C8C6D9 /* liblua.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = liblua.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		49C24A192E8C611700C8C6D9 /* libESPlib.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libESPlib.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		49DAA643278B212E00F67EEB /* PostLightController */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = PostLightController; sourceTree = BUILT_PRODUCTS_DIR; };
 		49DAA646278B212E00F67EEB /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
-		49E65B102E9C374D00D3C6C5 /* ESPlib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ESPlib.xcodeproj; path = /Users/cmarrin/Projects/git/ESPlib/mac/ESPlib.xcodeproj; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -240,18 +233,11 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		49C24A172E8C611700C8C6D9 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		49DAA640278B212E00F67EEB /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				49E65BBB2E9C3B3800D3C6C5 /* libESPlib.a in Frameworks */,
+				495AB4512E9C568D00C4C2C4 /* libESPlib.a in Frameworks */,
 				49C24A112E870E9700C8C6D9 /* liblua.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -259,6 +245,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		49132D932E9C56260005AE5D /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				49132D972E9C56260005AE5D /* libESPlib.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		493910E12E5D1BE90026FDA4 /* esp-idf */ = {
 			isa = PBXGroup;
 			children = (
@@ -436,7 +430,7 @@
 		49DAA63A278B212E00F67EEB = {
 			isa = PBXGroup;
 			children = (
-				49E65B102E9C374D00D3C6C5 /* ESPlib.xcodeproj */,
+				49132D902E9C56260005AE5D /* ESPlib.xcodeproj */,
 				49502B3F2E862BC600EE127D /* lua */,
 				498F27FA2DF0FB5500DFB022 /* Compiler */,
 				498F28022DF0FB5C00DFB022 /* Runtime */,
@@ -456,7 +450,6 @@
 			children = (
 				49DAA643278B212E00F67EEB /* PostLightController */,
 				49C249CD2E862F6D00C8C6D9 /* liblua.a */,
-				49C24A192E8C611700C8C6D9 /* libESPlib.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -480,14 +473,6 @@
 				4966134A2E00D2D300296791 /* PostLightController.h */,
 			);
 			name = src;
-			sourceTree = "<group>";
-		};
-		49E65B132E9C374D00D3C6C5 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				49E65B172E9C374D00D3C6C5 /* libESPlib.a */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -528,13 +513,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		49C24A152E8C611700C8C6D9 /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
@@ -557,26 +535,6 @@
 			productReference = 49C249CD2E862F6D00C8C6D9 /* liblua.a */;
 			productType = "com.apple.product-type.library.static";
 		};
-		49C24A182E8C611700C8C6D9 /* ESPlib */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 49C24A1A2E8C611700C8C6D9 /* Build configuration list for PBXNativeTarget "ESPlib" */;
-			buildPhases = (
-				49C24A2A2E8C61C600C8C6D9 /* Build filemgr.h */,
-				49C24A152E8C611700C8C6D9 /* Headers */,
-				49C24A162E8C611700C8C6D9 /* Sources */,
-				49C24A172E8C611700C8C6D9 /* Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = ESPlib;
-			packageProductDependencies = (
-			);
-			productName = ESPlib;
-			productReference = 49C24A192E8C611700C8C6D9 /* libESPlib.a */;
-			productType = "com.apple.product-type.library.static";
-		};
 		49DAA642278B212E00F67EEB /* PostLightController */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 49DAA64A278B212E00F67EEB /* Build configuration list for PBXNativeTarget "PostLightController" */;
@@ -588,7 +546,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				49E65BBA2E9C3B2D00D3C6C5 /* PBXTargetDependency */,
+				49132D992E9C563C0005AE5D /* PBXTargetDependency */,
 				49C24A102E870E8700C8C6D9 /* PBXTargetDependency */,
 			);
 			name = PostLightController;
@@ -606,9 +564,6 @@
 				LastUpgradeCheck = 2600;
 				TargetAttributes = {
 					49C249CC2E862F6D00C8C6D9 = {
-						CreatedOnToolsVersion = 26.0.1;
-					};
-					49C24A182E8C611700C8C6D9 = {
 						CreatedOnToolsVersion = 26.0.1;
 					};
 					49DAA642278B212E00F67EEB = {
@@ -629,25 +584,24 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 49E65B132E9C374D00D3C6C5 /* Products */;
-					ProjectRef = 49E65B102E9C374D00D3C6C5 /* ESPlib.xcodeproj */;
+					ProductGroup = 49132D932E9C56260005AE5D /* Products */;
+					ProjectRef = 49132D902E9C56260005AE5D /* ESPlib.xcodeproj */;
 				},
 			);
 			projectRoot = "";
 			targets = (
 				49DAA642278B212E00F67EEB /* PostLightController */,
 				49C249CC2E862F6D00C8C6D9 /* lua */,
-				49C24A182E8C611700C8C6D9 /* ESPlib */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		49E65B172E9C374D00D3C6C5 /* libESPlib.a */ = {
+		49132D972E9C56260005AE5D /* libESPlib.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			path = libESPlib.a;
-			remoteRef = 49E65B162E9C374D00D3C6C5 /* PBXContainerItemProxy */;
+			remoteRef = 49132D962E9C56260005AE5D /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -672,25 +626,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n/usr/local/bin/clvr $SRCROOT/../PostLightEffects.clvr\n";
-		};
-		49C24A2A2E8C61C600C8C6D9 /* Build filemgr.h */ = {
-			isa = PBXShellScriptBuildPhase;
-			alwaysOutOfDate = 1;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = "Build filemgr.h";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nrm ../../ESPlib/filemgr.html.gz ../../ESPlib/filemgr.h ../../ESPlib/filemgr.gz.h\ngzip -k ../../ESPlib/filemgr.html\nxxd -n filemgr_html -i ../../ESPlib/filemgr.html ../../ESPlib/filemgr.h\nxxd -n filemgr_html_gz -i ../../ESPlib/filemgr.html.gz ../../ESPlib/filemgr.gz.h\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -736,29 +671,16 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		49C24A162E8C611700C8C6D9 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		49DAA63F278B212E00F67EEB /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				498F28032DF0FF8000DFB022 /* AST.cpp in Sources */,
 				498F28102DF0FFF800DFB022 /* Interpreter.cpp in Sources */,
-				498F28042DF0FF9300DFB022 /* Decompiler.cpp in Sources */,
 				4966134C2E00D2E700296791 /* PostLightController.cpp in Sources */,
 				498F28052DF0FF9300DFB022 /* NativeCore.cpp in Sources */,
-				498F28062DF0FF9300DFB022 /* CodeGen6809.cpp in Sources */,
-				498F28072DF0FF9300DFB022 /* CodeGenStackVM.cpp in Sources */,
-				498F28082DF0FF9300DFB022 /* Scanner.cpp in Sources */,
 				4966135A2E07192800296791 /* Flash.cpp in Sources */,
-				498F28092DF0FF9300DFB022 /* Compiler.cpp in Sources */,
 				498F28112DF1000000DFB022 /* NativeCoreRuntime.cpp in Sources */,
-				498F280F2DF0FFCA00DFB022 /* simplecpp.cpp in Sources */,
 				498F280A2DF0FF9300DFB022 /* Module.cpp in Sources */,
 				498F280B2DF0FF9300DFB022 /* Function.cpp in Sources */,
 				49DAA647278B212E00F67EEB /* main.cpp in Sources */,
@@ -770,15 +692,15 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		49132D992E9C563C0005AE5D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ESPlib;
+			targetProxy = 49132D982E9C563C0005AE5D /* PBXContainerItemProxy */;
+		};
 		49C24A102E870E8700C8C6D9 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 49C249CC2E862F6D00C8C6D9 /* lua */;
 			targetProxy = 49C24A0F2E870E8700C8C6D9 /* PBXContainerItemProxy */;
-		};
-		49E65BBA2E9C3B2D00D3C6C5 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = ESPlib;
-			targetProxy = 49E65BB92E9C3B2D00D3C6C5 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -814,36 +736,6 @@
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 26.0;
 				OTHER_CFLAGS = "-DLUA_USE_MACOSX";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
-			};
-			name = Release;
-		};
-		49C24A1B2E8C611700C8C6D9 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
-				CODE_SIGN_STYLE = Automatic;
-				EXECUTABLE_PREFIX = lib;
-				GCC_C_LANGUAGE_STANDARD = gnu17;
-				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MACOSX_DEPLOYMENT_TARGET = 26.0;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
-			};
-			name = Debug;
-		};
-		49C24A1C2E8C611700C8C6D9 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
-				CODE_SIGN_STYLE = Automatic;
-				EXECUTABLE_PREFIX = lib;
-				GCC_C_LANGUAGE_STANDARD = gnu17;
-				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MACOSX_DEPLOYMENT_TARGET = 26.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 			};
@@ -972,7 +864,7 @@
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				DEAD_CODE_STRIPPING = YES;
-				HEADER_SEARCH_PATHS = usr/local/include;
+				HEADER_SEARCH_PATHS = "$(CONFIGURATION_BUILD_DIR)/usr/local/include";
 				MACOSX_DEPLOYMENT_TARGET = 26.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -984,7 +876,7 @@
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				DEAD_CODE_STRIPPING = YES;
-				HEADER_SEARCH_PATHS = usr/local/include;
+				HEADER_SEARCH_PATHS = "$(CONFIGURATION_BUILD_DIR)/usr/local/include";
 				MACOSX_DEPLOYMENT_TARGET = 26.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -998,15 +890,6 @@
 			buildConfigurations = (
 				49C249CE2E862F6D00C8C6D9 /* Debug */,
 				49C249CF2E862F6D00C8C6D9 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		49C24A1A2E8C611700C8C6D9 /* Build configuration list for PBXNativeTarget "ESPlib" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				49C24A1B2E8C611700C8C6D9 /* Debug */,
-				49C24A1C2E8C611700C8C6D9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
