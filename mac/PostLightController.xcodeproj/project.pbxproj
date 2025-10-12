@@ -96,6 +96,8 @@
 		49C24A292E8C61AA00C8C6D9 /* libESPlib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 49C24A192E8C611700C8C6D9 /* libESPlib.a */; };
 		49C24A2E2E8C681600C8C6D9 /* filemgr.gz.h in Headers */ = {isa = PBXBuildFile; fileRef = 49C24A2D2E8C681600C8C6D9 /* filemgr.gz.h */; };
 		49DAA647278B212E00F67EEB /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49DAA646278B212E00F67EEB /* main.cpp */; };
+		49E65AF52E9C1B2C00D3C6C5 /* WebShell.h in Headers */ = {isa = PBXBuildFile; fileRef = 49E65AF32E9C1B2C00D3C6C5 /* WebShell.h */; };
+		49E65AF62E9C1B2C00D3C6C5 /* WebShell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49E65AF42E9C1B2C00D3C6C5 /* WebShell.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -269,6 +271,9 @@
 		49C24A2D2E8C681600C8C6D9 /* filemgr.gz.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = filemgr.gz.h; sourceTree = "<group>"; };
 		49DAA643278B212E00F67EEB /* PostLightController */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = PostLightController; sourceTree = BUILT_PRODUCTS_DIR; };
 		49DAA646278B212E00F67EEB /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		49E65AF32E9C1B2C00D3C6C5 /* WebShell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebShell.h; sourceTree = "<group>"; };
+		49E65AF42E9C1B2C00D3C6C5 /* WebShell.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = WebShell.cpp; sourceTree = "<group>"; };
+		49E65AF72E9C24FF00D3C6C5 /* system.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = system.html; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -389,6 +394,7 @@
 			isa = PBXGroup;
 			children = (
 				49C24A132E8C5AC500C8C6D9 /* filemgr.html */,
+				49E65AF72E9C24FF00D3C6C5 /* system.html */,
 				49C24A122E8B3F8000C8C6D9 /* filemgr.h */,
 				49C24A2D2E8C681600C8C6D9 /* filemgr.gz.h */,
 				4966131A2DF8ABE400296791 /* Application.cpp */,
@@ -419,6 +425,8 @@
 				4966132E2DF8ABE400296791 /* TimeWeatherServer.h */,
 				496613492DFF94BC00296791 /* WebFileSystem.cpp */,
 				496613482DFF94A600296791 /* WebFileSystem.h */,
+				49E65AF32E9C1B2C00D3C6C5 /* WebShell.h */,
+				49E65AF42E9C1B2C00D3C6C5 /* WebShell.cpp */,
 				493910EF2E679C140026FDA4 /* WiFiPortal.h */,
 				493910F02E679C3F0026FDA4 /* ESPWiFiPortal.cpp */,
 				493910F32E69F50C0026FDA4 /* ESPWiFiPortal.h */,
@@ -610,6 +618,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				49E65AF52E9C1B2C00D3C6C5 /* WebShell.h in Headers */,
 				49C24A2E2E8C681600C8C6D9 /* filemgr.gz.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -806,6 +815,7 @@
 				49C24A1D2E8C615800C8C6D9 /* Application.cpp in Sources */,
 				49C24A202E8C615800C8C6D9 /* Clock.cpp in Sources */,
 				49C24A222E8C615800C8C6D9 /* LittleFSShim.cpp in Sources */,
+				49E65AF62E9C1B2C00D3C6C5 /* WebShell.cpp in Sources */,
 				49C24A232E8C615800C8C6D9 /* JsonStreamingParser.cpp in Sources */,
 				49C24A262E8C615800C8C6D9 /* System.cpp in Sources */,
 				49C24A272E8C615800C8C6D9 /* TimeWeatherServer.cpp in Sources */,
