@@ -86,18 +86,8 @@
 		49C24A0D2E862F8900C8C6D9 /* lctype.c in Sources */ = {isa = PBXBuildFile; fileRef = 49502B492E862C4D00EE127D /* lctype.c */; };
 		49C24A0E2E862F8900C8C6D9 /* ldo.c in Sources */ = {isa = PBXBuildFile; fileRef = 49502B4E2E862C4D00EE127D /* ldo.c */; };
 		49C24A112E870E9700C8C6D9 /* liblua.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 49C249CD2E862F6D00C8C6D9 /* liblua.a */; };
-		49C24A1D2E8C615800C8C6D9 /* Application.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4966131A2DF8ABE400296791 /* Application.cpp */; };
-		49C24A202E8C615800C8C6D9 /* Clock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 496613212DF8ABE400296791 /* Clock.cpp */; };
-		49C24A222E8C615800C8C6D9 /* LittleFSShim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 496613622E0F5C3F00296791 /* LittleFSShim.cpp */; };
-		49C24A232E8C615800C8C6D9 /* JsonStreamingParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 496613272DF8ABE400296791 /* JsonStreamingParser.cpp */; };
-		49C24A262E8C615800C8C6D9 /* System.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 493910ED2E63C9CF0026FDA4 /* System.cpp */; };
-		49C24A272E8C615800C8C6D9 /* TimeWeatherServer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4966132D2DF8ABE400296791 /* TimeWeatherServer.cpp */; };
-		49C24A282E8C615800C8C6D9 /* WebFileSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 496613492DFF94BC00296791 /* WebFileSystem.cpp */; };
-		49C24A292E8C61AA00C8C6D9 /* libESPlib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 49C24A192E8C611700C8C6D9 /* libESPlib.a */; };
-		49C24A2E2E8C681600C8C6D9 /* filemgr.gz.h in Headers */ = {isa = PBXBuildFile; fileRef = 49C24A2D2E8C681600C8C6D9 /* filemgr.gz.h */; };
 		49DAA647278B212E00F67EEB /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49DAA646278B212E00F67EEB /* main.cpp */; };
-		49E65AF52E9C1B2C00D3C6C5 /* WebShell.h in Headers */ = {isa = PBXBuildFile; fileRef = 49E65AF32E9C1B2C00D3C6C5 /* WebShell.h */; };
-		49E65AF62E9C1B2C00D3C6C5 /* WebShell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49E65AF42E9C1B2C00D3C6C5 /* WebShell.cpp */; };
+		49E65BBB2E9C3B3800D3C6C5 /* libESPlib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 49E65B172E9C374D00D3C6C5 /* libESPlib.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -108,24 +98,24 @@
 			remoteGlobalIDString = 49C249CC2E862F6D00C8C6D9;
 			remoteInfo = lua;
 		};
-		49C24A2B2E8C622F00C8C6D9 /* PBXContainerItemProxy */ = {
+		49E65B162E9C374D00D3C6C5 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 49DAA63B278B212E00F67EEB /* Project object */;
+			containerPortal = 49E65B102E9C374D00D3C6C5 /* ESPlib.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 49E65B012E9C36F800D3C6C5;
+			remoteInfo = ESPlib;
+		};
+		49E65BB92E9C3B2D00D3C6C5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 49E65B102E9C374D00D3C6C5 /* ESPlib.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 49C24A182E8C611700C8C6D9;
+			remoteGlobalIDString = 49E65B002E9C36F800D3C6C5;
 			remoteInfo = ESPlib;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		493910E42E5D1DA50026FDA4 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = main/main.cpp; sourceTree = "<group>"; };
-		493910E92E61F5F40026FDA4 /* System.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = System.h; sourceTree = "<group>"; };
-		493910ED2E63C9CF0026FDA4 /* System.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = System.cpp; sourceTree = "<group>"; };
-		493910EF2E679C140026FDA4 /* WiFiPortal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WiFiPortal.h; sourceTree = "<group>"; };
-		493910F02E679C3F0026FDA4 /* ESPWiFiPortal.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ESPWiFiPortal.cpp; sourceTree = "<group>"; };
-		493910F12E69F4E80026FDA4 /* IDFWiFiPortal.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = IDFWiFiPortal.cpp; sourceTree = "<group>"; };
-		493910F22E69F5030026FDA4 /* IDFWiFiPortal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IDFWiFiPortal.h; sourceTree = "<group>"; };
-		493910F32E69F50C0026FDA4 /* ESPWiFiPortal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ESPWiFiPortal.h; sourceTree = "<group>"; };
 		49502B402E862C4D00EE127D /* lapi.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = lapi.h; path = "/Users/cmarrin/Projects/git/lua/lua-5.4.8/src/lapi.h"; sourceTree = "<absolute>"; };
 		49502B412E862C4D00EE127D /* lapi.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = lapi.c; path = "/Users/cmarrin/Projects/git/lua/lua-5.4.8/src/lapi.c"; sourceTree = "<absolute>"; };
 		49502B422E862C4D00EE127D /* lauxlib.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = lauxlib.h; path = "/Users/cmarrin/Projects/git/lua/lua-5.4.8/src/lauxlib.h"; sourceTree = "<absolute>"; };
@@ -190,39 +180,10 @@
 		49502B7D2E862C4D00EE127D /* lzio.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = lzio.c; path = "/Users/cmarrin/Projects/git/lua/lua-5.4.8/src/lzio.c"; sourceTree = "<absolute>"; };
 		4963436927A5DC6E00ABF09F /* PostLightEffects.clvr */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; fileEncoding = 4; name = PostLightEffects.clvr; path = ../PostLightEffects.clvr; sourceTree = "<group>"; };
 		496613192DF3C61600296791 /* PostLightControllerESP.ino */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; name = PostLightControllerESP.ino; path = ../PostLightControllerESP.ino; sourceTree = "<group>"; };
-		4966131A2DF8ABE400296791 /* Application.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Application.cpp; path = ../../ESPlib/Application.cpp; sourceTree = SOURCE_ROOT; };
-		4966131B2DF8ABE400296791 /* Application.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Application.h; path = ../../ESPlib/Application.h; sourceTree = SOURCE_ROOT; };
-		4966131C2DF8ABE400296791 /* Blinker.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Blinker.h; sourceTree = "<group>"; };
-		4966131D2DF8ABE400296791 /* BrightnessManager.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = BrightnessManager.cpp; sourceTree = "<group>"; };
-		4966131E2DF8ABE400296791 /* BrightnessManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BrightnessManager.h; sourceTree = "<group>"; };
-		4966131F2DF8ABE400296791 /* ButtonManager.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ButtonManager.cpp; sourceTree = "<group>"; };
-		496613202DF8ABE400296791 /* ButtonManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ButtonManager.h; sourceTree = "<group>"; };
-		496613212DF8ABE400296791 /* Clock.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Clock.cpp; sourceTree = "<group>"; };
-		496613222DF8ABE400296791 /* Clock.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Clock.h; sourceTree = "<group>"; };
-		496613232DF8ABE400296791 /* DSP7S04B.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DSP7S04B.cpp; sourceTree = "<group>"; };
-		496613242DF8ABE400296791 /* DSP7S04B.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DSP7S04B.h; sourceTree = "<group>"; };
-		496613252DF8ABE400296791 /* JsonListener.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = JsonListener.h; path = ../../ESPlib/JsonListener.h; sourceTree = SOURCE_ROOT; };
-		496613262DF8ABE400296791 /* JsonStreamingParser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = JsonStreamingParser.h; path = ../../ESPlib/JsonStreamingParser.h; sourceTree = SOURCE_ROOT; };
-		496613272DF8ABE400296791 /* JsonStreamingParser.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = JsonStreamingParser.cpp; path = ../../ESPlib/JsonStreamingParser.cpp; sourceTree = SOURCE_ROOT; };
-		496613282DF8ABE400296791 /* Max7219Display.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Max7219Display.cpp; sourceTree = "<group>"; };
-		496613292DF8ABE400296791 /* Max7219Display.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Max7219Display.h; sourceTree = "<group>"; };
-		4966132A2DF8ABE400296791 /* MenuSystem.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MenuSystem.cpp; sourceTree = "<group>"; };
-		4966132B2DF8ABE400296791 /* MenuSystem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MenuSystem.h; sourceTree = "<group>"; };
-		4966132C2DF8ABE400296791 /* StateMachine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = StateMachine.h; sourceTree = "<group>"; };
-		4966132D2DF8ABE400296791 /* TimeWeatherServer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TimeWeatherServer.cpp; sourceTree = "<group>"; };
-		4966132E2DF8ABE400296791 /* TimeWeatherServer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TimeWeatherServer.h; sourceTree = "<group>"; };
-		4966132F2DF8ABE400296791 /* Font_8x8_8pt.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Font_8x8_8pt.h; sourceTree = "<group>"; };
-		496613302DF8ABE400296791 /* Font_Compact_5pt.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Font_Compact_5pt.h; sourceTree = "<group>"; };
-		496613312DF8ABE400296791 /* mil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mil.h; sourceTree = "<group>"; };
-		496613482DFF94A600296791 /* WebFileSystem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebFileSystem.h; sourceTree = "<group>"; };
-		496613492DFF94BC00296791 /* WebFileSystem.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = WebFileSystem.cpp; sourceTree = "<group>"; };
 		4966134A2E00D2D300296791 /* PostLightController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PostLightController.h; path = ../PostLightController.h; sourceTree = "<group>"; };
 		4966134B2E00D2E400296791 /* PostLightController.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PostLightController.cpp; path = ../PostLightController.cpp; sourceTree = "<group>"; };
-		4966135C2E0730E900296791 /* NeoPixel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NeoPixel.h; sourceTree = "<group>"; };
 		4966135F2E0DC2BC00296791 /* partitions.csv */ = {isa = PBXFileReference; lastKnownFileType = text; name = partitions.csv; path = ../partitions.csv; sourceTree = "<group>"; };
 		496613602E0DCCBD00296791 /* boards.local.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = boards.local.txt; path = ../boards.local.txt; sourceTree = SOURCE_ROOT; };
-		496613612E0F5C3F00296791 /* LittleFSShim.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LittleFSShim.h; sourceTree = "<group>"; };
-		496613622E0F5C3F00296791 /* LittleFSShim.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = LittleFSShim.cpp; sourceTree = "<group>"; };
 		498F27DC2DF0983B00DFB022 /* Format.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Format.h; sourceTree = "<group>"; };
 		498F27DD2DF0983B00DFB022 /* Format.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Format.cpp; sourceTree = "<group>"; };
 		498F27DE2DF0983B00DFB022 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
@@ -265,15 +226,10 @@
 		49BDF4D727C5B5BE00325407 /* PostLightController.ino */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = PostLightController.ino; path = ../PostLightController.ino; sourceTree = "<group>"; };
 		49BDF4D827C5B5BE00325407 /* Flash.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Flash.cpp; path = ../Flash.cpp; sourceTree = "<group>"; };
 		49C249CD2E862F6D00C8C6D9 /* liblua.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = liblua.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		49C24A122E8B3F8000C8C6D9 /* filemgr.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = filemgr.h; sourceTree = "<group>"; };
-		49C24A132E8C5AC500C8C6D9 /* filemgr.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = filemgr.html; sourceTree = "<group>"; };
 		49C24A192E8C611700C8C6D9 /* libESPlib.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libESPlib.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		49C24A2D2E8C681600C8C6D9 /* filemgr.gz.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = filemgr.gz.h; sourceTree = "<group>"; };
 		49DAA643278B212E00F67EEB /* PostLightController */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = PostLightController; sourceTree = BUILT_PRODUCTS_DIR; };
 		49DAA646278B212E00F67EEB /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
-		49E65AF32E9C1B2C00D3C6C5 /* WebShell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebShell.h; sourceTree = "<group>"; };
-		49E65AF42E9C1B2C00D3C6C5 /* WebShell.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = WebShell.cpp; sourceTree = "<group>"; };
-		49E65AF72E9C24FF00D3C6C5 /* system.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = system.html; sourceTree = "<group>"; };
+		49E65B102E9C374D00D3C6C5 /* ESPlib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ESPlib.xcodeproj; path = /Users/cmarrin/Projects/git/ESPlib/mac/ESPlib.xcodeproj; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -295,7 +251,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				49C24A292E8C61AA00C8C6D9 /* libESPlib.a in Frameworks */,
+				49E65BBB2E9C3B3800D3C6C5 /* libESPlib.a in Frameworks */,
 				49C24A112E870E9700C8C6D9 /* liblua.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -390,56 +346,6 @@
 			path = "../../lua/lua-5.4.8/src";
 			sourceTree = "<group>";
 		};
-		496613322DF8ABE400296791 /* ESPLib */ = {
-			isa = PBXGroup;
-			children = (
-				49C24A132E8C5AC500C8C6D9 /* filemgr.html */,
-				49E65AF72E9C24FF00D3C6C5 /* system.html */,
-				49C24A122E8B3F8000C8C6D9 /* filemgr.h */,
-				49C24A2D2E8C681600C8C6D9 /* filemgr.gz.h */,
-				4966131A2DF8ABE400296791 /* Application.cpp */,
-				4966131B2DF8ABE400296791 /* Application.h */,
-				4966131C2DF8ABE400296791 /* Blinker.h */,
-				4966131D2DF8ABE400296791 /* BrightnessManager.cpp */,
-				4966131E2DF8ABE400296791 /* BrightnessManager.h */,
-				4966131F2DF8ABE400296791 /* ButtonManager.cpp */,
-				496613202DF8ABE400296791 /* ButtonManager.h */,
-				496613212DF8ABE400296791 /* Clock.cpp */,
-				496613222DF8ABE400296791 /* Clock.h */,
-				496613232DF8ABE400296791 /* DSP7S04B.cpp */,
-				496613242DF8ABE400296791 /* DSP7S04B.h */,
-				496613612E0F5C3F00296791 /* LittleFSShim.h */,
-				496613622E0F5C3F00296791 /* LittleFSShim.cpp */,
-				496613252DF8ABE400296791 /* JsonListener.h */,
-				496613262DF8ABE400296791 /* JsonStreamingParser.h */,
-				496613272DF8ABE400296791 /* JsonStreamingParser.cpp */,
-				496613282DF8ABE400296791 /* Max7219Display.cpp */,
-				496613292DF8ABE400296791 /* Max7219Display.h */,
-				4966132A2DF8ABE400296791 /* MenuSystem.cpp */,
-				4966132B2DF8ABE400296791 /* MenuSystem.h */,
-				4966135C2E0730E900296791 /* NeoPixel.h */,
-				4966132C2DF8ABE400296791 /* StateMachine.h */,
-				493910E92E61F5F40026FDA4 /* System.h */,
-				493910ED2E63C9CF0026FDA4 /* System.cpp */,
-				4966132D2DF8ABE400296791 /* TimeWeatherServer.cpp */,
-				4966132E2DF8ABE400296791 /* TimeWeatherServer.h */,
-				496613492DFF94BC00296791 /* WebFileSystem.cpp */,
-				496613482DFF94A600296791 /* WebFileSystem.h */,
-				49E65AF32E9C1B2C00D3C6C5 /* WebShell.h */,
-				49E65AF42E9C1B2C00D3C6C5 /* WebShell.cpp */,
-				493910EF2E679C140026FDA4 /* WiFiPortal.h */,
-				493910F02E679C3F0026FDA4 /* ESPWiFiPortal.cpp */,
-				493910F32E69F50C0026FDA4 /* ESPWiFiPortal.h */,
-				493910F12E69F4E80026FDA4 /* IDFWiFiPortal.cpp */,
-				493910F22E69F5030026FDA4 /* IDFWiFiPortal.h */,
-				4966132F2DF8ABE400296791 /* Font_8x8_8pt.h */,
-				496613302DF8ABE400296791 /* Font_Compact_5pt.h */,
-				496613312DF8ABE400296791 /* mil.h */,
-			);
-			name = ESPLib;
-			path = ../../ESPlib;
-			sourceTree = "<group>";
-		};
 		498F233E2DEF75C800DFB022 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -530,8 +436,8 @@
 		49DAA63A278B212E00F67EEB = {
 			isa = PBXGroup;
 			children = (
+				49E65B102E9C374D00D3C6C5 /* ESPlib.xcodeproj */,
 				49502B3F2E862BC600EE127D /* lua */,
-				496613322DF8ABE400296791 /* ESPLib */,
 				498F27FA2DF0FB5500DFB022 /* Compiler */,
 				498F28022DF0FB5C00DFB022 /* Runtime */,
 				498F27E02DF0983B00DFB022 /* Format */,
@@ -576,6 +482,14 @@
 			name = src;
 			sourceTree = "<group>";
 		};
+		49E65B132E9C374D00D3C6C5 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				49E65B172E9C374D00D3C6C5 /* libESPlib.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -618,8 +532,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				49E65AF52E9C1B2C00D3C6C5 /* WebShell.h in Headers */,
-				49C24A2E2E8C681600C8C6D9 /* filemgr.gz.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -676,7 +588,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				49C24A2C2E8C622F00C8C6D9 /* PBXTargetDependency */,
+				49E65BBA2E9C3B2D00D3C6C5 /* PBXTargetDependency */,
 				49C24A102E870E8700C8C6D9 /* PBXTargetDependency */,
 			);
 			name = PostLightController;
@@ -715,6 +627,12 @@
 			mainGroup = 49DAA63A278B212E00F67EEB;
 			productRefGroup = 49DAA644278B212E00F67EEB /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 49E65B132E9C374D00D3C6C5 /* Products */;
+					ProjectRef = 49E65B102E9C374D00D3C6C5 /* ESPlib.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				49DAA642278B212E00F67EEB /* PostLightController */,
@@ -723,6 +641,16 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		49E65B172E9C374D00D3C6C5 /* libESPlib.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libESPlib.a;
+			remoteRef = 49E65B162E9C374D00D3C6C5 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXShellScriptBuildPhase section */
 		496613592E021A1300296791 /* Compile PostLightEffects.clvr */ = {
@@ -812,14 +740,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				49C24A1D2E8C615800C8C6D9 /* Application.cpp in Sources */,
-				49C24A202E8C615800C8C6D9 /* Clock.cpp in Sources */,
-				49C24A222E8C615800C8C6D9 /* LittleFSShim.cpp in Sources */,
-				49E65AF62E9C1B2C00D3C6C5 /* WebShell.cpp in Sources */,
-				49C24A232E8C615800C8C6D9 /* JsonStreamingParser.cpp in Sources */,
-				49C24A262E8C615800C8C6D9 /* System.cpp in Sources */,
-				49C24A272E8C615800C8C6D9 /* TimeWeatherServer.cpp in Sources */,
-				49C24A282E8C615800C8C6D9 /* WebFileSystem.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -855,10 +775,10 @@
 			target = 49C249CC2E862F6D00C8C6D9 /* lua */;
 			targetProxy = 49C24A0F2E870E8700C8C6D9 /* PBXContainerItemProxy */;
 		};
-		49C24A2C2E8C622F00C8C6D9 /* PBXTargetDependency */ = {
+		49E65BBA2E9C3B2D00D3C6C5 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 49C24A182E8C611700C8C6D9 /* ESPlib */;
-			targetProxy = 49C24A2B2E8C622F00C8C6D9 /* PBXContainerItemProxy */;
+			name = ESPlib;
+			targetProxy = 49E65BB92E9C3B2D00D3C6C5 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
