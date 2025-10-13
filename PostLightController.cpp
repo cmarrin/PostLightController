@@ -28,19 +28,6 @@ PostLightController::PostLightController(mil::WiFiPortal* portal)
 }
 
 bool
-PostLightController::uploadHTTPFile(const std::string& uri)
-{
-    // Get filename, Name is the string past the "/fs" (assume string started with "/fs")
-    std::string filename = uri.substr(3);
-    size_t size = 0; //httpContentLength();
-    uint8_t* buf = new uint8_t[size + 1];
-    // readHTTPContent(buf, size);
-    uploadFile(filename, buf, size);
-    delete [ ] buf;
-    return true;
-}
-
-bool
 PostLightController::uploadFile(const std::string& filename, const uint8_t* buf, size_t size)
 {
     // If this is the executable, show status lights

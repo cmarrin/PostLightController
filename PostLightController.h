@@ -21,8 +21,6 @@ static constexpr int NumPosts = 7;
 static constexpr int TotalPixels = PixelsPerPost * NumPosts;
 static constexpr int MaxExecutableSize = 2048;
 
-class PostLightController;
-
 class PostLightController : public mil::Application
 {
   public:
@@ -31,7 +29,6 @@ class PostLightController : public mil::Application
     virtual void setup() override;
     virtual void loop() override;
     
-    bool uploadHTTPFile(const std::string& uri);
     bool uploadFile(const std::string& filename, const uint8_t* buf, size_t size);
     bool sendCmd(const uint8_t* cmd, uint16_t size);
     void processCommand(const std::string& cmd);
