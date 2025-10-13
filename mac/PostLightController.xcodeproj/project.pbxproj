@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4927440B2E9D820000AF8FA1 /* liblua.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 492744082E9D81E600AF8FA1 /* liblua.a */; };
 		495AB4512E9C568D00C4C2C4 /* libESPlib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 49132D972E9C56260005AE5D /* libESPlib.a */; };
 		4966134C2E00D2E700296791 /* PostLightController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4966134B2E00D2E400296791 /* PostLightController.cpp */; };
 		4966135A2E07192800296791 /* Flash.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49BDF4D827C5B5BE00325407 /* Flash.cpp */; };
@@ -44,25 +43,17 @@
 			remoteGlobalIDString = 495AB4572E9C730A00C4C2C4;
 			remoteInfo = Vesper;
 		};
-		492744072E9D81E600AF8FA1 /* PBXContainerItemProxy */ = {
+		492744562E9DC68D00AF8FA1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 492744012E9D81E600AF8FA1 /* lua.xcodeproj */;
+			containerPortal = 49132D902E9C56260005AE5D /* ESPlib.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 495AB47C2E9D6BBF00C4C2C4;
-			remoteInfo = lua;
-		};
-		492744092E9D81F600AF8FA1 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 492744012E9D81E600AF8FA1 /* lua.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 495AB47B2E9D6BBF00C4C2C4;
-			remoteInfo = lua;
+			remoteGlobalIDString = 4927442B2E9D94D000AF8FA1;
+			remoteInfo = webby;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		49132D902E9C56260005AE5D /* ESPlib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ESPlib.xcodeproj; path = /Users/cmarrin/Projects/git/ESPlib/mac/ESPlib.xcodeproj; sourceTree = "<absolute>"; };
-		492744012E9D81E600AF8FA1 /* lua.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = lua.xcodeproj; path = "/Users/cmarrin/Projects/git/lua/lua-5.4.8/mac/lua.xcodeproj"; sourceTree = "<absolute>"; };
 		493910E42E5D1DA50026FDA4 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = main/main.cpp; sourceTree = "<group>"; };
 		4963436927A5DC6E00ABF09F /* PostLightEffects.clvr */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; fileEncoding = 4; name = PostLightEffects.clvr; path = ../PostLightEffects.clvr; sourceTree = "<group>"; };
 		496613192DF3C61600296791 /* PostLightControllerESP.ino */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; name = PostLightControllerESP.ino; path = ../PostLightControllerESP.ino; sourceTree = "<group>"; };
@@ -120,7 +111,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4927440B2E9D820000AF8FA1 /* liblua.a in Frameworks */,
 				495AB4512E9C568D00C4C2C4 /* libESPlib.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -133,14 +123,7 @@
 			children = (
 				492744002E9D819E00AF8FA1 /* Vesper */,
 				49132D972E9C56260005AE5D /* libESPlib.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		492744042E9D81E600AF8FA1 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				492744082E9D81E600AF8FA1 /* liblua.a */,
+				492744572E9DC68D00AF8FA1 /* webby */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -252,7 +235,6 @@
 		49DAA63A278B212E00F67EEB = {
 			isa = PBXGroup;
 			children = (
-				492744012E9D81E600AF8FA1 /* lua.xcodeproj */,
 				49132D902E9C56260005AE5D /* ESPlib.xcodeproj */,
 				498F27FA2DF0FB5500DFB022 /* Compiler */,
 				498F28022DF0FB5C00DFB022 /* Runtime */,
@@ -310,7 +292,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				4927440A2E9D81F600AF8FA1 /* PBXTargetDependency */,
 				49132D992E9C563C0005AE5D /* PBXTargetDependency */,
 			);
 			name = PostLightController;
@@ -348,10 +329,6 @@
 					ProductGroup = 49132D932E9C56260005AE5D /* Products */;
 					ProjectRef = 49132D902E9C56260005AE5D /* ESPlib.xcodeproj */;
 				},
-				{
-					ProductGroup = 492744042E9D81E600AF8FA1 /* Products */;
-					ProjectRef = 492744012E9D81E600AF8FA1 /* lua.xcodeproj */;
-				},
 			);
 			projectRoot = "";
 			targets = (
@@ -375,11 +352,11 @@
 			remoteRef = 492743FF2E9D819E00AF8FA1 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		492744082E9D81E600AF8FA1 /* liblua.a */ = {
+		492744572E9DC68D00AF8FA1 /* webby */ = {
 			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = liblua.a;
-			remoteRef = 492744072E9D81E600AF8FA1 /* PBXContainerItemProxy */;
+			fileType = "compiled.mach-o.executable";
+			path = webby;
+			remoteRef = 492744562E9DC68D00AF8FA1 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -433,11 +410,6 @@
 			isa = PBXTargetDependency;
 			name = ESPlib;
 			targetProxy = 49132D982E9C563C0005AE5D /* PBXContainerItemProxy */;
-		};
-		4927440A2E9D81F600AF8FA1 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = lua;
-			targetProxy = 492744092E9D81F600AF8FA1 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
