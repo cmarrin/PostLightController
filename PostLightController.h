@@ -21,7 +21,7 @@ static constexpr const char* Version = "0.1";
 
 static constexpr int PixelsPerPost = 8;
 static constexpr int NumPosts = 7;
-static constexpr int PixelPin = 8;
+static constexpr int PixelPin = 10;
 static constexpr int TotalPixels = PixelsPerPost * NumPosts;
 
 class PostLightController : public mil::Application
