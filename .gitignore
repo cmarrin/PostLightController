@@ -32,3 +32,4 @@ espidf/.devcontainer
 .clangd
 dependencies.lock
 mac/littlefs/.nvs
+sdkconfig
