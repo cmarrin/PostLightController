@@ -35,29 +35,30 @@ Command List:
                                                             Flash n times, for d duration (in 100ms units)
                                                             If n == 0, just turn lights on
 
-	'X'		Write Executable	addr, <data>				Write EEPROM starting at addr. Data can be
-                                                            up to 64 bytes, due to buffering limitations.
-
     All other commands are a single lower case letter followed by as many params are needed for the command.
     All commands take at least one color param which is 3 consecutive bytes (hue, saturation, value). 
     Saturation and value are levels between 0 and 255. Hue is an angle on the color wheel. A 0-360 degree 
     value is obtained with hue / 256 * 360.
 */
 
-#include "IDFWiFiPortal.h"
-
 #include "PostLightController.h"
 
+#include "IDFWiFiPortal.h"
+
+static const char* TAG = "OfficeClock";
+
 IDFWiFiPortal portal;
-PostLightController controller(&portal);
 
 extern "C" {
 void app_main(void)
 {
+    System::logI(TAG, "Starting PostLightController...");
+    PostLightController controller(&portal);
     controller.setup();
 
     while (true) {
         controller.loop();
+        vTaskDelay(1);
     }
 }
 }
