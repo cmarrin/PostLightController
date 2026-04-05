@@ -100,7 +100,7 @@ PostLightController::setup()
     System::delay(500);
     Application::setup();
 
-    setTitle("<center>MarrinTech Post Light Controller v0.4</center>");
+    setTitle((std::string("<center>MarrinTech Post Light Controller v") + Version + "</center>").c_str());
 
     addHTTPHandler("/command", [this](mil::WiFiPortal* p)
     {
