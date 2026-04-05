@@ -31,3 +31,4 @@ espidf/.vscode
 espidf/.devcontainer
 .clangd
 dependencies.lock
+mac/littlefs/.nvs
