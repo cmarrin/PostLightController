@@ -7,74 +7,92 @@
     found in the LICENSE file.
 -------------------------------------------------------------------------*/
 
-#include <iostream>
-#include <unistd.h>
-#include <filesystem>
-#include <fstream>
-#include <cstdio>
-
 #include "PostLightController.h"
 
-#include "WiFiPortal.h"
+#include "MacWiFiPortal.h"
+#include "tigr.h"
 
-// main <.clvx file>
+#include <numbers>
+#include <cmath>
+
+mil::MacWiFiPortal portal;
+
+static const char* TAG = "PostLightController";
+
+static constexpr double PI = std::numbers::pi;
+static constexpr int LEDsPerRing = 8;
+static constexpr double AnglePerLED = 2 * PI / LEDsPerRing;
+static constexpr int LEDRadius = 10;
+static constexpr int RingCount = 7;
+static constexpr int RingSize = 80;
+static constexpr int Spacing = 50;
+static constexpr int WindowWidth = RingSize * RingCount + Spacing * (RingCount + 1);
+static constexpr int WindowHeight = RingSize + Spacing * 2;
+
+static void polarToCartesian(double angle, int radius, int& x, int& y)
+{
+    x = std::cos(angle) * radius;
+    y = std::sin(angle) * radius;
+}
+
+static void colorToRGB(uint32_t color, uint8_t& r, uint8_t& g, uint8_t& b)
+{
+    r = (color >> 16) & 0xff;
+    g = (color >> 8) & 0xff;
+    b = color & 0xff;
+}
+
+static void makeRing(Tigr* screen, const uint32_t* buffer, int centerX, int centerY)
+{
+    double angle = 0;
+    
+    for (int i = 0; i < LEDsPerRing; ++i) {
+        int x;
+        int y;
+        polarToCartesian(angle, RingSize / 2, x, y);
+        uint32_t color = buffer[i];
+        uint8_t r, g, b;
+        colorToRGB(color, r, g, b);
+        tigrFillCircle(screen, x + centerX, y + centerY, LEDRadius, tigrRGB(r, g, b));
+        angle += AnglePerLED;
+    }
+}
 
 int main(int argc, char * const argv[])
 {
-    printf("PostLightController Simulator\n\n");
-    
-    if (argc < 2) {
-        printf("No executable given\n");
-        return 0;
-    }
-        
-    std::ifstream stream(argv[1], std::ios_base::binary | std::ios_base::ate);
-    if (stream.fail()) {
-        printf("Can't open '%s'\n", argv[1]);
-        return 0;
-    }
-    
-    std::streamsize size = stream.tellg();
-    stream.seekg(0, std::ios::beg);
-    char* buf = new char[size];
-    if (!(stream.read(buf, size))) {
-        printf("Error opening '%s'\n", argv[1]);
-        return 0;
-    }
-    
-    mil::WiFiPortal portal;
-    PostLightController controller(&portal);
-    
-    controller.setup();
-    
-    bool haveSentROM = false;
-    bool haveSentCmd = false;
-
-    // Loop a few times
-    int loopCount = -1;
     while (true) {
-        if (loopCount == 0) {
-            break;
-        }
-        else if (loopCount > 0) {
-            --loopCount;
-        }
+        System::logI(TAG, "Opening tigr window");
+
+        Tigr* screen = tigrWindow(WindowWidth, WindowHeight, "PostLightController", TIGR_AUTO);
         
-        controller.loop();
+        System::setRenderCB([screen](const void* buffer)
+        {
+            const uint32_t* b = reinterpret_cast<const uint32_t*>(buffer);
+            tigrClear(screen, tigrRGBA(0x0, 0x00, 0x00, 0xff));
+
+            int x = RingSize / 2 + Spacing;
+            for (int i = 0; i < RingCount; ++i) {
+                makeRing(screen, b + LEDsPerRing * i, x, RingSize / 2 + Spacing);
+                x += RingSize + Spacing;
+            }
+        });
+
+        PostLightController controller(&portal);
         
-        if (controller.isIdle()) {
-            if (!haveSentROM) {
-                haveSentROM = true;
-                controller.uploadFile("/executable.clvx", reinterpret_cast<uint8_t*>(buf), size);
+        controller.setup();
+        
+        while (!tigrClosed(screen) && !tigrKeyDown(screen, TK_ESCAPE)) {
+            if (System::isRestarting()) {
+                break;
             }
             
-            if (!haveSentCmd) {
-                haveSentCmd = true;
-                controller.processCommand("f,25,200,100,7");
-                loopCount = 20;
-            }
+            controller.loop();
+            tigrUpdate(screen);
+            System::delay(10);
         }
+
+        tigrFree(screen);
     }
-                        
+    
     return 1;
 }

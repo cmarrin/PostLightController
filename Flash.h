@@ -13,20 +13,20 @@
 
 #pragma once
 
-#include "NeoPixel.h"
-
 #include <stdint.h>
 
 class Flash
 {
 public:
-	bool init(mil::NeoPixel* pixels, uint8_t h, uint8_t s, uint8_t v, uint8_t count, uint16_t duration);
-	int32_t loop(mil::NeoPixel* pixels);
+	bool init(uint8_t h, uint8_t s, uint8_t v, uint8_t count, uint16_t duration);
+	int32_t loop();
 		
 private:
-    uint32_t _color;
-	uint8_t _count;
-	uint16_t _duration; // in ms
+    uint8_t _red = 0;
+    uint8_t _green = 0;
+    uint8_t _blue = 0;
+	uint8_t _count = 0;
+	uint16_t _duration = 1; // in ms
 	
 	uint32_t _lastFlash = 0;
 	bool _on = false;

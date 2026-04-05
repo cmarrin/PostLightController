@@ -9,64 +9,16 @@
 
 #include "PostLightController.h"
 
+static const char* TAG = "PostLightController";
+
 static constexpr uint16_t MaxCmdSize = 16;
 static constexpr int32_t MaxDelay = 1000; // ms
 static constexpr int32_t IdleDelay = 100; // ms
 
-static uint8_t getCodeByte(void* data, uint16_t addr)
-{
-    PostLightController* self = reinterpret_cast<PostLightController*>(data);
-    return self->getCodeByte(addr);
-}
-
 PostLightController::PostLightController(mil::WiFiPortal* portal)
-    : mil::Application(portal, LED_BUILTIN, ConfigPortalName)
-    , _pixels(TotalPixels, LEDPin)
-    , _interpretedEffect(&_pixels, ::getCodeByte, this)
+    : mil::Application(portal, ConfigPortalName, true)
 {
-    memset(_executable, 0, MaxExecutableSize);
-}
-
-bool
-PostLightController::uploadFile(const std::string& filename, const uint8_t* buf, size_t size)
-{
-    // If this is the executable, show status lights
-    bool show = filename == "/executable.clvx";
-    
-    if (show) {
-        showStatus(StatusColor::Blue, 0, 0);
-    }
-    
-    printf("Uploading file, size=%u...\n", (unsigned int) size);
-    File f = _wfs.open(filename.c_str(), "w");
-    if (!f) {
-        printf("***** failed to open '%s' for write\n", filename.c_str());
-        if (show) {
-            showStatus(StatusColor::Red, 5, 5);
-            show = false;
-        }
-    } else {
-        size_t r = f.write(buf, size);
-        if (r != size) {
-            printf("***** failed to write 'executable.clvx', error=%u\n", (unsigned int) r);
-            if (show) {
-                showStatus(StatusColor::Red, 5, 5);
-                show = false;
-            }
-        } else {
-            printf("    upload complete.\n");
-            if (show) {
-                showStatus(StatusColor::Green, 5, 1);
-            }
-        }
-    }
-    f.close();
-    
-    if (show) {
-        loadExecutable();
-    }
-
-    return true;
+    System::initLED(1, PixelPin, PixelsPerPost * NumPosts);
 }
 
 static int16_t parseCmd(const std::string& cmd, uint8_t* buf, uint16_t size)
@@ -143,90 +95,22 @@ PostLightController::processCommand(const std::string& cmd)
 }
 
 void
-PostLightController::handleCommand(mil::WiFiPortal* portal)
-{
-    processCommand(portal->getHTTPArg("cmd"));
-}
-
-static void showError(clvr::Memory::Error error, int16_t addr)
-{
-    const char* reason = "";
-    
-    switch(error) {
-        case clvr::Memory::Error::None:                     reason = "no error"; break;
-        case clvr::Memory::Error::InternalError:            reason = "internal error"; break;
-        case clvr::Memory::Error::UnexpectedOpInIf:         reason = "unexpected op in if (internal error)"; break;
-        case clvr::Memory::Error::InvalidOp:                reason = "invalid opcode"; break;
-        case clvr::Memory::Error::OnlyMemAddressesAllowed:  reason = "only Mem addresses allowed"; break;
-        case clvr::Memory::Error::StackOverrun:             reason = "stack overrun"; break;
-        case clvr::Memory::Error::StackUnderrun:            reason = "stack underrun"; break;
-        case clvr::Memory::Error::StackOutOfRange:          reason = "stack access out of range"; break;
-        case clvr::Memory::Error::AddressOutOfRange:        reason = "address out of range"; break;
-        case clvr::Memory::Error::InvalidModuleOp:          reason = "invalid operation in module"; break;
-        case clvr::Memory::Error::InvalidUserFunction:      reason = "invalid user function"; break;
-        case clvr::Memory::Error::ExpectedSetFrame:         reason = "expected SetFrame as first function op"; break;
-        case clvr::Memory::Error::NotEnoughArgs:            reason = "not enough args on stack"; break;
-        case clvr::Memory::Error::WrongNumberOfArgs:        reason = "wrong number of args"; break;
-        case clvr::Memory::Error::InvalidSignature:         reason = "invalid signature"; break;
-        case clvr::Memory::Error::InvalidVersion:           reason = "invalid version"; break;
-        case clvr::Memory::Error::WrongAddressSize:         reason = "wrong address size"; break;
-        case clvr::Memory::Error::NoEntryPoint:             reason = "invalid entry point in executable"; break;
-        case clvr::Memory::Error::NotInstantiated:          reason = "Need to call instantiate, then construct"; break;
-        case clvr::Memory::Error::ImmedNotAllowedHere:      reason = "immediate not allowed here"; break;
-    }
-    
-    printf("Interpreter failed: %s", reason);
-
-    if (addr >= 0) {
-        printf(" at addr %i", (int) addr);
-    }
-    
-    printf("\n\n");
-}
-
-void
-PostLightController::loadExecutable()
-{
-    printf("Loading executable...\n");
-    
-    File f = _wfs.open("/executable.clvx", "r");
-    if (!f) {
-        printf("***** failed to open 'executable.clvx' for read\n");
-    } else {
-        size_t size = f.size();
-        size_t r = f.read(_executable, size);
-        if (r != size) {
-            printf("***** failed to read 'executable.clvx', error=%i\n", (int) r);
-        } else {
-            printf("    load complete.\n");
-        }
-    }
-    f.close();
-}
-
-void
 PostLightController::setup()
 {
-    delay(500);
+    System::delay(500);
     Application::setup();
-    randomSeed(millis());
 
     setTitle("<center>MarrinTech Post Light Controller v0.4</center>");
 
     addHTTPHandler("/command", [this](mil::WiFiPortal* p)
     {
-        handleCommand(p);
+        processCommand(_portal->getHTTPArg("cmd"));
         return true;
     });
-    
-    _pixels.begin(); // This initializes the NeoPixel library.
-    _pixels.setBrightness(255);
-    
-    printf("Post Light Controller v0.4\n");
+
+    System::logI(TAG, "Post Light Controller v%s", Version);
   
     showStatus(StatusColor::Green, 3, 2);
-    
-    loadExecutable();
 }
 	
 void
@@ -237,13 +121,7 @@ PostLightController::loop()
     int32_t delayInMs = IdleDelay;
     
     if (_effect == Effect::Flash) {
-        delayInMs = _flash.loop(&_pixels);
-    } else if (_effect == Effect::Interp) {
-        delayInMs = _interpretedEffect.loop();
-        if (_interpretedEffect.error() != clvr::Memory::Error::None) {
-            _effect = Effect::None;
-            showError(_interpretedEffect.error(), _interpretedEffect.errorAddr());
-        }
+        delayInMs = _flash.loop();
     }
     
     if (delayInMs > MaxDelay) {
@@ -257,7 +135,7 @@ PostLightController::loop()
         delayInMs = IdleDelay;
     }
     
-    delay(delayInMs);
+    System::delay(delayInMs);
 }
 
 bool
@@ -273,12 +151,14 @@ PostLightController::sendCmd(const uint8_t* cmd, uint16_t size)
         return true;
     }
     
-    _effect = Effect::Interp;
-    _interpretedEffect.init(cmd[0], cmd + 1, size - 1);
-    if (_interpretedEffect.error() != clvr::Memory::Error::None) {
-        _effect = Effect::None;
-        showError(_interpretedEffect.error(), _interpretedEffect.errorAddr());
-        return false;
-    }
+    // FIXME: Run a Lua command
+    
+//    _effect = Effect::Interp;
+//    _interpretedEffect.init(cmd[0], cmd + 1, size - 1);
+//    if (_interpretedEffect.error() != clvr::Memory::Error::None) {
+//        _effect = Effect::None;
+//        showError(_interpretedEffect.error(), _interpretedEffect.errorAddr());
+//        return false;
+//    }
     return true;
 }

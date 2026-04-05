@@ -9,42 +9,47 @@
 
 #include "Flash.h"
 
-#include "Defines.h"
 #include "PostLightController.h"
+#include "System.h"
 
 bool
-Flash::init(mil::NeoPixel* pixels, uint8_t h, uint8_t s, uint8_t v, uint8_t count, uint16_t duration)
+Flash::init(uint8_t r, uint8_t g, uint8_t b, uint8_t count, uint16_t duration)
 {
+    System::initLED(1, PixelPin, TotalPixels);
+    
 	_countCompleted = 0;
-	
-    _color = pixels->color(h, s, v);
+    _red = r;
+    _green = g;
+    _blue = b;
     _count = count;
     _duration = uint16_t(duration) * 100;
-    _lastFlash = millis();
+    _lastFlash = System::millis();
 
     // If we will be flashing (count != 0) then start with the lights off.
     // Otherwise set the lights to the passed color
-    pixels->setLights(0, TotalPixels - 1, _count ? 0 : pixels->color(h, s, v));
-    pixels->show();
-
+    if (count == 0) {
+        System::setAllLEDs(1, TotalPixels, r, g, b);
+    } else {
+        System::setAllLEDs(1, TotalPixels, 0, 0, 0);
+    }
 	return true;
 }
 	
 int32_t
-Flash::loop(mil::NeoPixel* pixels)
+Flash::loop()
 {
 	if (_countCompleted >= _count) {
         // If count == 0 we leave the lights on forever
 		return _count ? -1 : 0;
 	}
 	
-	uint32_t t = millis();
+	uint32_t t = System::millis();
 	bool showColor = false;
-	uint32_t color = 0;
+	bool colorOn = false;
 	
 	if (_on) {
 		if (t > _lastFlash + _duration) {
-			color = 0;
+			colorOn = false;
 			showColor = true;
 			_lastFlash = t;
 			_on = false;
@@ -52,7 +57,7 @@ Flash::loop(mil::NeoPixel* pixels)
 		}
 	} else {
 		if (t > _lastFlash + _duration) {
-			color = _color;
+			colorOn = true;
 			showColor = true;
 			_lastFlash = t;
 			_on = true;
@@ -60,8 +65,12 @@ Flash::loop(mil::NeoPixel* pixels)
 	}
 	
 	if (showColor) {
-		pixels->setLights(0, TotalPixels - 1, color);
-        pixels->show();
+        if (colorOn) {
+            System::setAllLEDs(1, TotalPixels, _red, _green, _blue);
+        } else {
+            System::setAllLEDs(1, TotalPixels, 0, 0, 0);
+        }
+        System::refreshLEDs(1);
 	}
 	
     return 0;

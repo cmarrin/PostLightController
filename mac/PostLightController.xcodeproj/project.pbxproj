@@ -8,10 +8,45 @@
 
 /* Begin PBXBuildFile section */
 		4966134C2E00D2E700296791 /* PostLightController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4966134B2E00D2E400296791 /* PostLightController.cpp */; };
-		4966135A2E07192800296791 /* Flash.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49BDF4D827C5B5BE00325407 /* Flash.cpp */; };
-		4966135B2E07192F00296791 /* InterpretedEffect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49BDF4D327C5B5BE00325407 /* InterpretedEffect.cpp */; };
+		497CFEE22F816C7A006335F5 /* libESPlib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 497CFEDD2F815553006335F5 /* libESPlib.a */; };
+		497CFEE42F8174E1006335F5 /* libcurl.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 497CFEE32F8174E1006335F5 /* libcurl.tbd */; };
+		497CFEE52F817ADF006335F5 /* Flash.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49BDF4D827C5B5BE00325407 /* Flash.cpp */; };
+		497CFF2A2F818A05006335F5 /* tigr.c in Sources */ = {isa = PBXBuildFile; fileRef = 497CFF262F8189EC006335F5 /* tigr.c */; };
+		497CFF2C2F81BEE7006335F5 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 497CFF2B2F81BEE7006335F5 /* OpenGL.framework */; };
+		497CFF2E2F81BEF9006335F5 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 497CFF2D2F81BEF9006335F5 /* Cocoa.framework */; };
 		49DAA647278B212E00F67EEB /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49DAA646278B212E00F67EEB /* main.cpp */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		497CFEDA2F815553006335F5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 497CFECA2F815552006335F5 /* ESPlib.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 495AB4572E9C730A00C4C2C4;
+			remoteInfo = Vesper;
+		};
+		497CFEDC2F815553006335F5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 497CFECA2F815552006335F5 /* ESPlib.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 49E65B012E9C36F800D3C6C5;
+			remoteInfo = ESPlib;
+		};
+		497CFEDE2F815553006335F5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 497CFECA2F815552006335F5 /* ESPlib.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 4927442B2E9D94D000AF8FA1;
+			remoteInfo = webby;
+		};
+		497CFEE02F81556C006335F5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 497CFECA2F815552006335F5 /* ESPlib.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 49E65B002E9C36F800D3C6C5;
+			remoteInfo = ESPlib;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		493910E42E5D1DA50026FDA4 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = main/main.cpp; sourceTree = "<group>"; };
@@ -21,6 +56,65 @@
 		4966134B2E00D2E400296791 /* PostLightController.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PostLightController.cpp; path = ../PostLightController.cpp; sourceTree = "<group>"; };
 		4966135F2E0DC2BC00296791 /* partitions.csv-xxx */ = {isa = PBXFileReference; lastKnownFileType = text; name = "partitions.csv-xxx"; path = "../partitions.csv-xxx"; sourceTree = "<group>"; };
 		496613602E0DCCBD00296791 /* boards.local.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = boards.local.txt; path = ../boards.local.txt; sourceTree = SOURCE_ROOT; };
+		497CFECA2F815552006335F5 /* ESPlib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ESPlib.xcodeproj; path = ../ESPlib/mac/ESPlib.xcodeproj; sourceTree = SOURCE_ROOT; };
+		497CFEE32F8174E1006335F5 /* libcurl.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libcurl.tbd; path = usr/lib/libcurl.tbd; sourceTree = SDKROOT; };
+		497CFEE62F8189EC006335F5 /* build.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = build.yml; sourceTree = "<group>"; };
+		497CFEE92F8189EC006335F5 /* 5x7.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 5x7.png; sourceTree = "<group>"; };
+		497CFEEA2F8189EC006335F5 /* ch.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ch.png; sourceTree = "<group>"; };
+		497CFEEB2F8189EC006335F5 /* ci.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = ci.c; sourceTree = "<group>"; };
+		497CFEEC2F8189EC006335F5 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
+		497CFEED2F8189EC006335F5 /* reference.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reference.png; sourceTree = "<group>"; };
+		497CFEEF2F8189EC006335F5 /* clip.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = clip.c; sourceTree = "<group>"; };
+		497CFEF02F8189EC006335F5 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
+		497CFEF22F8189EC006335F5 /* demo.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = demo.cpp; sourceTree = "<group>"; };
+		497CFEF32F8189EC006335F5 /* greeting.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = greeting.txt; sourceTree = "<group>"; };
+		497CFEF42F8189EC006335F5 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
+		497CFEF52F8189EC006335F5 /* squinkle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = squinkle.png; sourceTree = "<group>"; };
+		497CFEF72F8189EC006335F5 /* flags.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = flags.c; sourceTree = "<group>"; };
+		497CFEF82F8189EC006335F5 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
+		497CFEFA2F8189EC006335F5 /* headless.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = headless.c; sourceTree = "<group>"; };
+		497CFEFB2F8189EC006335F5 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
+		497CFEFD2F8189EC006335F5 /* hello.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = hello.c; sourceTree = "<group>"; };
+		497CFEFE2F8189EC006335F5 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
+		497CFF002F8189EC006335F5 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
+		497CFF012F8189EC006335F5 /* opengl.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = opengl.c; sourceTree = "<group>"; };
+		497CFF032F8189EC006335F5 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
+		497CFF042F8189EC006335F5 /* shader.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = shader.c; sourceTree = "<group>"; };
+		497CFF062F8189EC006335F5 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		497CFF082F8189EC006335F5 /* bundle.pl */ = {isa = PBXFileReference; lastKnownFileType = text.script.perl; path = bundle.pl; sourceTree = "<group>"; };
+		497CFF092F8189EC006335F5 /* font.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = font.png; sourceTree = "<group>"; };
+		497CFF0A2F8189EC006335F5 /* incbin.pl */ = {isa = PBXFileReference; lastKnownFileType = text.script.perl; path = incbin.pl; sourceTree = "<group>"; };
+		497CFF0B2F8189EC006335F5 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
+		497CFF0C2F8189EC006335F5 /* tigr_amalgamated.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tigr_amalgamated.c; sourceTree = "<group>"; };
+		497CFF0D2F8189EC006335F5 /* tigr_amalgamated_one_header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tigr_amalgamated_one_header.h; sourceTree = "<group>"; };
+		497CFF0E2F8189EC006335F5 /* tigr_android.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tigr_android.h; sourceTree = "<group>"; };
+		497CFF0F2F8189EC006335F5 /* tigr_android.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tigr_android.c; sourceTree = "<group>"; };
+		497CFF102F8189EC006335F5 /* tigr_bitmaps.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tigr_bitmaps.c; sourceTree = "<group>"; };
+		497CFF112F8189EC006335F5 /* tigr_font.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tigr_font.h; sourceTree = "<group>"; };
+		497CFF122F8189EC006335F5 /* tigr_gl.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tigr_gl.c; sourceTree = "<group>"; };
+		497CFF132F8189EC006335F5 /* tigr_glsl_hdr.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tigr_glsl_hdr.h; sourceTree = "<group>"; };
+		497CFF142F8189EC006335F5 /* tigr_inflate.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tigr_inflate.c; sourceTree = "<group>"; };
+		497CFF152F8189EC006335F5 /* tigr_internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tigr_internal.h; sourceTree = "<group>"; };
+		497CFF162F8189EC006335F5 /* tigr_ios.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tigr_ios.c; sourceTree = "<group>"; };
+		497CFF172F8189EC006335F5 /* tigr_linux.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tigr_linux.c; sourceTree = "<group>"; };
+		497CFF182F8189EC006335F5 /* tigr_loadpng.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tigr_loadpng.c; sourceTree = "<group>"; };
+		497CFF192F8189EC006335F5 /* tigr_objc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tigr_objc.h; sourceTree = "<group>"; };
+		497CFF1A2F8189EC006335F5 /* tigr_osx.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tigr_osx.c; sourceTree = "<group>"; };
+		497CFF1B2F8189EC006335F5 /* tigr_print.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tigr_print.c; sourceTree = "<group>"; };
+		497CFF1C2F8189EC006335F5 /* tigr_savepng.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tigr_savepng.c; sourceTree = "<group>"; };
+		497CFF1D2F8189EC006335F5 /* tigr_upscale_gl_fs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tigr_upscale_gl_fs.h; sourceTree = "<group>"; };
+		497CFF1E2F8189EC006335F5 /* tigr_upscale_gl_vs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tigr_upscale_gl_vs.h; sourceTree = "<group>"; };
+		497CFF1F2F8189EC006335F5 /* tigr_utils.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tigr_utils.c; sourceTree = "<group>"; };
+		497CFF202F8189EC006335F5 /* tigr_win.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tigr_win.c; sourceTree = "<group>"; };
+		497CFF222F8189EC006335F5 /* .clang-format */ = {isa = PBXFileReference; lastKnownFileType = text; path = ".clang-format"; sourceTree = "<group>"; };
+		497CFF232F8189EC006335F5 /* demo.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = demo.gif; sourceTree = "<group>"; };
+		497CFF242F8189EC006335F5 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		497CFF252F8189EC006335F5 /* tigr.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tigr.h; sourceTree = "<group>"; };
+		497CFF262F8189EC006335F5 /* tigr.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tigr.c; sourceTree = "<group>"; };
+		497CFF272F8189EC006335F5 /* tigr.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tigr.png; sourceTree = "<group>"; };
+		497CFF282F8189EC006335F5 /* UNLICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = UNLICENSE; sourceTree = "<group>"; };
+		497CFF2B2F81BEE7006335F5 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
+		497CFF2D2F81BEF9006335F5 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		49BDF4D327C5B5BE00325407 /* InterpretedEffect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = InterpretedEffect.cpp; path = ../InterpretedEffect.cpp; sourceTree = "<group>"; };
 		49BDF4D427C5B5BE00325407 /* Flash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Flash.h; path = ../Flash.h; sourceTree = "<group>"; };
 		49BDF4D527C5B5BE00325407 /* InterpretedEffect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InterpretedEffect.h; path = ../InterpretedEffect.h; sourceTree = "<group>"; };
@@ -35,6 +129,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				497CFF2E2F81BEF9006335F5 /* Cocoa.framework in Frameworks */,
+				497CFF2C2F81BEE7006335F5 /* OpenGL.framework in Frameworks */,
+				497CFEE42F8174E1006335F5 /* libcurl.tbd in Frameworks */,
+				497CFEE22F816C7A006335F5 /* libESPlib.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -58,9 +156,181 @@
 			name = mac;
 			sourceTree = "<group>";
 		};
+		497CFED52F815552006335F5 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				497CFEDB2F815553006335F5 /* Vesper */,
+				497CFEDD2F815553006335F5 /* libESPlib.a */,
+				497CFEDF2F815553006335F5 /* webby */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		497CFEE72F8189EC006335F5 /* workflows */ = {
+			isa = PBXGroup;
+			children = (
+				497CFEE62F8189EC006335F5 /* build.yml */,
+			);
+			path = workflows;
+			sourceTree = "<group>";
+		};
+		497CFEE82F8189EC006335F5 /* .github */ = {
+			isa = PBXGroup;
+			children = (
+				497CFEE72F8189EC006335F5 /* workflows */,
+			);
+			path = .github;
+			sourceTree = "<group>";
+		};
+		497CFEEE2F8189EC006335F5 /* ci */ = {
+			isa = PBXGroup;
+			children = (
+				497CFEE92F8189EC006335F5 /* 5x7.png */,
+				497CFEEA2F8189EC006335F5 /* ch.png */,
+				497CFEEB2F8189EC006335F5 /* ci.c */,
+				497CFEEC2F8189EC006335F5 /* Makefile */,
+				497CFEED2F8189EC006335F5 /* reference.png */,
+			);
+			path = ci;
+			sourceTree = "<group>";
+		};
+		497CFEF12F8189EC006335F5 /* clip */ = {
+			isa = PBXGroup;
+			children = (
+				497CFEEF2F8189EC006335F5 /* clip.c */,
+				497CFEF02F8189EC006335F5 /* Makefile */,
+			);
+			path = clip;
+			sourceTree = "<group>";
+		};
+		497CFEF62F8189EC006335F5 /* demo */ = {
+			isa = PBXGroup;
+			children = (
+				497CFEF22F8189EC006335F5 /* demo.cpp */,
+				497CFEF32F8189EC006335F5 /* greeting.txt */,
+				497CFEF42F8189EC006335F5 /* Makefile */,
+				497CFEF52F8189EC006335F5 /* squinkle.png */,
+			);
+			path = demo;
+			sourceTree = "<group>";
+		};
+		497CFEF92F8189EC006335F5 /* flags */ = {
+			isa = PBXGroup;
+			children = (
+				497CFEF72F8189EC006335F5 /* flags.c */,
+				497CFEF82F8189EC006335F5 /* Makefile */,
+			);
+			path = flags;
+			sourceTree = "<group>";
+		};
+		497CFEFC2F8189EC006335F5 /* headless */ = {
+			isa = PBXGroup;
+			children = (
+				497CFEFA2F8189EC006335F5 /* headless.c */,
+				497CFEFB2F8189EC006335F5 /* Makefile */,
+			);
+			path = headless;
+			sourceTree = "<group>";
+		};
+		497CFEFF2F8189EC006335F5 /* hello */ = {
+			isa = PBXGroup;
+			children = (
+				497CFEFD2F8189EC006335F5 /* hello.c */,
+				497CFEFE2F8189EC006335F5 /* Makefile */,
+			);
+			path = hello;
+			sourceTree = "<group>";
+		};
+		497CFF022F8189EC006335F5 /* opengl */ = {
+			isa = PBXGroup;
+			children = (
+				497CFF002F8189EC006335F5 /* Makefile */,
+				497CFF012F8189EC006335F5 /* opengl.c */,
+			);
+			path = opengl;
+			sourceTree = "<group>";
+		};
+		497CFF052F8189EC006335F5 /* shader */ = {
+			isa = PBXGroup;
+			children = (
+				497CFF032F8189EC006335F5 /* Makefile */,
+				497CFF042F8189EC006335F5 /* shader.c */,
+			);
+			path = shader;
+			sourceTree = "<group>";
+		};
+		497CFF072F8189EC006335F5 /* examples */ = {
+			isa = PBXGroup;
+			children = (
+				497CFEF12F8189EC006335F5 /* clip */,
+				497CFEF62F8189EC006335F5 /* demo */,
+				497CFEF92F8189EC006335F5 /* flags */,
+				497CFEFC2F8189EC006335F5 /* headless */,
+				497CFEFF2F8189EC006335F5 /* hello */,
+				497CFF022F8189EC006335F5 /* opengl */,
+				497CFF052F8189EC006335F5 /* shader */,
+				497CFF062F8189EC006335F5 /* .gitignore */,
+			);
+			path = examples;
+			sourceTree = "<group>";
+		};
+		497CFF212F8189EC006335F5 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				497CFF082F8189EC006335F5 /* bundle.pl */,
+				497CFF092F8189EC006335F5 /* font.png */,
+				497CFF0A2F8189EC006335F5 /* incbin.pl */,
+				497CFF0B2F8189EC006335F5 /* Makefile */,
+				497CFF0C2F8189EC006335F5 /* tigr_amalgamated.c */,
+				497CFF0D2F8189EC006335F5 /* tigr_amalgamated_one_header.h */,
+				497CFF0E2F8189EC006335F5 /* tigr_android.h */,
+				497CFF0F2F8189EC006335F5 /* tigr_android.c */,
+				497CFF102F8189EC006335F5 /* tigr_bitmaps.c */,
+				497CFF112F8189EC006335F5 /* tigr_font.h */,
+				497CFF122F8189EC006335F5 /* tigr_gl.c */,
+				497CFF132F8189EC006335F5 /* tigr_glsl_hdr.h */,
+				497CFF142F8189EC006335F5 /* tigr_inflate.c */,
+				497CFF152F8189EC006335F5 /* tigr_internal.h */,
+				497CFF162F8189EC006335F5 /* tigr_ios.c */,
+				497CFF172F8189EC006335F5 /* tigr_linux.c */,
+				497CFF182F8189EC006335F5 /* tigr_loadpng.c */,
+				497CFF192F8189EC006335F5 /* tigr_objc.h */,
+				497CFF1A2F8189EC006335F5 /* tigr_osx.c */,
+				497CFF1B2F8189EC006335F5 /* tigr_print.c */,
+				497CFF1C2F8189EC006335F5 /* tigr_savepng.c */,
+				497CFF1D2F8189EC006335F5 /* tigr_upscale_gl_fs.h */,
+				497CFF1E2F8189EC006335F5 /* tigr_upscale_gl_vs.h */,
+				497CFF1F2F8189EC006335F5 /* tigr_utils.c */,
+				497CFF202F8189EC006335F5 /* tigr_win.c */,
+			);
+			path = src;
+			sourceTree = "<group>";
+		};
+		497CFF292F8189EC006335F5 /* tigr */ = {
+			isa = PBXGroup;
+			children = (
+				497CFEE82F8189EC006335F5 /* .github */,
+				497CFEEE2F8189EC006335F5 /* ci */,
+				497CFF072F8189EC006335F5 /* examples */,
+				497CFF212F8189EC006335F5 /* src */,
+				497CFF222F8189EC006335F5 /* .clang-format */,
+				497CFF232F8189EC006335F5 /* demo.gif */,
+				497CFF242F8189EC006335F5 /* README.md */,
+				497CFF252F8189EC006335F5 /* tigr.h */,
+				497CFF262F8189EC006335F5 /* tigr.c */,
+				497CFF272F8189EC006335F5 /* tigr.png */,
+				497CFF282F8189EC006335F5 /* UNLICENSE */,
+			);
+			name = tigr;
+			path = ../tigr;
+			sourceTree = SOURCE_ROOT;
+		};
 		498F233E2DEF75C800DFB022 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				497CFF2D2F81BEF9006335F5 /* Cocoa.framework */,
+				497CFF2B2F81BEE7006335F5 /* OpenGL.framework */,
+				497CFEE32F8174E1006335F5 /* libcurl.tbd */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -79,6 +349,8 @@
 		49DAA63A278B212E00F67EEB = {
 			isa = PBXGroup;
 			children = (
+				497CFF292F8189EC006335F5 /* tigr */,
+				497CFECA2F815552006335F5 /* ESPlib.xcodeproj */,
 				49BDF4D227C5B56200325407 /* Arduino */,
 				493910E12E5D1BE90026FDA4 /* esp-idf */,
 				493910E22E5D1C510026FDA4 /* mac */,
@@ -125,13 +397,13 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 49DAA64A278B212E00F67EEB /* Build configuration list for PBXNativeTarget "PostLightController" */;
 			buildPhases = (
-				496613592E021A1300296791 /* Compile PostLightEffects.clvr */,
 				49DAA63F278B212E00F67EEB /* Sources */,
 				49DAA640278B212E00F67EEB /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				497CFEE12F81556C006335F5 /* PBXTargetDependency */,
 			);
 			name = PostLightController;
 			productName = CompileArly;
@@ -145,7 +417,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastUpgradeCheck = 2600;
+				LastUpgradeCheck = 2640;
 				TargetAttributes = {
 					49DAA642278B212E00F67EEB = {
 						CreatedOnToolsVersion = 13.2.1;
@@ -163,6 +435,12 @@
 			mainGroup = 49DAA63A278B212E00F67EEB;
 			productRefGroup = 49DAA644278B212E00F67EEB /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 497CFED52F815552006335F5 /* Products */;
+					ProjectRef = 497CFECA2F815552006335F5 /* ESPlib.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				49DAA642278B212E00F67EEB /* PostLightController */,
@@ -170,42 +448,51 @@
 		};
 /* End PBXProject section */
 
-/* Begin PBXShellScriptBuildPhase section */
-		496613592E021A1300296791 /* Compile PostLightEffects.clvr */ = {
-			isa = PBXShellScriptBuildPhase;
-			alwaysOutOfDate = 1;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"$(SRCROOT)/PostLightEffects.clvr",
-			);
-			name = "Compile PostLightEffects.clvr";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n/usr/local/bin/clvr $SRCROOT/../PostLightEffects.clvr\n";
+/* Begin PBXReferenceProxy section */
+		497CFEDB2F815553006335F5 /* Vesper */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.executable";
+			path = Vesper;
+			remoteRef = 497CFEDA2F815553006335F5 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-/* End PBXShellScriptBuildPhase section */
+		497CFEDD2F815553006335F5 /* libESPlib.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libESPlib.a;
+			remoteRef = 497CFEDC2F815553006335F5 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		497CFEDF2F815553006335F5 /* webby */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.executable";
+			path = webby;
+			remoteRef = 497CFEDE2F815553006335F5 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXSourcesBuildPhase section */
 		49DAA63F278B212E00F67EEB /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				497CFF2A2F818A05006335F5 /* tigr.c in Sources */,
 				4966134C2E00D2E700296791 /* PostLightController.cpp in Sources */,
-				4966135A2E07192800296791 /* Flash.cpp in Sources */,
+				497CFEE52F817ADF006335F5 /* Flash.cpp in Sources */,
 				49DAA647278B212E00F67EEB /* main.cpp in Sources */,
-				4966135B2E07192F00296791 /* InterpretedEffect.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		497CFEE12F81556C006335F5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ESPlib;
+			targetProxy = 497CFEE02F81556C006335F5 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		49DAA648278B212E00F67EEB /* Debug */ = {
@@ -331,9 +618,18 @@
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				DEAD_CODE_STRIPPING = YES;
-				HEADER_SEARCH_PATHS = "$(CONFIGURATION_BUILD_DIR)/usr/local/include";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					GL_SILENCE_DEPRECATION,
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/../ESPlib",
+					"$(PROJECT_DIR)/../ESPlib/lua/lua-5.4.8/src",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 26.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
@@ -343,7 +639,11 @@
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				DEAD_CODE_STRIPPING = YES;
-				HEADER_SEARCH_PATHS = "$(CONFIGURATION_BUILD_DIR)/usr/local/include";
+				GCC_PREPROCESSOR_DEFINITIONS = GL_SILENCE_DEPRECATION;
+				HEADER_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/../ESPlib",
+					"$(PROJECT_DIR)/../ESPlib/lua/lua-5.4.8/src",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 26.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
