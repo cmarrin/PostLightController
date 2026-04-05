@@ -45,7 +45,7 @@ Command List:
 
 #include "IDFWiFiPortal.h"
 
-static const char* TAG = "OfficeClock";
+static const char* TAG = "PostLightController";
 
 IDFWiFiPortal portal;
 
