@@ -33,3 +33,4 @@ espidf/.devcontainer
 dependencies.lock
 mac/littlefs/.nvs
 sdkconfig
+mac/littlefs
