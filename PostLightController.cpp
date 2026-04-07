@@ -150,15 +150,14 @@ PostLightController::sendCmd(const uint8_t* cmd, uint16_t size)
         showColor(cmd[1], cmd[2], cmd[3], cmd[4], cmd[5]);
         return true;
     }
+
+    _effect = Effect::Lua;
     
-    // FIXME: Run a Lua command
-    
-//    _effect = Effect::Interp;
-//    _interpretedEffect.init(cmd[0], cmd + 1, size - 1);
-//    if (_interpretedEffect.error() != clvr::Memory::Error::None) {
-//        _effect = Effect::None;
-//        showError(_interpretedEffect.error(), _interpretedEffect.errorAddr());
-//        return false;
-//    }
+    // Make a command with args
+    std::string luaCmd = std::string(1, cmd[0]);
+    for (int i = 1; i < size; ++i) {
+        luaCmd += " " + std::to_string(cmd[i]);
+    }
+    handleShellCommand(luaCmd);
     return true;
 }

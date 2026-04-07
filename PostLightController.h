@@ -60,7 +60,7 @@ class PostLightController : public mil::Application
         showColor(h, 0xff, 0x80, numberOfBlinks, interval);
 	}
  
-    enum class Effect { None, Flash };
+    enum class Effect { None, Flash, Lua };
     Effect _effect = Effect::None;
 	Flash _flash;
 };
