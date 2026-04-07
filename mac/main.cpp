@@ -61,11 +61,11 @@ static void makeRing(Tigr* screen, const uint32_t* buffer, int centerX, int cent
 int main(int argc, char * const argv[])
 {
     while (true) {
-        System::logI(TAG, "Opening tigr window");
+        mil::System::logI(TAG, "Opening tigr window");
 
         Tigr* screen = tigrWindow(WindowWidth, WindowHeight, "PostLightController", TIGR_AUTO);
         
-        System::setRenderCB([screen](const void* buffer)
+        mil::System::setRenderCB([screen, &needRender](const mil::Graphics* gfx)
         {
             const uint32_t* b = reinterpret_cast<const uint32_t*>(buffer);
             tigrClear(screen, tigrRGBA(0x0, 0x00, 0x00, 0xff));
@@ -82,13 +82,13 @@ int main(int argc, char * const argv[])
         controller.setup();
         
         while (!tigrClosed(screen) && !tigrKeyDown(screen, TK_ESCAPE)) {
-            if (System::isRestarting()) {
+            if (mil::System::isRestarting()) {
                 break;
             }
             
             controller.loop();
             tigrUpdate(screen);
-            System::delay(10);
+            mil::System::delay(10);
         }
 
         tigrFree(screen);

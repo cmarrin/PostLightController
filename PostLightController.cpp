@@ -18,7 +18,7 @@ static constexpr int32_t IdleDelay = 100; // ms
 PostLightController::PostLightController(mil::WiFiPortal* portal)
     : mil::Application(portal, ConfigPortalName, true)
 {
-    System::initLED(1, PixelPin, PixelsPerPost * NumPosts);
+    mil::System::initLED(1, PixelPin, PixelsPerPost * NumPosts);
 }
 
 static int16_t parseCmd(const std::string& cmd, uint8_t* buf, uint16_t size)
@@ -97,7 +97,7 @@ PostLightController::processCommand(const std::string& cmd)
 void
 PostLightController::setup()
 {
-    System::delay(500);
+    mil::System::delay(500);
     Application::setup();
 
     setTitle((std::string("<center>MarrinTech Post Light Controller v") + Version + "</center>").c_str());
@@ -108,7 +108,7 @@ PostLightController::setup()
         return true;
     });
 
-    System::logI(TAG, "Post Light Controller v%s", Version);
+    mil::System::logI(TAG, "Post Light Controller v%s", Version);
   
     showStatus(StatusColor::Green, 3, 2);
 }
@@ -135,7 +135,7 @@ PostLightController::loop()
         delayInMs = IdleDelay;
     }
     
-    System::delay(delayInMs);
+    mil::System::delay(delayInMs);
 }
 
 bool

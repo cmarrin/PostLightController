@@ -52,7 +52,7 @@ mil::IDFWiFiPortal portal;
 extern "C" {
 void app_main(void)
 {
-    System::logI(TAG, "Starting PostLightController...");
+    mil::System::logI(TAG, "Starting PostLightController...");
     PostLightController controller(&portal);
     controller.setup();
 

@@ -21,14 +21,14 @@ Flash::init(uint8_t r, uint8_t g, uint8_t b, uint8_t count, uint16_t duration)
     _blue = b;
     _count = count;
     _duration = uint16_t(duration) * 100;
-    _lastFlash = System::millis();
+    _lastFlash = mil::System::millis();
 
     // If we will be flashing (count != 0) then start with the lights off.
     // Otherwise set the lights to the passed color
     if (count == 0) {
-        System::setAllLEDs(1, TotalPixels, r, g, b);
+        mil::System::setAllLEDs(1, TotalPixels, r, g, b);
     } else {
-        System::setAllLEDs(1, TotalPixels, 0, 0, 0);
+        mil::System::setAllLEDs(1, TotalPixels, 0, 0, 0);
     }
 	return true;
 }
@@ -41,7 +41,7 @@ Flash::loop()
 		return _count ? -1 : 0;
 	}
 	
-	uint32_t t = System::millis();
+	uint32_t t = mil::System::millis();
 	bool showColor = false;
 	bool colorOn = false;
 	
@@ -64,11 +64,11 @@ Flash::loop()
 	
 	if (showColor) {
         if (colorOn) {
-            System::setAllLEDs(1, TotalPixels, _red, _green, _blue);
+            mil::System::setAllLEDs(1, TotalPixels, _red, _green, _blue);
         } else {
-            System::setAllLEDs(1, TotalPixels, 0, 0, 0);
+            mil::System::setAllLEDs(1, TotalPixels, 0, 0, 0);
         }
-        System::refreshLEDs(1);
+        mil::System::refreshLEDs(1);
 	}
 	
     return 0;
