@@ -13,12 +13,11 @@
 #include "System.h"
 
 bool
-Flash::init(uint8_t r, uint8_t g, uint8_t b, uint8_t count, uint16_t duration)
+Flash::init(uint8_t h, uint8_t s, uint8_t v, uint8_t count, uint16_t duration)
 {
+    // Incoming hue is 0-255, hsvToRGB expects 0-65535
+    mil::Graphics::hsvToRGB(_red, _green, _blue, uint16_t(h) * 256, s, v);
 	_countCompleted = 0;
-    _red = r;
-    _green = g;
-    _blue = b;
     _count = count;
     _duration = uint16_t(duration) * 100;
     _lastFlash = mil::System::millis();
@@ -26,7 +25,8 @@ Flash::init(uint8_t r, uint8_t g, uint8_t b, uint8_t count, uint16_t duration)
     // If we will be flashing (count != 0) then start with the lights off.
     // Otherwise set the lights to the passed color
     if (count == 0) {
-        mil::System::setAllLEDs(1, TotalPixels, r, g, b);
+        mil::System::setAllLEDs(1, TotalPixels, _red, _green, _blue);
+        mil::System::refreshLEDs(1);
     } else {
         mil::System::setAllLEDs(1, TotalPixels, 0, 0, 0);
     }
