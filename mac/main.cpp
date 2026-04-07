@@ -61,14 +61,13 @@ static void makeRing(Tigr* screen, const uint32_t* buffer, int centerX, int cent
 int main(int argc, char * const argv[])
 {
     static std::mutex _mutex;
-    bool needRender = false;
     
     while (true) {
         mil::System::logI(TAG, "Opening tigr window");
 
         Tigr* screen = tigrWindow(WindowWidth, WindowHeight, "PostLightController", TIGR_AUTO);
         
-        mil::System::setRenderCB([screen, &needRender](const mil::Graphics* gfx)
+        mil::System::setRenderCB([screen](const mil::Graphics* gfx)
         {
             const uint32_t* b = reinterpret_cast<const uint32_t*>(gfx->getBuffer());
             tigrClear(screen, tigrRGBA(0x0, 0x00, 0x00, 0xff));
@@ -87,7 +86,6 @@ int main(int argc, char * const argv[])
                 }
             }
             std::unique_lock<std::mutex> lk(_mutex);
-            needRender = true;
         });
 
         PostLightController controller(&portal);
@@ -102,10 +100,7 @@ int main(int argc, char * const argv[])
             controller.loop();
             {
                 std::unique_lock<std::mutex> lk(_mutex);
-                if (needRender) {
-                    tigrUpdate(screen);
-                    needRender = false;
-                }
+                tigrUpdate(screen);
             }
             mil::System::delay(10);
         }
