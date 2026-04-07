@@ -79,7 +79,7 @@ static int16_t parseCmd(const std::string& cmd, uint8_t* buf, uint16_t size)
 void
 PostLightController::processCommand(const std::string& cmd)
 {
-    printf("cmd='%s'\n", cmd.c_str());
+    mil::System::logI(TAG, "cmd='%s'\n", cmd.c_str());
     
     uint8_t buf[MaxCmdSize];
     int16_t r = parseCmd(cmd, buf, MaxCmdSize);
