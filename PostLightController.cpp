@@ -31,7 +31,8 @@ static int16_t parseCmd(const std::string& cmd, uint8_t* buf, uint16_t size)
     while (true) {
         int16_t nextIndex = cmd.find(',', strIndex);
         if (nextIndex == std::string::npos) {
-            nextIndex = cmd.length();
+            // HACK ALERT: This is another case where string.length includes the terminating null on espidf!
+            nextIndex = strlen(cmd.c_str());
         }
 
         if (parsingCmd) {
