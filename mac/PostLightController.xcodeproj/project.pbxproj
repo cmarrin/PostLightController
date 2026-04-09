@@ -49,6 +49,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		4908E5F02F85D9BA007534F8 /* f.lua */ = {isa = PBXFileReference; lastKnownFileType = text; name = f.lua; path = ../f.lua; sourceTree = SOURCE_ROOT; };
 		4963436927A5DC6E00ABF09F /* PostLightEffects.clvr */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; fileEncoding = 4; name = PostLightEffects.clvr; path = ../PostLightEffects.clvr; sourceTree = "<group>"; };
 		496613192DF3C61600296791 /* PostLightControllerESP.ino */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; name = PostLightControllerESP.ino; path = ../PostLightControllerESP.ino; sourceTree = "<group>"; };
 		4966134A2E00D2D300296791 /* PostLightController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PostLightController.h; path = ../PostLightController.h; sourceTree = "<group>"; };
@@ -372,6 +373,7 @@
 		49DAA64D278B2DF200F67EEB /* Scripts */ = {
 			isa = PBXGroup;
 			children = (
+				4908E5F02F85D9BA007534F8 /* f.lua */,
 				4963436927A5DC6E00ABF09F /* PostLightEffects.clvr */,
 			);
 			name = Scripts;
