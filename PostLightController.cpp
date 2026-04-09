@@ -99,6 +99,9 @@ void
 PostLightController::setup()
 {
     mil::System::delay(500);
+
+    showColor(0, 0, 0, 0, 0);
+
     Application::setup();
     
     // Just in case
