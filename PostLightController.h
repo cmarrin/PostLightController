@@ -40,8 +40,12 @@ class PostLightController : public mil::Application
 
 	void showColor(uint8_t h, uint8_t s, uint8_t v, uint8_t n, uint8_t d)
 	{
-        // FIXME: terminate any Lua program running
-        
+        if (_effect == Effect::Lua && _effectId >= 0) {
+            terminateShellCommand(_effectId);
+            _effect = Effect::None;
+            _effectId = -1;
+        }
+
         _effect = Effect::Flash;
         _flash.init(h, s, v, n, d);
 	}

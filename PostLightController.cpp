@@ -140,6 +140,7 @@ PostLightController::loop()
         // An effect has finished. End it and clear the display
         showColor(0, 0, 0, 0, 0);
         _effect = Effect::None;
+        _effectId = -1;
         delayInMs = IdleDelay;
     }
     
@@ -153,9 +154,9 @@ PostLightController::sendCmd(const uint8_t* cmd, uint16_t size)
         return false;
     }
     
-    if (_effect == Effect::Lua && _effectId >= 0) {
-        terminateShellCommand(_effectId);
-    }
+    // Send a command to turn off the pixels. This will also
+    // Kill any Lua programs running
+    showColor(0, 0, 0, 0, 0);
     
     if (cmd[0] == 'C') {
         // Built-in color command
