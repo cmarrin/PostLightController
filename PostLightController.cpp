@@ -100,6 +100,10 @@ PostLightController::setup()
 {
     mil::System::delay(500);
     Application::setup();
+    
+    // Just in case
+    _effect = Effect::None;
+    _effectId = -1;
 
     setTitle((std::string("<center>MarrinTech Post Light Controller v") + Version + "</center>").c_str());
 
@@ -146,9 +150,14 @@ PostLightController::sendCmd(const uint8_t* cmd, uint16_t size)
         return false;
     }
     
+    if (_effect == Effect::Lua && _effectId >= 0) {
+        terminateShellCommand(_effectId);
+    }
+    
     if (cmd[0] == 'C') {
         // Built-in color command
         showColor(cmd[1], cmd[2], cmd[3], cmd[4], cmd[5]);
+        _effect = Effect::Flash;
         return true;
     }
 
@@ -159,6 +168,6 @@ PostLightController::sendCmd(const uint8_t* cmd, uint16_t size)
     for (int i = 1; i < size; ++i) {
         luaCmd += " " + std::to_string(cmd[i]);
     }
-    handleShellCommand(luaCmd);
+    _effectId = handleShellCommand(luaCmd);
     return true;
 }

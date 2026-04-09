@@ -63,4 +63,5 @@ class PostLightController : public mil::Application
     enum class Effect { None, Flash, Lua };
     Effect _effect = Effect::None;
 	Flash _flash;
+    int8_t _effectId = -1;
 };
