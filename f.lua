@@ -73,7 +73,7 @@ __print__("LEDTest finished\n")
 local PixelsPerPost = 8
 local NumPosts = 7
 local NumPixels = PixelsPerPost * NumPosts
-local Delay = 25; -- Delay between iterations (in ms)
+local Delay = 10; -- Delay between iterations (in ms)
 
 local FlickerMin = 38
 local FlickerBrightestMin = 77;
