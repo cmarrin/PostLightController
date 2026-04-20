@@ -1,5 +1,0 @@
-{
-    "idf.flashType": "UART",
-    "idf.port": "/dev/tty.usbmodem8334401",
-    "C_Cpp.default.compilerPath": "/usr/bin/g++"
-}
