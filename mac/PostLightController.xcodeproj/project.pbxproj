@@ -114,7 +114,7 @@
 		497CFF282F8189EC006335F5 /* UNLICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = UNLICENSE; sourceTree = "<group>"; };
 		497CFF2B2F81BEE7006335F5 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		497CFF2D2F81BEF9006335F5 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
-		497CFF2F2F8318B4006335F5 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../espidf/main/main.cpp; sourceTree = SOURCE_ROOT; };
+		497CFF2F2F8318B4006335F5 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = "../PostLightController-espidf/main/main.cpp"; sourceTree = SOURCE_ROOT; };
 		49BDF4D327C5B5BE00325407 /* InterpretedEffect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = InterpretedEffect.cpp; path = ../InterpretedEffect.cpp; sourceTree = "<group>"; };
 		49BDF4D427C5B5BE00325407 /* Flash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Flash.h; path = ../Flash.h; sourceTree = "<group>"; };
 		49BDF4D527C5B5BE00325407 /* InterpretedEffect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InterpretedEffect.h; path = ../InterpretedEffect.h; sourceTree = "<group>"; };
@@ -145,7 +145,7 @@
 				497CFF2F2F8318B4006335F5 /* main.cpp */,
 			);
 			name = "esp-idf";
-			path = "../PostLightController-esp-idf";
+			path = "../PostLightController-espidf";
 			sourceTree = "<group>";
 		};
 		493910E22E5D1C510026FDA4 /* mac */ = {
