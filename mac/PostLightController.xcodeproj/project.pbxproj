@@ -54,7 +54,6 @@
 		496613192DF3C61600296791 /* PostLightControllerESP.ino */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; name = PostLightControllerESP.ino; path = ../PostLightControllerESP.ino; sourceTree = "<group>"; };
 		4966134A2E00D2D300296791 /* PostLightController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PostLightController.h; path = ../PostLightController.h; sourceTree = "<group>"; };
 		4966134B2E00D2E400296791 /* PostLightController.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PostLightController.cpp; path = ../PostLightController.cpp; sourceTree = "<group>"; };
-		4966135F2E0DC2BC00296791 /* partitions.csv-xxx */ = {isa = PBXFileReference; lastKnownFileType = text; name = "partitions.csv-xxx"; path = "../partitions.csv-xxx"; sourceTree = "<group>"; };
 		496613602E0DCCBD00296791 /* boards.local.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = boards.local.txt; path = ../boards.local.txt; sourceTree = SOURCE_ROOT; };
 		497CFECA2F815552006335F5 /* ESPlib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ESPlib.xcodeproj; path = ../ESPlib/mac/ESPlib.xcodeproj; sourceTree = SOURCE_ROOT; };
 		497CFEE32F8174E1006335F5 /* libcurl.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libcurl.tbd; path = usr/lib/libcurl.tbd; sourceTree = SDKROOT; };
@@ -340,7 +339,6 @@
 			isa = PBXGroup;
 			children = (
 				496613602E0DCCBD00296791 /* boards.local.txt */,
-				4966135F2E0DC2BC00296791 /* partitions.csv-xxx */,
 				49BDF4D727C5B5BE00325407 /* PostLightController.ino */,
 				496613192DF3C61600296791 /* PostLightControllerESP.ino */,
 			);
