@@ -122,6 +122,7 @@
 		49BDF4D827C5B5BE00325407 /* Flash.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Flash.cpp; path = ../Flash.cpp; sourceTree = "<group>"; };
 		49DAA643278B212E00F67EEB /* PostLightController */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = PostLightController; sourceTree = BUILT_PRODUCTS_DIR; };
 		49DAA646278B212E00F67EEB /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		49E225F82F9FCE56007436BC /* PostLightController.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = PostLightController.html; path = ../PostLightController.html; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -380,6 +381,7 @@
 		49DAA652278B3B5B00F67EEB /* src */ = {
 			isa = PBXGroup;
 			children = (
+				49E225F82F9FCE56007436BC /* PostLightController.html */,
 				49BDF4D827C5B5BE00325407 /* Flash.cpp */,
 				49BDF4D427C5B5BE00325407 /* Flash.h */,
 				49BDF4D327C5B5BE00325407 /* InterpretedEffect.cpp */,
