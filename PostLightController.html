@@ -3,23 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Color Picker Tool</title>
+    <title>Post Light Controller</title>
     <style>
+        :root {
+            --primary-color: #007bff;
+            --primary-color-hover: #0056b3;
+            --danger-color: #c22;
+            --danger-color-hover: #800;
+            --bg-color: #ccc;
+            --text-color: #212529;
+            --card-bg: #ddd;
+            --border-color: #dee2e6;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            --transition-speed: 0.3s;
+        }
+
+        /* Dark mode */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --primary-color: #007bff;
+                --primary-color-hover: #0056b3;
+                --primary-color-disabled: #606060;
+                --bg-color: #1a1a1a;
+                --text-color: #ffffff;
+                --card-bg: #2a2a2a;
+                --border-color: #dee2e6;
+                --border-radius: 8px;
+                --box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+                --transition-speed: 0.3s;
+            }
+        }
+        
+        a:link      { color: var(--primary-color); }
+        a:visited   { color: var(--primary-color); }
+        a:hover     { color: var(--primary-color-hover); }
+        a:active    { color: var(--primary-color); }
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            margin: 0;
+            padding: 1rem;
+            overflow:hidden;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f0f0f0;
+            box-sizing: border-box;
         }
-        .color-picker {
-            background-color: #fff;
-            padding: 20px;
+
+        .container {
+            height: 500px;
+            width: 100%;
+            max-width: 420px;
+            padding: 2rem;
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            text-align: center;
+            transition: box-shadow var(--transition-speed);
+        }
+
+        .container:hover {
+             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            color: var(--primary-color);
+            margin-top: 0;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .widget {
+            background-color: var(--bg-color);
             border-radius: 8px;
+            vertical-align: baseline;
+            margin:10px;
+            padding: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             text-align: center;
+            align-items: center;
+            display: flex;
+            margin:10px;
+            justify-content: center;
+       }
+        .power-button {
+        }
+        .widget-label {
+            padding:10px;
+        }
+        .widget-control {
+            height: 34px;
+        }
+        .color-picker {
         }
         p {
             margin: 5px 0;
@@ -27,10 +106,8 @@
         }
 
         .switch {
-          position: relative;
-          display: inline-block;
-          width: 60px;
-          height: 34px;
+            position: relative;
+            width: 60px;
         }
 
         /* Hide default HTML checkbox */
@@ -90,29 +167,30 @@
     </style>
 </head>
 <body>
-    <div>Hello</div>
-    <label class="switch">
-        <input type="checkbox">
-        <span class="slider round"></span>
-    </label>
-
-    <div class="color-picker">
-        <input type="color" id="colorInput" value="#ff0000">
+    <div class="container">
+        <h1 id="title">PostLightController</h1>
+        <div class="widget power-button">
+            <span class="widget-label">Post Lights On</span>
+            <label class="widget-control switch">
+                <input type="checkbox" id="powerInput" >
+                <span class="slider round"></span>
+            </label>
+        </div>
+        <div class="widget color-picker">
+            <span class="widget-label">Color</span>
+            <input class="widget-control" type="color" id="colorInput" value="#ff0000">
+        </div>
     </div>
     
     <script>
+        document.getElementById('powerInput').addEventListener('input', function() {
+            const on = this.checked;
+            console.log("power is " + (on ? "on" : "off"));
+        });
         document.getElementById('colorInput').addEventListener('input', function() {
             const color = this.value;
-            document.getElementById('hexValue').textContent = color;
-            document.getElementById('rgbValue').textContent = hexToRgb(color);
+            console.log("Color changed to " + color);
         });
-        
-        function hexToRgb(hex) {
-            const r = parseInt(hex.slice(1, 3), 16);
-            const g = parseInt(hex.slice(3, 5), 16);
-            const b = parseInt(hex.slice(5, 7), 16);
-            return `rgb(${r}, ${g}, ${b})`;
-        }
     </script>
 </body>
 </html>
