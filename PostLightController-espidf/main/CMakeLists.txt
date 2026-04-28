@@ -9,7 +9,6 @@ set(esplibFiles
     HTTPParser.cpp 
     JsonStreamingParser.cpp 
     libtelnet.c 
-    linenoise.c 
     LittleFSShim.cpp 
     LuaManager.cpp 
     LuaWFS.cpp 
