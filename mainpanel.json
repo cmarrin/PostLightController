@@ -1,0 +1,15 @@
+{
+    "title" : "Post Light UI Panel",
+    "widgets" : [
+        {
+            "type" : "toggleButton",
+            "name" : "on",
+            "label" : "Post Lights On"
+        },
+        {
+            "type" : "colorPicker",
+            "name" : "color",
+            "label" : "Color"
+        }
+    ]
+}

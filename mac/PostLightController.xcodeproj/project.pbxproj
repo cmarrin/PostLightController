@@ -120,6 +120,8 @@
 		49BDF4D527C5B5BE00325407 /* InterpretedEffect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InterpretedEffect.h; path = ../InterpretedEffect.h; sourceTree = "<group>"; };
 		49BDF4D727C5B5BE00325407 /* PostLightController.ino */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = PostLightController.ino; path = ../PostLightController.ino; sourceTree = "<group>"; };
 		49BDF4D827C5B5BE00325407 /* Flash.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Flash.cpp; path = ../Flash.cpp; sourceTree = "<group>"; };
+		49D61D9C2FA2DE11004F59E2 /* mainpanel.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = mainpanel.json; path = ../mainpanel.json; sourceTree = SOURCE_ROOT; };
+		49D61D9F2FA2DEE7004F59E2 /* mainpanel.lua */ = {isa = PBXFileReference; lastKnownFileType = text; name = mainpanel.lua; path = ../mainpanel.lua; sourceTree = SOURCE_ROOT; };
 		49DAA643278B212E00F67EEB /* PostLightController */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = PostLightController; sourceTree = BUILT_PRODUCTS_DIR; };
 		49DAA646278B212E00F67EEB /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		49E225F82F9FCE56007436BC /* PostLightController.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = PostLightController.html; path = ../PostLightController.html; sourceTree = "<group>"; };
@@ -372,6 +374,8 @@
 		49DAA64D278B2DF200F67EEB /* Scripts */ = {
 			isa = PBXGroup;
 			children = (
+				49D61D9F2FA2DEE7004F59E2 /* mainpanel.lua */,
+				49D61D9C2FA2DE11004F59E2 /* mainpanel.json */,
 				4908E5F02F85D9BA007534F8 /* f.lua */,
 				4963436927A5DC6E00ABF09F /* PostLightEffects.clvr */,
 			);
