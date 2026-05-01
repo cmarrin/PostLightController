@@ -111,11 +111,11 @@ int main(int argc, char * const argv[])
             {
                 std::unique_lock<std::mutex> lk(_mutex);
                 if (needRender) {
-                    tigrUpdate(screen);
                     needRender = false;
                     _statusCond.notify_all();
                 }
             }
+            tigrUpdate(screen);
             mil::System::delay(10);
         }
 
