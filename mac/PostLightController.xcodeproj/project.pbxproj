@@ -634,6 +634,7 @@
 					"$(PROJECT_DIR)/../ESPlib/lua/lua-5.4.8/src",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.marrintech.PostLightController;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -651,6 +652,7 @@
 					"$(PROJECT_DIR)/../ESPlib/lua/lua-5.4.8/src",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.marrintech.PostLightController;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
