@@ -11,6 +11,19 @@
             "type" : "colorPicker",
             "name" : "color",
             "label" : "Color"
+        },
+        {
+            "type" : "select",
+            "name" : "effect",
+            "label" : "Effect",
+            "list" : [
+                "Constant Color",
+                "Flicker",
+                "Multicolor",
+                "Rainbow",
+                "Pulse",
+                "Christmas"
+            ]
         }
     ]
 }
