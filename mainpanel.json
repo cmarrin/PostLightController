@@ -3,16 +3,6 @@
     "name" : "mainpanel",
     "widgets" : [
         {
-            "type" : "toggleButton",
-            "name" : "on",
-            "label" : "Post Lights On"
-        },
-        {
-            "type" : "colorPicker",
-            "name" : "color",
-            "label" : "Color"
-        },
-        {
             "type" : "select",
             "name" : "effect",
             "label" : "Effect",
@@ -24,6 +14,16 @@
                 "Pulse",
                 "Christmas"
             ]
+        },
+        {
+            "type" : "toggleButton",
+            "name" : "on",
+            "label" : "Post Lights On"
+        },
+        {
+            "type" : "colorPicker",
+            "name" : "color",
+            "label" : "Color"
         }
     ]
 }
