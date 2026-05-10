@@ -38,6 +38,7 @@ static int16_t parseCmd(const std::string& cmd, uint8_t* buf, uint16_t size)
         if (parsingCmd) {
             // Cmd must be a single char
             if (nextIndex != 1) {
+                mil::System::logE(TAG, "parseCmd: cmd must be a single char at index %d", int(nextIndex));
                 return -1;
             }
             buf[bufIndex++] = uint8_t(cmd.c_str()[0]);
@@ -46,6 +47,7 @@ static int16_t parseCmd(const std::string& cmd, uint8_t* buf, uint16_t size)
             // Parse param. Must be 1 to 3 digits <= 255
             uint16_t paramSize = nextIndex - strIndex;
             if (paramSize < 1 || paramSize > 3) {
+                mil::System::logE(TAG, "parseCmd: param must be 1 to 3 chars at index %d", int(nextIndex));
                 return -1;
             }
             
@@ -53,6 +55,7 @@ static int16_t parseCmd(const std::string& cmd, uint8_t* buf, uint16_t size)
             for (uint16_t i = 0; i < paramSize; ++i) {
                 uint16_t digit = uint16_t(cmd.c_str()[strIndex + i]) - '0';
                 if (digit > 9) {
+                    mil::System::logE(TAG, "parseCmd: digit out of range at index %d", int(nextIndex));
                     return -1;
                 }
                 
@@ -60,7 +63,7 @@ static int16_t parseCmd(const std::string& cmd, uint8_t* buf, uint16_t size)
             }
             
             if (param > 255) {
-                return -1;
+                param = 255;
             }
             
             buf[bufIndex++] = uint8_t(param);
@@ -74,22 +77,17 @@ static int16_t parseCmd(const std::string& cmd, uint8_t* buf, uint16_t size)
             return bufIndex;
         }
     }
-    return -1;
 }
 
 void
 PostLightController::processCommand(const std::string& cmd)
 {
-    mil::System::logI(TAG, "cmd='%s'\n", cmd.c_str());
+    mil::System::logI(TAG, "cmd='%s'", cmd.c_str());
     
     uint8_t buf[MaxCmdSize];
     int16_t r = parseCmd(cmd, buf, MaxCmdSize);
-    if (r < 0) {
-        printf("**** parseCmd failed\n");
-    } else {
-        if (!sendCmd(buf, r)) {
-            printf("**** sendCmd failed\n");
-        }
+    if (r >= 0) {
+        sendCmd(buf, r);
     }
     
     _portal->sendHTTPResponse(200, "text/plain", "command processed");
