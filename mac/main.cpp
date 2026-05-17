@@ -75,6 +75,12 @@ int main(int argc, char * const argv[])
         
         mil::System::setRenderCB([screen, &needRender, myThreadId](const mil::Graphics* gfx)
         {
+            static int8_t renderCount = 0;
+            if (++renderCount < 2) {
+                return;
+            }
+            renderCount = 0;
+            
             const uint32_t* b = reinterpret_cast<const uint32_t*>(gfx->getBuffer());
             tigrClear(screen, tigrRGBA(0x0, 0x00, 0x00, 0xff));
 
