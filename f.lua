@@ -33,7 +33,7 @@
 local PixelsPerPost = 8
 local NumPosts = 7
 local NumPixels = PixelsPerPost * NumPosts
-local Delay = 10; -- Delay between iterations (in ms)
+local Delay = 30; -- Delay between iterations (in ms)
 
 local FlickerMin = 38
 local FlickerBrightestMin = 77;
@@ -91,6 +91,7 @@ function animate(index)
 end
 
 while true do
+	local loopStartTime = millis();
 	for i = 1, NumPixels, 1 do
 		if animate(i) == -1 then
 			-- We are done with the throb. We always start at BrightnessMin.
@@ -110,5 +111,9 @@ while true do
 	end
 	refreshLEDs(1)
 	
-	delay(Delay)
+	local delayTime = Delay - (millis() - loopStartTime)
+	if delayTime < 1 then
+		delayTime = 1
+	end
+	delay(delayTime)
 end
