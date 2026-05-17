@@ -37,7 +37,6 @@ local Delay = 10; -- Delay between iterations (in ms)
 
 local FlickerMin = 38
 local FlickerBrightestMin = 77;
-local FlickerBrightestMax = 255;
 
 function clearArray(array, size)
 	for i = 1, size, 1 do
@@ -58,6 +57,8 @@ end
 if speed > 7 then
 	speed = 7
 end
+
+local brightnessMax = math.max(FlickerBrightestMin, math.min(255, v))
 
 local speedMin = speed + 1
 local speedMax = speed + 2
@@ -102,7 +103,7 @@ while true do
 			ledInc[i] = math.random(speedMin, speedMax) * 128
 			
 			-- set the max brightness for flicker
-			ledMax[i] = math.random(FlickerBrightestMin, FlickerBrightestMax) * 128
+			ledMax[i] = math.random(FlickerBrightestMin, brightnessMax) * 128
 		end
 
 		setLED(1, i - 1, hsvToRGB(h, s, ledCur[i] / 128))
