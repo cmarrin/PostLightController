@@ -75,12 +75,7 @@ int main(int argc, char * const argv[])
         
         mil::System::setRenderCB([screen, &needRender, myThreadId](const mil::Graphics* gfx)
         {
-            static int8_t renderCount = 0;
-            if (++renderCount < 2) {
-                return;
-            }
-            renderCount = 0;
-            
+            std::unique_lock<std::mutex> lk(_mutex);
             const uint32_t* b = reinterpret_cast<const uint32_t*>(gfx->getBuffer());
             tigrClear(screen, tigrRGBA(0x0, 0x00, 0x00, 0xff));
 
@@ -97,11 +92,7 @@ int main(int argc, char * const argv[])
                     break;
                 }
             }
-            std::unique_lock<std::mutex> lk(_mutex);
             needRender = true;
-            if (std::this_thread::get_id() != myThreadId) {
-                _statusCond.wait(lk);
-            }
         });
 
         PostLightController controller(&portal);
@@ -118,10 +109,9 @@ int main(int argc, char * const argv[])
                 std::unique_lock<std::mutex> lk(_mutex);
                 if (needRender) {
                     needRender = false;
-                    _statusCond.notify_all();
-                }
+                    tigrUpdate(screen);
+               }
             }
-            tigrUpdate(screen);
             mil::System::delay(10);
         }
 
