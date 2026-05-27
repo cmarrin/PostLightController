@@ -43,7 +43,7 @@ static void colorToRGB(uint32_t color, uint8_t& r, uint8_t& g, uint8_t& b)
     b = color & 0xff;
 }
 
-static void makeRing(Tigr* screen, const uint32_t* buffer, int centerX, int centerY)
+static void makeRing(Tigr* bitmap, const uint32_t* buffer, int centerX, int centerY)
 {
     double angle = 0;
     
@@ -54,7 +54,7 @@ static void makeRing(Tigr* screen, const uint32_t* buffer, int centerX, int cent
         uint32_t color = buffer[i];
         uint8_t r, g, b;
         colorToRGB(color, r, g, b);
-        tigrFillCircle(screen, x + centerX, y + centerY, LEDRadius, tigrRGB(r, g, b));
+        tigrFillCircle(bitmap, x + centerX, y + centerY, LEDRadius, tigrRGB(r, g, b));
         angle += AnglePerLED;
     }
 }
@@ -72,19 +72,20 @@ int main(int argc, char * const argv[])
         mil::System::logI(TAG, "Opening tigr window");
 
         Tigr* screen = tigrWindow(WindowWidth, WindowHeight, "PostLightController", TIGR_AUTO);
+        Tigr* bitmap = tigrBitmap(WindowWidth, WindowHeight);
         
-        mil::System::setRenderCB([screen, &needRender, myThreadId](const mil::Graphics* gfx)
+        mil::System::setRenderCB([bitmap, &needRender, myThreadId](const mil::Graphics* gfx)
         {
             std::unique_lock<std::mutex> lk(_mutex);
             const uint32_t* b = reinterpret_cast<const uint32_t*>(gfx->getBuffer());
-            tigrClear(screen, tigrRGBA(0x0, 0x00, 0x00, 0xff));
+            tigrClear(bitmap, tigrRGBA(0x0, 0x00, 0x00, 0xff));
 
             int16_t width = gfx->width();
 
             int x = RingSize / 2 + Spacing;
             for (int i = 0; i < RingCount; ++i) {
                 if (width >= LEDsPerRing) {
-                    makeRing(screen, b + LEDsPerRing * i, x, RingSize / 2 + Spacing);
+                    makeRing(bitmap, b + LEDsPerRing * i, x, RingSize / 2 + Spacing);
                 }
                 x += RingSize + Spacing;
                 width -= LEDsPerRing;
@@ -109,12 +110,14 @@ int main(int argc, char * const argv[])
                 std::unique_lock<std::mutex> lk(_mutex);
                 if (needRender) {
                     needRender = false;
-                    tigrUpdate(screen);
+                    tigrBlit(screen, bitmap, 0, 0, 0, 0, WindowWidth, WindowHeight);
                }
             }
+            tigrUpdate(screen);
             mil::System::delay(10);
         }
 
+        tigrFree(bitmap);
         tigrFree(screen);
     }
     
