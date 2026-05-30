@@ -1,6 +1,6 @@
 {
     "title" : "Post Light UI Panel",
-    "name" : "mainpanel",
+    "name" : "uipanel",
     "widgets" : [
         {
             "type" : "select",
