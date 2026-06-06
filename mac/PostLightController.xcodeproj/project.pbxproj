@@ -55,6 +55,7 @@
 		4966134A2E00D2D300296791 /* PostLightController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PostLightController.h; path = ../PostLightController.h; sourceTree = "<group>"; };
 		4966134B2E00D2E400296791 /* PostLightController.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PostLightController.cpp; path = ../PostLightController.cpp; sourceTree = "<group>"; };
 		496613602E0DCCBD00296791 /* boards.local.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = boards.local.txt; path = ../boards.local.txt; sourceTree = SOURCE_ROOT; };
+		497923052FCCF5C10025ED80 /* Flicker.lua */ = {isa = PBXFileReference; lastKnownFileType = text; name = Flicker.lua; path = ../Flicker.lua; sourceTree = SOURCE_ROOT; };
 		497CFECA2F815552006335F5 /* ESPlib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ESPlib.xcodeproj; path = ../ESPlib/mac/ESPlib.xcodeproj; sourceTree = SOURCE_ROOT; };
 		497CFEE32F8174E1006335F5 /* libcurl.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libcurl.tbd; path = usr/lib/libcurl.tbd; sourceTree = SDKROOT; };
 		497CFEE62F8189EC006335F5 /* build.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = build.yml; sourceTree = "<group>"; };
@@ -374,6 +375,7 @@
 		49DAA64D278B2DF200F67EEB /* Scripts */ = {
 			isa = PBXGroup;
 			children = (
+				497923052FCCF5C10025ED80 /* Flicker.lua */,
 				49D61D9F2FA2DEE7004F59E2 /* uipanel.lua */,
 				49D61D9C2FA2DE11004F59E2 /* uipanel.json */,
 				4908E5F02F85D9BA007534F8 /* f.lua */,
