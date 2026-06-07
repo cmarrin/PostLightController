@@ -44,11 +44,6 @@ while true do
 			elseif key == "on" then
 				-- Turn the effect on or off
 				on = value == "true"
-			elseif key == "color" then
-				-- set color
-				__print__(string.format("**** uipanel.lua:color='%s'\n", value))
-			else
-				__print__(string.format("**** uipanel.lua:unknown event, kay='%s', value='%s'\n", key, value))
 			end
 		end
 	end
@@ -59,7 +54,9 @@ while true do
 			if not effect then
 				__print__(string.format("**** running effect '%s'\n", effectName))
 				effect = require(effectName)
-				effect.setup({ 30, 255, 128, 2 }) -- Dummy setup
+			end
+			if ev then
+				effect.setArgs(ev)
 			end
 			delay(effect.loop())
 		else
