@@ -57,13 +57,18 @@ Effect.clearArray(Effect.ledInc, NumPixels)
 Effect.ledMax = { }
 Effect.clearArray(Effect.ledMax, NumPixels)
 
-function Effect.setup(arg)
-	-- Get the params
-	Effect.hue = tonumber(arg[1])
-	Effect.sat = tonumber(arg[2])
-	Effect.val = tonumber(arg[3])
-	Effect.speed = tonumber(arg[4])
-
+-- arg is a table containing key/value pairs
+function Effect.setArgs(arg)
+	-- Get args from the table
+	for key, value in pairs(arg) do
+		if key == "color" then
+			Effect.hue, Effect.sat, Effect.val = htmlToHSV(value)
+		elseif key == "speed" then
+			Effect.speed = tonumber(value)
+		end
+	end
+	
+	-- Range limit and set internal values
 	if Effect.speed < 0 then
 		Effect.speed = 0
 	end
