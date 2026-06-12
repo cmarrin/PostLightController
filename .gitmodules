@@ -4,6 +4,3 @@
 [submodule "tigr"]
 	path = tigr
 	url = https://github.com/cmarrin/tigr
-[submodule "JSONParser"]
-	path = JSONParser
-	url = https://github.com/nlohmann/json.git
