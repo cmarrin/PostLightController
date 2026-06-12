@@ -7,7 +7,7 @@ set(esplibFiles
     Graphics.cpp 
     HTTPFetchClient.cpp 
     HTTPParser.cpp 
-    JsonStreamingParser.cpp 
+    JsonParser.cpp 
     libtelnet.c 
     LittleFSShim.cpp 
     LuaManager.cpp 
