@@ -65,6 +65,7 @@ while true do
 				__print__("**** effect is off, terminating\n")
 				terminateEffect()
 			end
+			delay(10)
 		end
 	else
 		delay(10)
