@@ -117,6 +117,10 @@ PostLightController::setup()
     mil::System::logI(TAG, "Post Light Controller v%s", Version);
   
     showStatus(StatusColor::Green, 3, 2);
+//    System::delay(3);
+//    
+//    // Start any effect that should be running
+//    startUI();
 }
 	
 void
